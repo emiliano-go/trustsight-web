@@ -328,6 +328,10 @@ const limits = [
 
 const faqs = [
   {
+    q: 'Does this replace reading the PKGBUILD?',
+    a: <>No. TrustSight is a second pair of eyes, not a substitute for reading the diff. Every finding points at the line or URL it fired on, so the report tells you where to look, and you still do the looking. The tool&rsquo;s own principle is that the report is input to a decision, not the decision: it does not authorize an update, you do.</>,
+  },
+  {
     q: 'Is installing TrustSight safe?',
     a: <>The tool never runs the PKGBUILD, never executes extracted commands, and never installs or modifies anything it reviews; it reads diffs and runs pattern rules over the text. The package itself is MIT licensed and open source, and the PKGBUILD in the repository runs the test suite during build. Reviewing a package is not the same as trusting it, and the same applies to the reviewer.</>,
   },
