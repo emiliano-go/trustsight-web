@@ -822,6 +822,11 @@ code, kbd, samp {
   .page { padding: 0 20px; }
   .section { padding: 70px 0 76px; }
   .masthead { padding: 24px 0 60px; min-height: 0; }
+  /* The wordmark's 0.28em tracking makes the row (mark + a11y + theme
+     buttons) need ~300px; on a 320px screen the content column is 280px,
+     so the tracking is relaxed and the row keeps its single line. */
+  .masthead-top { gap: 14px; }
+  .wordmark { font-size: 18px; letter-spacing: 0.18em; }
   .masthead h1 { margin-top: 80px; font-size: clamp(40px, 12vw, 56px); }
   .masthead-links { flex-wrap: wrap; gap: 18px; margin-top: 56px; }
   .ns-list { grid-template-columns: 1fr; }
