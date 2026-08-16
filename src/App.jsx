@@ -436,6 +436,10 @@ export function App() {
               <code>Version bump. modified PKGBUILD. Signals: checksum set to SKIP; novel dependency 'pyfoo' added in depends.</code>
             </p>
           </div>
+          <div className="callout" role="note">
+            <p><strong>This does not replace reading the PKGBUILD.</strong> Every finding points at the line or URL it fired on, so the report tells you where to look; you still read the diff and make the call. The tool&rsquo;s own principle is that the report is input to a decision, not the decision.</p>
+            <p><strong>It is fully open source.</strong> The tool, all 145 rule patterns, every default, and the seed&rsquo;s verification key are published on GitHub under MIT. There is no closed component: you can read, rebuild, and audit the reviewer itself.</p>
+          </div>
           <ol className="principle-list">
             {principles.map((item) => (
               <li key={item.strong}><strong>{item.strong}</strong><p>{item.text}</p></li>
@@ -716,7 +720,8 @@ export function App() {
       <footer className="colophon" aria-label="Colophon">
         <div>
           <h2>Colophon</h2>
-          <p>MIT licensed. Built by <strong>Emiliano Gandini</strong>.</p>
+          <p><a href={GITHUB} target="_blank" rel="noreferrer">MIT licensed</a>, fully open source. Built by <strong>Emiliano Gandini</strong>.</p>
+          <p>Every rule pattern, default, and the seed&rsquo;s verification key are published in the repository. There is no closed component; the reviewer can be audited the same way it audits packages.</p>
           <p>Security contact: <a href="mailto:emiliano.gandini@protonmail.com">emiliano.gandini@protonmail.com</a></p>
           <p className="pgp">PGP&nbsp;F759D6D4 9B0A395A B922414A 5CC3B4C5 0D37E793</p>
         </div>
