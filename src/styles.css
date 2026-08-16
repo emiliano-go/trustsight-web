@@ -474,9 +474,15 @@ code, kbd, samp {
   margin: 48px auto 0;
   max-width: 780px;
   color-scheme: dark; /* plates stay dark in both themes; scrollbar stays dark too */
+  /* Size container for the terminal: the frame hugs the text (fit-content
+     below), so the scale-to-fit font is sized against this outer width. */
+  container-type: inline-size;
 }
 
 .plate__scroll {
+  /* The border wraps the terminal output exactly, centered in the plate. */
+  width: fit-content;
+  margin: 0 auto;
   overflow-x: auto;
   border: 1px solid var(--plate-frame);
   border-radius: 8px;
@@ -492,10 +498,13 @@ code, kbd, samp {
 .term {
   margin: 0;
   padding: 0 22px;
-  min-width: max-content;
   color: var(--plate-fg);
   font-family: var(--font-mono);
-  font-size: 13px;
+  /* The widest panel line is 70 characters; a mono advance of 0.6em means
+     70 * 0.6 = 42 em-widths. (100cqi - 46px) is the plate width minus the
+     terminal's own frame (2px borders + 44px padding), so /44 fits the
+     whole 70-column output at any width, capped at the 13px reading size. */
+  font-size: min(13px, calc((100cqi - 46px) / 44));
   line-height: 1.62;
   white-space: pre;
   font-feature-settings: "liga" 0, "calt" 0;
@@ -505,11 +514,12 @@ code, kbd, samp {
 .term .t-red { color: var(--plate-red); }
 
 .plate figcaption {
-  margin-top: 16px;
+  margin: 16px auto 0;
+  max-width: 56ch;
   color: var(--fg-muted);
   font-size: 14px;
   line-height: 1.6;
-  max-width: 56ch;
+  text-align: center;
 }
 
 .plate figcaption code {
@@ -519,6 +529,21 @@ code, kbd, samp {
   background: none;
   padding: 0;
 }
+
+/* One docs link at the end of every section */
+
+.section-docs {
+  margin: 34px 0 0;
+  color: var(--fg-muted);
+  font-size: 14px;
+}
+
+.section-docs a {
+  color: var(--fg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.section-docs a:hover { color: var(--accent); border-color: currentColor; }
 
 /* ---------- tables (hairline, no zebra) ---------- */
 
@@ -570,13 +595,20 @@ code, kbd, samp {
 .gauge {
   margin: 48px 0 8px;
   max-width: 720px;
+  /* Size container: the tick positions are percentages so the track already
+     scales; only the fixed-size labels need to shrink to fit narrow screens
+     without colliding (see the cqi rule on .gauge__label below). */
+  container-type: inline-size;
 }
 
 .gauge__track {
   position: relative;
   height: 1px;
   background: var(--rule);
-  margin: 30px 6px 64px;
+  /* Headroom for the above-track label (malicious p5 · 60) and footroom for
+     the below-track labels: without it, the label's line box pokes past the
+     gauge and overflow-x: auto turns that into a vertical scrollbar. */
+  margin: 44px 6px 80px;
 }
 
 .gauge__mark {
@@ -610,7 +642,11 @@ code, kbd, samp {
   white-space: nowrap;
   color: var(--fg-muted);
   font-family: var(--font-mono);
-  font-size: 12px;
+  line-height: 1.35;
+  /* The two below-track labels sit 25% of the track apart; each is ~9em
+     wide, so they touch when the container is 36em wide. /37 shrinks them
+     in lockstep with the container, capped at the 12px reading size. */
+  font-size: min(12px, calc(100cqi / 37));
 }
 
 .gauge__label--above { top: auto; bottom: 100%; margin-top: 0; margin-bottom: 10px; }
@@ -642,7 +678,7 @@ code, kbd, samp {
 .ns-list {
   margin: 40px 0 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1px;
   background: var(--rule);
   border: 1px solid var(--rule);
@@ -718,6 +754,9 @@ code, kbd, samp {
 .install-block {
   margin: 40px 0 0;
   max-width: 720px;
+  /* Size container: the config snippet's widest line is 76 characters, so
+     the font scales down to fit narrow screens instead of scrolling. */
+  container-type: inline-size;
 }
 
 .install-block pre {
@@ -728,7 +767,9 @@ code, kbd, samp {
   background: color-mix(in srgb, var(--bg) 60%, var(--fg) 4%);
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: 13.5px;
+  /* 76 chars * 0.6em mono advance = 45.6; /46 plus the padding deduction
+     keeps every line inside the block at any width, capped at 13.5px. */
+  font-size: min(13.5px, calc((100cqi - 46px) / 46));
   line-height: 1.8;
   overflow-x: auto;
   white-space: pre;
@@ -829,11 +870,79 @@ code, kbd, samp {
   .wordmark { font-size: 18px; letter-spacing: 0.18em; }
   .masthead h1 { margin-top: 80px; font-size: clamp(40px, 12vw, 56px); }
   .masthead-links { flex-wrap: wrap; gap: 18px; margin-top: 56px; }
-  .ns-list { grid-template-columns: 1fr; }
   .colophon { grid-template-columns: 1fr; gap: 36px; }
   .colophon-note { grid-column: 1; }
   .data-table { min-width: 520px; }
+  /* The detection table stacks into cards instead of squeezing two long
+     columns into ~280px: attack on top, explanation below it. */
+  .detects-table, .detects-table tbody, .detects-table tr,
+  .detects-table th, .detects-table td { display: block; }
+  .detects-table { min-width: 0; }
+  .detects-table thead { display: none; }
+  .detects-table tbody tr {
+    margin: 0 0 22px;
+    padding: 0 0 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .detects-table tbody tr:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+  .detects-table tbody th, .detects-table tbody td {
+    width: auto;
+    padding: 0 0 6px;
+    border: 0;
+  }
+  .detects-table tbody th { font-size: 16px; }
+  /* The evidence tiers table stacks the same way; its extra columns get
+     the header text back as a tiny label above each cell, because "Weight"
+     or "Example" alone would be ambiguous once detached from the header. */
+  .tiers-table, .tiers-table tbody, .tiers-table tr,
+  .tiers-table th, .tiers-table td { display: block; }
+  .tiers-table { min-width: 0; }
+  .tiers-table thead { display: none; }
+  .tiers-table tbody tr {
+    margin: 0 0 22px;
+    padding: 0 0 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tiers-table tbody tr:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+  .tiers-table tbody th, .tiers-table tbody td {
+    width: auto;
+    padding: 0 0 8px;
+    border: 0;
+  }
+  .tiers-table tbody th { font-size: 16px; }
+  .tiers-table tbody td::before {
+    display: block;
+    content: attr(data-label);
+    margin-bottom: 3px;
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  /* Roomier at small sizes: the plate already shrinks its font to fit, so
+     trim the side padding and let it use the width instead. 22px = 2px
+     border + 20px padding, matching the trimmed .term padding. */
+  .term {
+    padding: 0 10px;
+    font-size: min(13px, calc((100cqi - 22px) / 44));
+  }
   .principle-list li { padding-left: 48px; }
   .gauge { overflow-x: auto; }
-  .gauge__inner { min-width: 560px; }
+  .gauge__inner { min-width: 0; }
+  /* Keep the scale ends and the caption in step with the labels. The
+     caption's negative top margin shortens the flow below the ends row
+     ("0 … 100"), which would otherwise poke past the gauge and, with
+     overflow-x: auto, turn into a vertical scrollbar; margin-bottom closes
+     the gap. */
+  .gauge__ends { font-size: min(12px, calc(100cqi / 37)); }
+  .gauge__sep { font-size: min(12.5px, calc(100cqi / 37)); margin-bottom: 18px; }
+  /* The config snippet trims its side padding at small sizes and re-derives
+     the fit: 8px padding each side + 2px border = 18px, sized for the
+     ~63-character widest line so the font stays readable on phones. */
+  .install-block pre {
+    padding: 20px 8px;
+    font-size: min(13.5px, calc((100cqi - 18px) / 38));
+  }
 }
