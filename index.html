@@ -11,42 +11,61 @@
         var v
         try { v = localStorage.getItem(K) } catch (e) {}
         /* Dark is the default; only an explicit stored light choice flips it. */
-        d.setAttribute('data-theme', v === 'light' ? 'light' : 'dark')
+        var theme = v === 'light' ? 'light' : 'dark'
+        d.setAttribute('data-theme', theme)
+        var meta = document.querySelector('meta[name="theme-color"]')
+        if (meta) meta.content = theme === 'light' ? '#FBFBF9' : '#0D1117'
       })()
     </script>
-    <title>TrustSight — Audits AUR PKGBUILDs before you update</title>
-    <meta name="description" content="TrustSight audits AUR PKGBUILDs before you update: it catches careless malice and structural risk, reports evidence and the absence of evidence, and never calls an incomplete analysis clean." />
-    <link rel="canonical" href="https://trustsight.org/" />
+    <meta name="author" content="Emiliano Gandini" />
+    <meta name="keywords" content="TrustSight, AUR security, PKGBUILD audit, Arch Linux, pacman, supply chain security, AUR malware, novelty seed, dependency review" />
+    <!-- seoslug:start -->
+    <title>TrustSight | Audits AUR PKGBUILDs before you update</title>
+    <meta name="description" content="TrustSight audits AUR PKGBUILDs before you update: it catches careless malice and structural risk, reports evidence, and never calls an incomplete analysis clean.">
+    <link rel="canonical" href="https://trustsight.org/">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="TrustSight | Audits AUR PKGBUILDs before you update">
+    <meta property="og:description" content="TrustSight audits AUR PKGBUILDs before you update: it catches careless malice and structural risk, reports evidence, and never calls an incomplete analysis clean.">
+    <meta property="og:url" content="https://trustsight.org/">
+    <meta property="og:image" content="https://trustsight.org/og-image.png">
+    <meta property="og:image:width" content="2806">
+    <meta property="og:image:height" content="1582">
+    <meta property="og:image:alt" content="TrustSight | Audits AUR PKGBUILDs before you update">
+    <meta property="og:site_name" content="TrustSight">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TrustSight | Audits AUR PKGBUILDs before you update">
+    <meta name="twitter:description" content="TrustSight audits AUR PKGBUILDs before you update: it catches careless malice and structural risk, reports evidence, and never calls an incomplete analysis clean.">
+    <meta name="twitter:image" content="https://trustsight.org/og-image.png">
+    <meta name="twitter:image:alt" content="TrustSight | Audits AUR PKGBUILDs before you update">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "TrustSight",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Arch Linux",
+      "description": "Audits AUR PKGBUILDs before you update: catches careless malice and structural risk, and tells you what it cannot verify.",
+      "url": "https://trustsight.org",
+      "image": "https://trustsight.org/og-image.png",
+      "sameAs": [
+        "https://github.com/emiliano-go/trustsight"
+      ],
+      "isAccessibleForFree": true,
+      "codeRepository": "https://github.com/emiliano-go/trustsight",
+      "license": "https://github.com/emiliano-go/trustsight/blob/main/LICENSE",
+      "author": {
+        "@type": "Person",
+        "name": "Emiliano Gandini"
+      }
+    }
+    </script>
+    <!-- seoslug:end -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="TrustSight" />
-    <meta property="og:title" content="TrustSight — Audits AUR PKGBUILDs before you update" />
-    <meta property="og:description" content="TrustSight audits AUR PKGBUILDs before you update: it catches careless malice and structural risk, reports evidence and the absence of evidence, and never calls an incomplete analysis clean." />
-    <meta property="og:url" content="https://trustsight.org/" />
-    <meta property="og:image" content="https://trustsight.org/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="TrustSight — Audits AUR PKGBUILDs before you update" />
-    <meta name="twitter:description" content="TrustSight audits AUR PKGBUILDs before you update: it catches careless malice and structural risk, reports evidence and the absence of evidence, and never calls an incomplete analysis clean." />
-    <meta name="twitter:image" content="https://trustsight.org/og-image.png" />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "TrustSight",
-        "applicationCategory": "SecurityApplication",
-        "operatingSystem": "Arch Linux",
-        "description": "Audits AUR PKGBUILDs before you update: catches careless malice and structural risk, and tells you what it cannot verify.",
-        "url": "https://trustsight.org",
-        "codeRepository": "https://github.com/emiliano-go/trustsight",
-        "license": "https://github.com/emiliano-go/trustsight/blob/main/LICENSE",
-        "author": { "@type": "Person", "name": "Emiliano Gandini" }
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>

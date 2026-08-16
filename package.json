@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "generate:seo": "python scripts/generate_seo.py",
+    "verify:seo": "python scripts/generate_seo.py --check",
     "verify:csp": "node scripts/verify-csp.mjs"
   },
   "dependencies": {
