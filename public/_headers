@@ -1,5 +1,5 @@
 /
-  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-wSIneDGZTwAVoTzZP82McS+9Me+F44KkjlSBps3ycOQ='; connect-src 'none'
+  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-BnRe8yoQbtULHZq47xstDdDkCilW1wpisitDHJ6pnf0=' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com
   Cross-Origin-Opener-Policy: same-origin
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
