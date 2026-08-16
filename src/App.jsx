@@ -399,8 +399,8 @@ export function App() {
             </p>
           </div>
           <Plate
-            label="Terminal transcript of trustsight review, showing three packages. chez-scheme-bin, version 10.0.0 to 10.1.0: only pkgver and sha256sums changed, review the diff before building. sketchy-pkg, version 1.4.2 to 1.5.0: the update is not trivial, remote script execution detected at line 4, source URL classified as unknown. some-trusted-tool, version 2.4.1 to 2.4.2: the update is not trivial, with a direct dependency libhelper showing 2 findings at risk level High."
-            lines={[...plateExample.split('\n'), ...plateFlagged.split('\n'), ...plateDeps.split('\n'), '3 package(s) needing update and reviewed out of 3 installed']}
+            label="Terminal transcript of trustsight review, showing three packages. chez-scheme-bin, version 10.0.0 to 10.1.0: only pkgver and sha256sums changed, review the diff before building. sketchy-pkg, version 1.4.2 to 1.5.0: the update is not trivial, remote script execution detected at line 4, source URL classified as unknown. some-trusted-tool, version 2.4.1 to 2.4.2: the update is not trivial, an install hook performs a privileged operation, with a direct dependency libhelper showing 2 findings."
+            lines={[...plateExample.split('\n'), ...plateFlagged.split('\n'), ...plateDeps.split('\n'), '3 package(s) needing update and reviewed out of 3 installed', 'Tip: those dependencies are summarised, not reviewed. `trustsight', 'review --deps` reviews each as a package in its own right and names', 'what requires it; add `--depth n` for deeper levels.']}
             caption={<>Real output from <code>trustsight review</code> on three outdated packages. A clean verdict means no known signal fired, not that the package is safe.</>}
           />
         </section>
