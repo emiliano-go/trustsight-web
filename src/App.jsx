@@ -326,6 +326,49 @@ const limits = [
   { strong: 'Zero-day structural attacks.', text: 'The rules are pattern-based. A novel attack that leaves no matching pattern will not fire.' },
 ]
 
+const faqs = [
+  {
+    q: 'Is installing TrustSight safe?',
+    a: <>The tool never runs the PKGBUILD, never executes extracted commands, and never installs or modifies anything it reviews; it reads diffs and runs pattern rules over the text. The package itself is MIT licensed and open source, and the PKGBUILD in the repository runs the test suite during build. Reviewing a package is not the same as trusting it, and the same applies to the reviewer.</>,
+  },
+  {
+    q: 'What does an UNFLAGGED verdict mean?',
+    a: <>It means the score stayed at or below 20: no published rule matched the evidence that was examined. It does not mean the package is safe, that the ruleset is complete, or that anything was executed. Absence of signals is a statement about detection, not about the update.</>,
+  },
+  {
+    q: 'Why does the tool never run the PKGBUILD?',
+    a: <>Executing a recipe written by the party under review would let hostile input detect the review and change its behaviour. Static analysis is a deliberate boundary: the tool reads what the diff says, not what a sandbox would run. Runtime behaviour is listed as a structural limitation, not an accident.</>,
+  },
+  {
+    q: 'Why is my package flagged when the update looks normal?',
+    a: <>About 13% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
+  },
+  {
+    q: 'How does novelty detection work before I have any history?',
+    a: <>The first run imports a signed seed of about 180,000 normalised source URLs and 35,587 hashed maintainer identities, verified against a key pinned in the package. Novelty signals are maturity-gated: they scale with your own observation count (<code>observation_count / 50</code>), so a cold database contributes nothing and your own reviews take over as history accumulates.</>,
+  },
+  {
+    q: 'Does TrustSight phone home?',
+    a: <>The analysis is local. The only two declared network hosts are <code>aur.archlinux.org</code> (the RPC, the metadata dump, the git clone, and cgit) and the GitHub releases channel, used only for verified baseline assets such as the seed and the IOC lists, on explicit commands or first-run auto-import. The tool never connects to a host named by the package under review.</>,
+  },
+  {
+    q: 'Why does it review my AUR dependencies too?',
+    a: <>makepkg builds a package&rsquo;s depends on your machine in the same run, so a dependency is part of what actually executes. A default review analyses direct AUR dependencies and summarises them; <code>trustsight review --deps</code> reviews each as a package in its own right, and <code>--depth n</code> walks deeper. The walk is bounded, and a closure cut short is reported, never hidden.</>,
+  },
+  {
+    q: 'Can it stop a malicious package from being installed?',
+    a: <>No. TrustSight is a review tool, not an execution gate. It produces evidence about a diff and a verdict in plain English; you decide whether to build and install. Nothing the tool does blocks makepkg, and nothing it says is permission.</>,
+  },
+  {
+    q: 'Why is there no score in the default output?',
+    a: <>The default output is findings, the change summary, and the verdict, because a number invites a decision the tool is not entitled to make. The score exists, is deterministic, and is available with <code>--score</code> (and in JSON with <code>--score</code> or <code>--risk</code>). The evidence is the product; the score is a summary of it.</>,
+  },
+  {
+    q: 'What happens when the tool cannot see everything?',
+    a: <>It says so. Coverage gaps such as <code>deps_not_scanned</code> (dependencies past the configured depth) and <code>unpinned_build_deps</code> (build steps that fetch unpinned code) are part of the report, and an analysis with a coverage gap is never issued as UNFLAGGED. A report that hid what it could not look at would be indistinguishable from one that was switched off.</>,
+  },
+]
+
 export function App() {
   const [dark, setDark] = useState(() =>
     typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') !== 'light'
@@ -648,9 +691,24 @@ export function App() {
           <DocsLink href={`${DOCS}/getting-started/installation/`}>installing TrustSight</DocsLink>
         </section>
 
+        {/* 11 · FAQ */}
+        <section className="section" aria-labelledby="faq">
+          <div className="section-label">FAQ</div>
+          <h2 id="faq">Frequently asked questions</h2>
+          <div className="faq-list">
+            {faqs.map((item) => (
+              <details className="faq-item" key={item.q}>
+                <summary>{item.q}</summary>
+                <p className="faq-answer">{item.a}</p>
+              </details>
+            ))}
+          </div>
+          <DocsLink href={SECURITY}>the security model</DocsLink>
+        </section>
+
       </main>
 
-      {/* 11 · Colophon */}
+      {/* 12 · Colophon */}
       <footer className="colophon" aria-label="Colophon">
         <div>
           <h2>Colophon</h2>

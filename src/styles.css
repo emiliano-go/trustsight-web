@@ -696,6 +696,51 @@ code, kbd, samp {
   letter-spacing: 0.02em;
 }
 
+/* ---------- FAQ ---------- */
+
+.faq-list { margin: 40px 0 0; }
+
+.faq-item { border-top: 1px solid var(--rule); }
+.faq-item:last-child { border-bottom: 1px solid var(--rule); }
+
+.faq-item summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 18px 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+  content: '+';
+  flex-shrink: 0;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  line-height: 1;
+  transition: transform var(--dur) var(--ease);
+}
+
+.faq-item[open] summary::after { transform: rotate(45deg); }
+
+.faq-answer {
+  margin: 0;
+  padding: 0 0 22px;
+  max-width: 66ch;
+  color: var(--fg-muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.faq-answer code { color: var(--fg); }
+
 /* ---------- rules: namespaces ---------- */
 
 .ns-list {
