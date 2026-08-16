@@ -31,6 +31,10 @@
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas,
                "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  /* 4. motion — one easing and duration for every interaction */
+  --dur: 0.2s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :root[data-theme="light"] { color-scheme: light; }
@@ -77,7 +81,7 @@ a {
   color: var(--accent);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.18s ease, color 0.18s ease;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 
 a:hover { border-color: currentColor; }
@@ -186,7 +190,12 @@ code, kbd, samp {
 
 .push { margin-top: 34px; }
 
-.prose a { text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+.prose a {
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
 .prose a:hover { border-bottom: 0; text-decoration-color: currentColor; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -217,8 +226,9 @@ code, kbd, samp {
   letter-spacing: 0.28em;
   color: var(--fg);
   border-bottom: 0;
+  transition: opacity var(--dur) var(--ease);
 }
-.wordmark:hover { border-bottom: 0; }
+.wordmark:hover { border-bottom: 0; opacity: 0.85; }
 .wordmark span { color: var(--accent); }
 
 .masthead-actions {
@@ -238,9 +248,11 @@ code, kbd, samp {
   border-radius: 999px;
   padding: 3px;
   cursor: pointer;
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
 }
-.theme-switch:hover { border-color: var(--accent); }
+.theme-switch:hover { border-color: var(--accent); transform: translateY(-1px); }
+.theme-switch:active { transform: translateY(0); }
 
 .theme-option {
   display: grid;
@@ -251,7 +263,7 @@ code, kbd, samp {
   line-height: 1;
   color: var(--fg-muted);
   opacity: 0.55;
-  transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), opacity var(--dur) var(--ease);
 }
 .theme-option.is-active {
   background: var(--accent);
@@ -273,10 +285,13 @@ code, kbd, samp {
   border-radius: 999px;
   color: var(--fg-muted);
   cursor: pointer;
-  transition: border-color 0.18s ease, color 0.18s ease;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
 }
 .a11y-button:hover,
 .a11y-button.is-open { border-color: var(--accent); color: var(--accent); }
+.a11y-button:hover { transform: translateY(-1px); }
+.a11y-button:active { transform: translateY(0); }
 
 .a11y-panel {
   position: absolute;
@@ -329,9 +344,11 @@ code, kbd, samp {
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease),
+              background var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.a11y-seg button:hover { border-color: var(--accent); color: var(--accent); }
+.a11y-seg button:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.a11y-seg button:active { transform: translateY(0); }
 .a11y-seg button.is-on {
   background: var(--accent);
   border-color: var(--accent);
@@ -392,11 +409,17 @@ code, kbd, samp {
   line-height: 1.8;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.18s ease, background-color 0.18s ease;
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease),
+              transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 
 .install-command:hover,
-.install-command:focus-visible { border-color: var(--accent); }
+.install-command:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -16px var(--accent);
+}
+.install-command:active { transform: translateY(0); box-shadow: none; }
 
 .install-command .cmd-line {
   display: block;
@@ -423,7 +446,7 @@ code, kbd, samp {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  transition: color 0.18s ease, border-color 0.18s ease;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
 .install-command:hover .install-command__copy { color: var(--accent); border-color: var(--accent); }
@@ -684,7 +707,18 @@ code, kbd, samp {
   border: 1px solid var(--rule);
 }
 
-.ns { background: var(--bg); padding: 28px 30px; }
+.ns {
+  background: var(--bg);
+  padding: 28px 30px;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease);
+}
+
+.ns:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px var(--accent);
+  background: color-mix(in srgb, var(--bg) 98%, var(--accent) 2%);
+}
 
 .ns-head {
   display: flex;
@@ -737,10 +771,12 @@ code, kbd, samp {
   font-size: 12.5px;
   color: var(--fg);
   border-bottom: 1px solid var(--rule);
-  transition: border-color 0.18s ease, color 0.18s ease;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
 }
 
-.ns-cats a:hover { border-color: var(--accent); color: var(--accent); }
+.ns-cats a:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.ns-cats a:active { transform: translateY(0); }
 
 .ns-n {
   color: var(--fg-muted);
