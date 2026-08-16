@@ -150,12 +150,22 @@ function InstallCommand({ className }) {
   )
 }
 
+/* One link to the docs at the end of every section, pointing at the page
+   that covers the section's topic. */
+function DocsLink({ href, children }) {
+  return (
+    <p className="section-docs">
+      <a href={href} target="_blank" rel="noreferrer">Documentation · {children} ↗</a>
+    </p>
+  )
+}
+
 /* The config.toml example. Rows are rendered inside a <pre>, so newlines are
    explicit children; trailing comments align at column 22 like the real file. */
 const CONFIG = [
   { line: '# ~/.config/trustsight/config.toml', comment: true },
   { line: '[depth]', comment: true },
-  { line: 'levels = 1', tail: '# 0 off, 1 default: direct AUR dependencies, n levels, -1 every level (bounded)' },
+  { line: 'levels = 1', tail: '# 0 off, 1 direct deps, n levels, -1 all' },
   { line: '' },
   { line: '[rules]', comment: true },
   { line: 'experimental = false', tail: '# rules whose fire rate is not yet measured' },
@@ -200,13 +210,13 @@ const principles = [
 
 const detects = [
   { attack: 'Piped shell scripts (<code>curl | bash</code>, <code>base64 | sh</code>)', how: 'Scans every new or changed line for command-to-shell pipelines (R001).' },
-  { attack: 'Obfuscated commands (encoded strings, <code>LD_PRELOAD</code> environment subversion)', how: 'Resolves variables, decodes known encodings, and flags build-environment tampering (R007, R070).' },
+  { attack: 'Obfuscated commands (encoded strings, <code>LD_PRELOAD</code> environment subversion)', how: 'Resolves variables, decodes known encodings, and flags build-environment tampering (R003, R070).' },
   { attack: 'Checksum disabled or removed', how: 'Compares the old and new <code>sha256sums</code> / <code>md5sums</code> arrays (R004, R005).' },
-  { attack: 'Source URL typosquatting (<code>githab.com</code> for <code>github.com</code>)', how: 'Character-level edit distance against known forge domains (R008).' },
+  { attack: 'Source URL typosquatting (<code>githab.com</code> for <code>github.com</code>)', how: 'The source-bucket prior classifies every new URL; a domain written with confusable characters is labelled <code>homograph_attack</code> (+30). A prior, not a rule.' },
   { attack: 'Package-name typosquatting (<code>libuvc</code> resembling <code>libuv</code>)', how: 'Edit-distance comparison against more popular packages in the seed database (R074).' },
   { attack: 'A risky AUR dependency (novel, typosquatted, or hijacked)', how: 'Walks AUR dependencies to a configurable depth (default: direct ones; <code>--depth</code> to go further) and analyses each as a package in its own right: novel (D001), typosquatted (D002), network-using makedepends (D003), and provides hijacks (D004).' },
   { attack: 'Source URL swapped without a version bump', how: 'Tracks source URL changes that do not come with a new version (C003).' },
-  { attack: 'Novel, never-before-seen URLs or maintainers', how: 'Compares against the signed release seed: about 180,000 known source URLs plus hashed maintainer identities, in the novelty tier.' },
+  { attack: 'Novel, never-before-seen URLs or maintainers', how: 'Compares against the signed release seed: about 180,000 known source URLs and 35,587 hashed maintainer identities, in the novelty tier.' },
   { attack: 'Known-bad indicators', how: 'Matches package URLs and strings against signed, federated IOC baselines; reported outside the heuristic score (IOC tier).' },
   { attack: 'Unicode bidi override attacks (invisible characters that change how text displays)', how: 'Detects directionality overrides and homoglyph codepoints in PKGBUILD content (R013, FATAL).' },
   { attack: 'Prompt injection in package metadata', how: 'Pattern-matches common injection templates; the primary defence is structural (R012).' },
@@ -219,10 +229,10 @@ const detects = [
 ]
 
 const tiers = [
-  { tier: 'A: Rules', what: 'Direct structural facts from the diff.', example: '<code>curl | bash</code> (R001); checksum set to SKIP (R004)', weight: 'The strongest evidence' },
-  { tier: 'B: Priors', what: 'Source-bucket classification of every new URL.', example: 'an unknown domain adds weight', weight: 'Moderate: a prior, not proof' },
-  { tier: 'C: Novelty', what: 'First-seen history for URLs and maintainers, maturity-gated.', example: 'URL first seen globally; maintainer first seen', weight: 'Scales with observation history' },
-  { tier: 'D: Declared practice', what: 'What the recipe claims: checksums, PGP keys, pins.', example: 'P001–P007', weight: '0: reported, never scored' },
+  { tier: 'A: Structural', what: 'Direct structural facts from the diff.', example: '<code>curl | bash</code> (R001); checksum set to SKIP (R004)', weight: 'The strongest evidence' },
+  { tier: 'B: Priors / Context', what: 'Source-bucket classification of every new URL.', example: 'an unknown domain adds weight', weight: 'Moderate: a prior, not proof' },
+  { tier: 'C: History / Novelty', what: 'First-seen history for URLs and maintainers, maturity-gated.', example: 'URL first seen globally; maintainer first seen', weight: 'Scales with observation history' },
+  { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: 'P001–P007', weight: '0: reported, never scored' },
 ]
 
 const nsCategories = {
@@ -337,7 +347,7 @@ export function App() {
       {/* 1 · Masthead */}
       <header className="masthead">
         <div className="masthead-top">
-          <span className="wordmark" aria-label="TrustSight">TRUST<span>SIGHT</span></span>
+          <a className="wordmark" href="/" aria-label="TrustSight">TRUST<span>SIGHT</span></a>
           <div className="masthead-actions">
             <AccessibilityMenu />
             <ThemeSwitch dark={dark} toggleTheme={toggleTheme} />
@@ -376,7 +386,7 @@ export function App() {
               nothing is installed or modified. The report is deterministic: the same diff, the same
               configuration, and the same database produce the same verdict, so re-running a review
               gives the same answer. Verdicts are template-based plain English, e.g.{' '}
-              <code>Version bump. modified PKGBUILD, .SRCINFO. Signals: checksum disabled; novel dependency 'pyfoo' added in depends.</code>
+              <code>Version bump. modified PKGBUILD. Signals: checksum set to SKIP; novel dependency 'pyfoo' added in depends.</code>
             </p>
           </div>
           <ol className="principle-list">
@@ -384,6 +394,7 @@ export function App() {
               <li key={item.strong}><strong>{item.strong}</strong><p>{item.text}</p></li>
             ))}
           </ol>
+          <DocsLink href={`${DOCS}/getting-started/quickstart/`}>the quickstart</DocsLink>
         </section>
 
         {/* 3 · Example output */}
@@ -403,6 +414,7 @@ export function App() {
             lines={[...plateExample.split('\n'), ...plateFlagged.split('\n'), ...plateDeps.split('\n'), '3 package(s) needing update and reviewed out of 3 installed', 'Tip: those dependencies are summarised, not reviewed. `trustsight', 'review --deps` reviews each as a package in its own right and names', 'what requires it; add `--depth n` for deeper levels.']}
             caption={<>Real output from <code>trustsight review</code> on three outdated packages. A clean verdict means no known signal fired, not that the package is safe.</>}
           />
+          <DocsLink href={`${DOCS}/getting-started/reading-a-report/`}>reading a report</DocsLink>
         </section>
 
         {/* 4 · What it detects */}
@@ -435,6 +447,7 @@ export function App() {
               and measured fire rate for each rule) is in the <a href={RULES} target="_blank" rel="noreferrer">rules reference</a>.
             </p>
           </div>
+          <DocsLink href={RULES}>the rules reference</DocsLink>
         </section>
 
         {/* 5 · Evidence tiers */}
@@ -448,15 +461,15 @@ export function App() {
             </p>
           </div>
           <div className="table-wrap">
-            <table className="data-table">
+            <table className="data-table tiers-table">
               <thead><tr><th>Tier</th><th>What it is</th><th>Example</th><th>Weight</th></tr></thead>
               <tbody>
                 {tiers.map((row) => (
                   <tr key={row.tier}>
                     <th>{row.tier}</th>
-                    <td>{row.what}</td>
-                    <td dangerouslySetInnerHTML={{ __html: linkRules(row.example, RULES) }} />
-                    <td>{row.weight}</td>
+                    <td data-label="What it is">{row.what}</td>
+                    <td data-label="Example" dangerouslySetInnerHTML={{ __html: linkRules(row.example, RULES) }} />
+                    <td data-label="Weight">{row.weight}</td>
                   </tr>
                 ))}
               </tbody>
@@ -469,6 +482,7 @@ export function App() {
               claims; it reports that the recipe makes them.
             </p>
           </div>
+          <DocsLink href={`${DOCS}/reference/evidence-tiers/`}>evidence tiers</DocsLink>
         </section>
 
         {/* 6 · Calibration */}
@@ -477,14 +491,13 @@ export function App() {
           <h2 id="calibration">The weights are measured, not asserted</h2>
           <div className="prose">
             <p>
-              Against the locked 3,246-diff benign corpus, <strong>69.1%</strong> of benign diffs score 0.
-              Benign diffs reach a 95th percentile of <strong>45</strong>; the CRITICAL-class corpus has a
+              Against the locked 3,739-diff benign corpus, <strong>68.3%</strong> of benign diffs score 0.
+              Benign diffs reach a 95th percentile of <strong>35</strong>; the CRITICAL-class corpus has a
               5th percentile of <strong>60</strong>. The 20-point threshold is not the benign p95; it sits
-              at the 83.7th percentile, so about 16% of benign diffs land above it. What matters is that
+              at the 86.9th percentile, so about 13% of benign diffs land above it. What matters is that
               the two distributions do not overlap.
             </p>
-          </div>
-          <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 45. Malicious diffs start at a 5th percentile of 60. The 15-point margin between them is enforced by CI.">
+          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 35. Malicious diffs start at a 5th percentile of 60. The 25-point margin between them is enforced by CI.">
             <div className="gauge__inner">
               <div className="gauge__track">
                 <span className="gauge__mark gauge__mark--threshold">
@@ -493,7 +506,7 @@ export function App() {
                 </span>
                 <span className="gauge__mark gauge__mark--benign">
                   <span className="gauge__tick" />
-                  <span className="gauge__label">benign p95 · 45</span>
+                  <span className="gauge__label">benign p95 · 35</span>
                 </span>
                 <span className="gauge__mark gauge__mark--malicious">
                   <span className="gauge__tick" />
@@ -501,7 +514,7 @@ export function App() {
                 </span>
               </div>
               <div className="gauge__ends"><span>0</span><span>100</span></div>
-              <div className="gauge__sep">15-point margin, gated</div>
+              <div className="gauge__sep">25-point margin, gated</div>
             </div>
           </div>
           <div className="prose push">
@@ -511,6 +524,7 @@ export function App() {
               malicious p5. A change that narrows the gap is rejected.
             </p>
           </div>
+          <DocsLink href={`${DOCS}/explanation/fire-rates/`}>measured fire rates</DocsLink>
         </section>
 
         {/* 7 · Testing and configuration */}
@@ -519,13 +533,14 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>1,535 tests</strong> across all modules.
-              Three gates run in CI on every push: CRITICAL recall stays at 100% (every labelled
-              malicious sample must fire the rules it is labelled for); the separation gate requires benign
-              p95 to stay below malicious p5; and any scoring rule that fires on more than 30% of the
-              benign corpus is demoted to INFO, because a rule that fires on a third of ordinary updates
-              is not a signal. The rules are checked against their documentation on every test run, so a
-              documented pattern cannot drift from the one that runs.
+              <strong>Testing.</strong> The test suite covers <strong>2,473 tests</strong>, enforced by
+              <strong>65 security gates</strong> and <strong>10 calibration gates</strong> in CI on every push.
+              Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
+              it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
+              any scoring rule that fires on more than 30% of the benign corpus is demoted to INFO, because
+              a rule that fires on a third of ordinary updates is not a signal. The rules are checked
+              against their documentation on every test run, so a documented pattern cannot drift from the
+              one that runs.
             </p>
             <p>
               <strong>Configuration.</strong> The rules live in <code>~/.config/trustsight/rules.toml</code> and
@@ -536,6 +551,7 @@ export function App() {
           <div className="install-block">
             <pre><code>{CONFIG.map((row, i) => <span key={i}>{renderConfigRow(row)}{'\n'}</span>)}</code></pre>
           </div>
+          <DocsLink href={`${DOCS}/reference/configuration/`}>the configuration reference</DocsLink>
         </section>
 
         {/* 8 · What it cannot see */}
@@ -552,6 +568,7 @@ export function App() {
               <p key={item.strong}><strong dangerouslySetInnerHTML={{ __html: item.strong }} />{' '}<span dangerouslySetInnerHTML={{ __html: item.text }} /></p>
             ))}
           </div>
+          <DocsLink href={`${DOCS}/explanation/what-trustsight-cannot-see/`}>what TrustSight cannot see</DocsLink>
         </section>
 
         {/* 9 · The rules */}
@@ -591,6 +608,7 @@ export function App() {
               their documentation on every test run.
             </p>
           </div>
+          <DocsLink href={`${DOCS}/reference/rules/system/`}>the rule system</DocsLink>
         </section>
 
         {/* 10 · Installation */}
@@ -627,6 +645,7 @@ export function App() {
               already seen what normal looks like for your package set.
             </p>
           </div>
+          <DocsLink href={`${DOCS}/getting-started/installation/`}>installing TrustSight</DocsLink>
         </section>
 
       </main>
