@@ -1,0 +1,2 @@
+# www.trustsight.org -> trustsight.org is a hostname-aware Redirect Rule in
+# Cloudflare (the pages _redirects file cannot match on hostname).
