@@ -4,46 +4,116 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
-    <meta http-equiv="refresh" content="0; url=/" />
+    <meta name="theme-color" content="#0D1117" />
+    <script>
+      (function () {
+        var d = document.documentElement
+        var K = 'ts-theme'
+        var v
+        try { v = localStorage.getItem(K) } catch (e) {}
+        /* Dark is the default; only an explicit stored light choice flips it. */
+        var theme = v === 'light' ? 'light' : 'dark'
+        d.setAttribute('data-theme', theme)
+        var meta = document.querySelector('meta[name="theme-color"]')
+        if (meta) meta.content = theme === 'light' ? '#FBFBF9' : '#0D1117'
+      })()
+    </script>
     <title>Page not found | TrustSight</title>
     <style>
-      :root { color-scheme: dark; }
+      :root {
+        color-scheme: dark;
+        --ink: #0D1117;
+        --paper: #E6EDF3;
+        --arch: #1793D1;
+        --bg: light-dark(#FBFBF9, #0D1117);
+        --fg: light-dark(#16191D, #E6EDF3);
+        --fg-muted: light-dark(#5A6169, #8B949E);
+        --rule: light-dark(#E3E1DB, #21262D);
+        --accent: light-dark(#1073A8, #1793D1);
+        --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas,
+                     "DejaVu Sans Mono", "Liberation Mono", monospace;
+      }
+      :root[data-theme="light"] { color-scheme: light; }
+      * { box-sizing: border-box; }
       body {
         margin: 0;
-        min-height: 100vh;
+        min-height: 100svh;
         display: grid;
         place-items: center;
-        background: #0D1117;
-        color: #E6EDF3;
-        font-family: ui-serif, Charter, Cambria, Georgia, serif;
+        padding: 40px 24px;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--font-sans);
+        font-size: 17px;
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
       }
-      .wrap { text-align: center; padding: 40px 24px; }
-      .mark {
-        font-family: ui-sans-serif, system-ui, sans-serif;
+      .wrap { max-width: 620px; text-align: center; }
+      .wordmark {
         font-weight: 700;
         letter-spacing: 0.28em;
-        font-size: 15px;
-        margin-bottom: 22px;
+        font-size: 20px;
+        color: var(--fg);
       }
-      .mark span { color: #1793D1; }
-      h1 { font-size: 30px; margin: 0 0 10px; }
-      p { color: #8B949E; margin: 0 0 26px; }
+      .wordmark span { color: var(--accent); }
+      .label {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        margin: 72px 0 0;
+        color: var(--fg-muted);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .label::before, .label::after {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: var(--rule);
+      }
+      h1 {
+        margin: 20px 0 12px;
+        font-size: clamp(28px, 3.8vw, 40px);
+        font-weight: 700;
+        line-height: 1.18;
+      }
+      p { margin: 0 0 34px; color: var(--fg-muted); }
+      .links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 22px;
+      }
       a {
-        color: #1793D1;
-        font-family: ui-monospace, Consolas, monospace;
+        color: var(--accent);
+        font-family: var(--font-mono);
         font-size: 14px;
         text-decoration: none;
-        border-bottom: 1px solid #30363D;
+        border-bottom: 1px solid var(--rule);
       }
       a:hover { border-color: currentColor; }
+      @media (max-width: 720px) {
+        .wordmark { font-size: 18px; letter-spacing: 0.18em; }
+        .label { margin-top: 56px; }
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="mark">TRUST<span>SIGHT</span></div>
-      <h1>404</h1>
-      <p>This page does not exist. Taking you home.</p>
-      <a href="/">trustsight.org</a>
-    </div>
+    <main class="wrap" id="content">
+      <div class="wordmark" aria-label="TrustSight">TRUST<span>SIGHT</span></div>
+      <div class="label">404</div>
+      <h1>This page does not exist</h1>
+      <p>The URL does not match anything on this site. It may have moved, or the link that brought you here may be stale.</p>
+      <nav class="links" aria-label="Where to go next">
+        <a href="/">Home</a>
+        <a href="https://docs.trustsight.org" target="_blank" rel="noreferrer">Docs ↗</a>
+        <a href="https://github.com/emiliano-go/trustsight" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </nav>
+    </main>
   </body>
 </html>
