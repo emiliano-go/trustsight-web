@@ -190,27 +190,6 @@ code, kbd, samp {
 
 .push { margin-top: 34px; }
 
-.callout {
-  margin: 34px 0 0;
-  max-width: 66ch;
-  padding: 20px 22px;
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--accent);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--accent) 6%, transparent);
-}
-
-.callout p {
-  margin: 0 0 10px;
-  color: var(--fg-muted);
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-.callout p:last-child { margin-bottom: 0; }
-
-.callout strong { color: var(--fg); }
-
 .prose a {
   text-decoration: underline;
   text-decoration-color: var(--rule);
@@ -394,6 +373,14 @@ code, kbd, samp {
   color: var(--fg);
   font-size: clamp(19px, 2.4vw, 23px);
   line-height: 1.5;
+}
+
+.masthead-note {
+  margin: 14px 0 0;
+  max-width: 40em;
+  color: var(--fg-muted);
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .masthead-install {

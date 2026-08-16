@@ -405,6 +405,10 @@ export function App() {
           Audits AUR PKGBUILDs before you update: catches careless malice and structural risk,
           and tells you what it can&rsquo;t verify.
         </p>
+        <p className="masthead-note">
+          Fully open source under MIT. The report points at where to look; it does not replace
+          reading the PKGBUILD.
+        </p>
         <div className="masthead-install">
           <InstallCommand />
         </div>
@@ -426,7 +430,9 @@ export function App() {
               Whenever an installed AUR package has a newer version available, TrustSight clones the
               repository, diffs the new PKGBUILD against the one you have, and runs a published set of
               rules over the change. The output is a report: what changed, which rules fired, and what
-              the analysis could not see.
+              the analysis could not see. The report does not replace reading the diff: every finding
+              names the line or URL it fired on, so you know exactly where to look, and you do the
+              looking.
             </p>
             <p className="more-bottom">
               Everything runs locally. Nothing is executed (no PKGBUILD, no extracted command) and
@@ -435,10 +441,6 @@ export function App() {
               gives the same answer. Verdicts are template-based plain English, e.g.{' '}
               <code>Version bump. modified PKGBUILD. Signals: checksum set to SKIP; novel dependency 'pyfoo' added in depends.</code>
             </p>
-          </div>
-          <div className="callout" role="note">
-            <p><strong>This does not replace reading the PKGBUILD.</strong> Every finding points at the line or URL it fired on, so the report tells you where to look; you still read the diff and make the call. The tool&rsquo;s own principle is that the report is input to a decision, not the decision.</p>
-            <p><strong>It is fully open source.</strong> The tool, all 145 rule patterns, every default, and the seed&rsquo;s verification key are published on GitHub under MIT. There is no closed component: you can read, rebuild, and audit the reviewer itself.</p>
           </div>
           <ol className="principle-list">
             {principles.map((item) => (
@@ -656,7 +658,9 @@ export function App() {
             <p>
               Counts are per the generated rules index; the 14 category pages are closed, so every rule
               has exactly one page. <code>trustsight lint-rules</code> checks the shipped rules against
-              their documentation on every test run.
+              their documentation on every test run. The rule files themselves are part of the open
+              source repository: read a pattern, change a severity, or rebuild the tool, and nothing
+              hides behind a binary.
             </p>
           </div>
           <DocsLink href={`${DOCS}/reference/rules/system/`}>the rule system</DocsLink>
@@ -670,7 +674,7 @@ export function App() {
             <InstallCommand />
           </div>
           <ul className="caveats">
-            <li><strong>Not on the AUR yet.</strong> <code>aur.archlinux.org/trustsight.git</code> does not exist; build from the PKGBUILD in the repository. The PKGBUILD runs the test suite during build, and <code>makepkg -si</code> pulls the dependencies in as proper pacman packages.</li>
+            <li><strong>Not on the AUR yet.</strong> <code>aur.archlinux.org/trustsight.git</code> does not exist; build from the PKGBUILD in the repository, which is MIT licensed and fully open source. The PKGBUILD runs the test suite during build, and <code>makepkg -si</code> pulls the dependencies in as proper pacman packages.</li>
             <li>Requires <strong>Python 3.11+</strong> and <strong>Arch Linux</strong>; packages are discovered via <code>pacman</code>.</li>
           </ul>
           <h3 className="sub-heading">The first run: a seed, then your own baseline</h3>
