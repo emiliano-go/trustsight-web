@@ -1,7 +1,7 @@
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import preact from '@preact/preset-vite'
 
 // Inter is the page's only font and the masthead H1 is the LCP element, so
 // the latin woff2 is preloaded straight from the HTML. Without this it waits
@@ -11,8 +11,9 @@ import react from '@vitejs/plugin-react'
 function preloadFont() {
   return {
     name: 'preload-inter-font',
-    closeBundle() {
+    writeBundle() {
       const outDir = 'dist'
+      if (!existsSync(join(outDir, 'assets'))) return
       const latin = readdirSync(join(outDir, 'assets')).find(
         (file) => file.startsWith('inter-latin-wght-normal-') && file.endsWith('.woff2')
       )
@@ -28,16 +29,30 @@ function preloadFont() {
 }
 
 // Single-page landing. One route, no code splitting needed: the entire page
-// ships as one small JS bundle and one CSS file. oxc + lightningcss match the
-// dbwarden site's aggressive-minification baseline.
+// ships as one small JS bundle and one CSS file.
 export default defineConfig({
-  plugins: [react(), preloadFont()],
+  plugins: [preact(), preloadFont()],
   css: {
     transformer: 'lightningcss',
   },
   build: {
     cssMinify: 'lightningcss',
-    minify: 'oxc',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        defaults: true,
+        drop_debugger: true,
+        passes: 3,
+        pure_getters: 'strict',
+      },
+      mangle: {
+        toplevel: true,
+      },
+      module: true,
+      format: {
+        comments: false,
+      },
+    },
     assetsInlineLimit: 0,
   },
   server: {

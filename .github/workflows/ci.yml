@@ -22,5 +22,7 @@ jobs:
       - run: pip install "seoslug>=2.0.1"
       - run: python scripts/generate_seo.py --check
       - run: npm ci
-      - run: npm run build
+      - run: npm run verify:content
       - run: npm run verify:csp
+      - run: npm run build
+      - run: npm run verify:budget

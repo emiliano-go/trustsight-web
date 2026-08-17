@@ -1,11 +1,11 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import '@fontsource-variable/inter'
+import { StrictMode } from 'preact/compat'
+import { hydrate } from 'preact'
 import './styles.css'
 import { App } from './App.jsx'
 
-createRoot(document.getElementById('root')).render(
+hydrate(
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
+  document.getElementById('root'),
 )

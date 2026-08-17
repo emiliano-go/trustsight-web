@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'preact/hooks'
 import { plateExample, plateFlagged, plateDeps } from './plate.js'
 import { linkRules } from './rules.js'
 
@@ -61,17 +61,23 @@ const INSTALL = {
   ].join('\n'),
 }
 
-function fallbackCopy(text, done) {
+function fallbackCopy(text) {
+  const previousFocus = document.activeElement
   const el = document.createElement('textarea')
   el.value = text
   el.setAttribute('readonly', '')
+  el.setAttribute('aria-hidden', 'true')
+  el.tabIndex = -1
   el.style.position = 'fixed'
   el.style.opacity = '0'
   document.body.appendChild(el)
+  el.focus()
   el.select()
-  try { document.execCommand('copy') } catch (e) {}
+  let copied = false
+  try { copied = document.execCommand('copy') } catch (e) {}
   document.body.removeChild(el)
-  done()
+  previousFocus?.focus?.()
+  return copied
 }
 
 /* The same switch the dbwarden site ships: a sun/moon pill that writes
@@ -91,9 +97,18 @@ function ThemeSwitch({ dark, toggleTheme }) {
    behaviour as the dbwarden site's menu. */
 function AccessibilityMenu() {
   const [open, setOpen] = useState(false)
-  const [fontSize, setFontSize] = useState(() => typeof window !== 'undefined' && window.localStorage.getItem('ts-font-size') === 'large' ? 'large' : 'normal')
-  const [contrast, setContrast] = useState(() => typeof window !== 'undefined' && window.localStorage.getItem('ts-contrast') === 'high')
+  const [fontSize, setFontSize] = useState(() => {
+    try { return typeof window !== 'undefined' && window.localStorage.getItem('ts-font-size') === 'large' ? 'large' : 'normal' } catch (e) { return 'normal' }
+  })
+  const [contrast, setContrast] = useState(() => {
+    try {
+      if (typeof window === 'undefined') return null
+      const saved = window.localStorage.getItem('ts-contrast')
+      return saved === 'high' ? true : saved === 'normal' ? false : null
+    } catch (e) { return null }
+  })
   const wrapRef = useRef(null)
+  const triggerRef = useRef(null)
 
   useEffect(() => {
     document.documentElement.dataset.fontSize = fontSize
@@ -101,26 +116,34 @@ function AccessibilityMenu() {
   }, [fontSize])
 
   useEffect(() => {
+    if (contrast === null) {
+      delete document.documentElement.dataset.contrast
+      return
+    }
     document.documentElement.dataset.contrast = contrast ? 'high' : 'normal'
     try { localStorage.setItem('ts-contrast', contrast ? 'high' : 'normal') } catch (e) {}
   }, [contrast])
 
   useEffect(() => {
     if (!open) return
-    const onDown = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false) }
-    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
-    document.addEventListener('mousedown', onDown)
+    const close = () => {
+      setOpen(false)
+      triggerRef.current?.focus()
+    }
+    const onDown = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) close() }
+    const onKey = (e) => { if (e.key === 'Escape') close() }
+    document.addEventListener('pointerdown', onDown)
     document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey) }
+    return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey) }
   }, [open])
 
   return (
     <div className="a11y-wrap" ref={wrapRef}>
-      <button className={open ? 'a11y-button is-open' : 'a11y-button'} type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="dialog" aria-label="Accessibility settings">
+      <button ref={triggerRef} className={open ? 'a11y-button is-open' : 'a11y-button'} type="button" onClick={() => setOpen((v) => !v)} aria-controls="accessibility-settings" aria-expanded={open} aria-label="Accessibility settings">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="1.6" /><path d="M12 9.8v4.4" /><path d="M12 11.5 7.8 8.5" /><path d="M12 11.5l4.2-3" /><path d="M12 14.2 9.2 18.2" /><path d="M12 14.2l2.8 4" /></svg>
       </button>
       {open ? (
-        <div className="a11y-panel" role="dialog" aria-label="Accessibility settings">
+        <div className="a11y-panel" id="accessibility-settings" role="group" aria-label="Accessibility settings">
           <div className="a11y-row"><span className="a11y-label">Font size</span><div className="a11y-seg" role="group" aria-label="Font size"><button type="button" className={fontSize === 'normal' ? 'is-on' : ''} onClick={() => setFontSize('normal')} aria-pressed={fontSize === 'normal'}>A</button><button type="button" className={fontSize === 'large' ? 'is-on' : ''} onClick={() => setFontSize('large')} aria-pressed={fontSize === 'large'}><span className="a11y-big">A</span></button></div></div>
           <div className="a11y-row"><span className="a11y-label">High contrast</span><div className="a11y-seg" role="group" aria-label="High contrast"><button type="button" className={!contrast ? 'is-on' : ''} onClick={() => setContrast(false)} aria-pressed={!contrast}>Off</button><button type="button" className={contrast ? 'is-on' : ''} onClick={() => setContrast(true)} aria-pressed={contrast}>On</button></div></div>
         </div>
@@ -131,23 +154,28 @@ function AccessibilityMenu() {
 
 function InstallCommand({ className }) {
   const [copied, setCopied] = useState(false)
+  const [copyStatus, setCopyStatus] = useState('')
   const [protocol, setProtocol] = useState('https')
   const install = INSTALL[protocol]
 
   const copy = () => {
     const done = () => {
       setCopied(true)
+      setCopyStatus('Install commands copied to clipboard.')
       window.setTimeout(() => setCopied(false), 2000)
     }
     if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(install).then(done).catch(() => fallbackCopy(install, done))
+      navigator.clipboard.writeText(install).then(done).catch(() => {
+        if (fallbackCopy(install)) done()
+      })
     } else {
-      done()
+      if (fallbackCopy(install)) done()
     }
   }
 
   return (
     <div className={className ? `install-command ${className}` : 'install-command'}>
+      <span className="visually-hidden" role="status" aria-live="polite">{copyStatus}</span>
       <div className="install-command__header">
         <span className="install-command__title">Install from source</span>
         <div className="install-command__actions">
@@ -402,11 +430,20 @@ const faqs = [
 ]
 
 export function App() {
-  const [dark, setDark] = useState(() =>
-    typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') !== 'light'
-  )
+  // Match the server's dark default during hydration. The head bootstrap may
+  // already have applied a stored light preference, which we adopt afterwards.
+  const [dark, setDark] = useState(true)
+  const themeHydrated = useRef(false)
 
   useEffect(() => {
+    if (!themeHydrated.current) {
+      themeHydrated.current = true
+      const initialDark = document.documentElement.dataset.theme !== 'light'
+      if (initialDark !== dark) {
+        setDark(initialDark)
+        return
+      }
+    }
     document.documentElement.dataset.theme = dark ? 'dark' : 'light'
     try { localStorage.setItem('ts-theme', dark ? 'dark' : 'light') } catch (e) {}
     const meta = document.querySelector('meta[name="theme-color"]')
@@ -510,11 +547,11 @@ export function App() {
           </div>
           <div className="table-wrap">
             <table className="data-table detects-table">
-              <thead><tr><th>Attack / risk</th><th>How TrustSight catches it</th></tr></thead>
+              <thead><tr><th scope="col">Attack / risk</th><th scope="col">How TrustSight catches it</th></tr></thead>
               <tbody>
                 {detects.map((row) => (
                   <tr key={row.attack}>
-                    <th dangerouslySetInnerHTML={{ __html: linkRules(row.attack, RULES) }} />
+                    <th scope="row" dangerouslySetInnerHTML={{ __html: linkRules(row.attack, RULES) }} />
                     <td dangerouslySetInnerHTML={{ __html: linkRules(row.how, RULES) }} />
                   </tr>
                 ))}
@@ -543,11 +580,11 @@ export function App() {
           </div>
           <div className="table-wrap">
             <table className="data-table tiers-table">
-              <thead><tr><th>Tier</th><th>What it is</th><th>Example</th><th>Weight</th></tr></thead>
+              <thead><tr><th scope="col">Tier</th><th scope="col">What it is</th><th scope="col">Example</th><th scope="col">Weight</th></tr></thead>
               <tbody>
                 {tiers.map((row) => (
                   <tr key={row.tier}>
-                    <th>{row.tier}</th>
+                    <th scope="row">{row.tier}</th>
                     <td data-label="What it is">{row.what}</td>
                     <td data-label="Example" dangerouslySetInnerHTML={{ __html: linkRules(row.example, RULES) }} />
                     <td data-label="Weight">{row.weight}</td>

@@ -38,9 +38,8 @@ SITE_URL = "https://trustsight.org"
 SITE_NAME = "TrustSight"
 TITLE = "Audits AUR PKGBUILDs before you update"
 DESCRIPTION = (
-    "TrustSight audits AUR PKGBUILDs before you update: it catches careless "
-    "malice and structural risk, reports evidence, and never calls an "
-    "incomplete analysis clean."
+    "TrustSight audits AUR PKGBUILDs before you update; it reports structural "
+    "risk, evidence, and incomplete analysis without claiming safety."
 )
 # The OG image is the repo's banner (docs/assets/images/trustsight-banner.png),
 # served from /og-image.png; keep width/height in sync with that file.
