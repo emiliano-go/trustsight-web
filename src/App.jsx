@@ -46,13 +46,20 @@ function renderLine(line) {
   return parts.length ? parts : line
 }
 
-/* The hero and install-section command block. Clicking it copies the commands
-   (without the prompts), same behaviour as the dbwarden web hero. */
-const INSTALL = [
-  'git clone https://github.com/emiliano-go/trustsight.git',
-  'cd trustsight/packaging/aur && makepkg -si',
-  'trustsight review',
-].join('\n')
+/* The hero and install-section command block. The copy control copies the
+   selected clone command without prompts. */
+const INSTALL = {
+  https: [
+    'git clone https://github.com/emiliano-go/trustsight.git',
+    'cd trustsight/packaging/aur && makepkg -si',
+    'trustsight review',
+  ].join('\n'),
+  ssh: [
+    'git clone git@github.com:emiliano-go/trustsight.git',
+    'cd trustsight/packaging/aur && makepkg -si',
+    'trustsight review',
+  ].join('\n'),
+}
 
 function fallbackCopy(text, done) {
   const el = document.createElement('textarea')
@@ -124,6 +131,8 @@ function AccessibilityMenu() {
 
 function InstallCommand({ className }) {
   const [copied, setCopied] = useState(false)
+  const [protocol, setProtocol] = useState('https')
+  const install = INSTALL[protocol]
 
   const copy = () => {
     const done = () => {
@@ -131,22 +140,36 @@ function InstallCommand({ className }) {
       window.setTimeout(() => setCopied(false), 2000)
     }
     if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(INSTALL).then(done).catch(() => fallbackCopy(INSTALL, done))
+      navigator.clipboard.writeText(install).then(done).catch(() => fallbackCopy(install, done))
     } else {
       done()
     }
   }
 
   return (
-    <button type="button" className={className ? `install-command ${className}` : 'install-command'} onClick={copy}>
-      <span className="visually-hidden">Copy the install commands: </span>
+    <div className={className ? `install-command ${className}` : 'install-command'}>
       <span className="install-command__body">
-        <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> git clone https://github.com/emiliano-go/trustsight.git</span>
+        <span className="visually-hidden">Install using {protocol}: </span>
+        <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> {install.split('\n')[0]}</span>
         <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> cd trustsight/packaging/aur &amp;&amp; makepkg -si</span>
         <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> trustsight review</span>
       </span>
-      <span className="install-command__copy" aria-hidden="true">{copied ? 'copied ✓' : 'copy'}</span>
-    </button>
+      <button
+        type="button"
+        className={protocol === 'ssh' ? 'install-command__protocol is-ssh' : 'install-command__protocol'}
+        onClick={() => setProtocol((value) => value === 'https' ? 'ssh' : 'https')}
+        aria-label={`Switch to ${protocol === 'https' ? 'SSH' : 'HTTPS'} clone URL`}
+        role="switch"
+        aria-checked={protocol === 'ssh'}
+      >
+        <span className={protocol === 'https' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">HTTPS</span>
+        <span className="install-command__protocol-track" aria-hidden="true"><span /></span>
+        <span className={protocol === 'ssh' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">SSH</span>
+      </button>
+      <button type="button" className="install-command__copy" onClick={copy} aria-label="Copy the install commands">
+        {copied ? 'copied ✓' : 'copy'}
+      </button>
+    </div>
   )
 }
 

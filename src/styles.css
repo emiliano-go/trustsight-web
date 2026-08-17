@@ -407,7 +407,7 @@ code, kbd, samp {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 16px 82px 16px 20px;
+  padding: 16px 226px 16px 20px;
   border: 1px solid var(--rule);
   border-left: 3px solid var(--accent);
   background: color-mix(in srgb, var(--bg) 60%, var(--fg) 4%);
@@ -416,18 +416,12 @@ code, kbd, samp {
   font-size: 13.5px;
   line-height: 1.8;
   text-align: left;
-  cursor: pointer;
-  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease),
-              transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
 
-.install-command:hover,
-.install-command:focus-visible {
+.install-command:focus-within {
   border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px -16px var(--accent);
 }
-.install-command:active { transform: translateY(0); box-shadow: none; }
 
 .install-command .cmd-line {
   display: block;
@@ -444,20 +438,97 @@ code, kbd, samp {
 .install-command__copy {
   position: absolute;
   top: 14px;
-  right: 14px;
+  right: 12px;
+  margin: 0;
   padding: 3px 10px;
   border: 1px solid var(--rule);
   border-radius: 4px;
+  background: transparent;
   color: var(--fg-muted);
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  cursor: pointer;
   transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
-.install-command:hover .install-command__copy { color: var(--accent); border-color: var(--accent); }
+.install-command__protocol {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  top: 14px;
+  right: 88px;
+  min-width: 94px;
+  margin: 0;
+  padding: 3px 6px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              background-color var(--dur) var(--ease);
+}
+
+.install-command__protocol-option {
+  color: var(--fg-muted);
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  transition: color var(--dur) var(--ease);
+}
+
+.install-command__protocol-option.is-active {
+  color: var(--accent);
+}
+
+.install-command__protocol-track {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 12px;
+  flex: 0 0 22px;
+  border-radius: 999px;
+  background: var(--rule);
+  transition: background-color var(--dur) var(--ease);
+}
+
+.install-command__protocol-track span {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+
+.install-command__protocol.is-ssh .install-command__protocol-track {
+  background: color-mix(in srgb, var(--accent) 35%, var(--rule));
+}
+
+.install-command__protocol.is-ssh .install-command__protocol-track span {
+  background: var(--accent);
+  transform: translateX(10px);
+}
+
+.install-command__copy:hover,
+.install-command__copy:focus-visible,
+.install-command__protocol:hover,
+.install-command__protocol:focus-visible,
+.install-command__protocol.is-ssh {
+  color: var(--accent);
+  border-color: var(--accent);
+}
 
 /* ---------- principle list (the four statements) ---------- */
 
