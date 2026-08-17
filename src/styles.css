@@ -403,11 +403,10 @@ code, kbd, samp {
 /* ---------- install command (copy button) ---------- */
 
 .install-command {
-  position: relative;
   display: block;
   width: 100%;
   margin: 0;
-  padding: 16px 226px 16px 20px;
+  padding: 0;
   border: 1px solid var(--rule);
   border-left: 3px solid var(--accent);
   background: color-mix(in srgb, var(--bg) 60%, var(--fg) 4%);
@@ -423,6 +422,37 @@ code, kbd, samp {
   border-color: var(--accent);
 }
 
+.install-command__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 46px;
+  padding: 8px 12px 8px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.install-command__title {
+  color: var(--fg-muted);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.install-command__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.install-command__body {
+  display: block;
+  padding: 16px 20px;
+}
+
 .install-command .cmd-line {
   display: block;
   white-space: pre-wrap;
@@ -436,9 +466,6 @@ code, kbd, samp {
 }
 
 .install-command__copy {
-  position: absolute;
-  top: 14px;
-  right: 12px;
   margin: 0;
   padding: 3px 10px;
   border: 1px solid var(--rule);
@@ -455,13 +482,10 @@ code, kbd, samp {
 }
 
 .install-command__protocol {
-  position: absolute;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  top: 14px;
-  right: 88px;
   min-width: 94px;
   margin: 0;
   padding: 3px 6px;
@@ -1105,4 +1129,12 @@ code, kbd, samp {
     padding: 20px 8px;
     font-size: min(13.5px, calc((100cqi - 18px) / 38));
   }
+}
+
+@media (max-width: 400px) {
+  .install-command__header { gap: 8px; padding-left: 12px; }
+  .install-command__title { font-size: 9px; letter-spacing: 0.08em; }
+  .install-command__actions { gap: 8px; }
+  .install-command__protocol { min-width: 86px; padding-right: 4px; padding-left: 4px; }
+  .install-command__copy { padding-right: 7px; padding-left: 7px; font-size: 10px; }
 }

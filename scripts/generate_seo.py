@@ -68,7 +68,7 @@ SCHEMA_JSONLD = {
     "sameAs": ["https://github.com/emiliano-go/trustsight"],
     "isAccessibleForFree": True,
     "codeRepository": "https://github.com/emiliano-go/trustsight",
-    "license": "https://github.com/emiliano-go/trustsight/blob/main/LICENSE",
+    "license": "https://github.com/emiliano-go/trustsight/blob/master/LICENSE",
     "author": {"@type": "Person", "name": "Emiliano Gandini"},
 }
 

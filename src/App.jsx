@@ -148,27 +148,32 @@ function InstallCommand({ className }) {
 
   return (
     <div className={className ? `install-command ${className}` : 'install-command'}>
+      <div className="install-command__header">
+        <span className="install-command__title">Install from source</span>
+        <div className="install-command__actions">
+          <button
+            type="button"
+            className={protocol === 'ssh' ? 'install-command__protocol is-ssh' : 'install-command__protocol'}
+            onClick={() => setProtocol((value) => value === 'https' ? 'ssh' : 'https')}
+            aria-label={`Switch to ${protocol === 'https' ? 'SSH' : 'HTTPS'} clone URL`}
+            role="switch"
+            aria-checked={protocol === 'ssh'}
+          >
+            <span className={protocol === 'https' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">HTTPS</span>
+            <span className="install-command__protocol-track" aria-hidden="true"><span /></span>
+            <span className={protocol === 'ssh' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">SSH</span>
+          </button>
+          <button type="button" className="install-command__copy" onClick={copy} aria-label="Copy the install commands">
+            {copied ? 'copied ✓' : 'copy'}
+          </button>
+        </div>
+      </div>
       <span className="install-command__body">
         <span className="visually-hidden">Install using {protocol}: </span>
         <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> {install.split('\n')[0]}</span>
         <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> cd trustsight/packaging/aur &amp;&amp; makepkg -si</span>
         <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> trustsight review</span>
       </span>
-      <button
-        type="button"
-        className={protocol === 'ssh' ? 'install-command__protocol is-ssh' : 'install-command__protocol'}
-        onClick={() => setProtocol((value) => value === 'https' ? 'ssh' : 'https')}
-        aria-label={`Switch to ${protocol === 'https' ? 'SSH' : 'HTTPS'} clone URL`}
-        role="switch"
-        aria-checked={protocol === 'ssh'}
-      >
-        <span className={protocol === 'https' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">HTTPS</span>
-        <span className="install-command__protocol-track" aria-hidden="true"><span /></span>
-        <span className={protocol === 'ssh' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">SSH</span>
-      </button>
-      <button type="button" className="install-command__copy" onClick={copy} aria-label="Copy the install commands">
-        {copied ? 'copied ✓' : 'copy'}
-      </button>
     </div>
   )
 }
@@ -479,16 +484,16 @@ export function App() {
           <h2 id="example">What a review looks like</h2>
           <div className="prose">
             <p>
-              Default output from <code>trustsight review</code> for three outdated packages. The first
+              Default output from <code>trustsight review</code> for two outdated packages. The first
               is a routine version bump with updated checksums; the second is a change worth a look
-              before you build it; the third shows the dependency mini-cards nested in the output.
+              before you build it. The dependency example shows the mini-cards nested in the output.
               Without flags the report shows the findings and the verdict, no score column.
             </p>
           </div>
           <Plate
-            label="Terminal transcript of trustsight review, showing three packages. chez-scheme-bin, version 10.0.0 to 10.1.0: only pkgver and sha256sums changed, review the diff before building. sketchy-pkg, version 1.4.2 to 1.5.0: the update is not trivial, remote script execution detected at line 4, source URL classified as unknown. some-trusted-tool, version 2.4.1 to 2.4.2: the update is not trivial, an install hook performs a privileged operation, with a direct dependency libhelper showing 2 findings."
-            lines={[...plateExample.split('\n'), ...plateFlagged.split('\n'), ...plateDeps.split('\n'), '3 package(s) needing update and reviewed out of 3 installed', 'Tip: those dependencies are summarised, not reviewed. `trustsight', 'review --deps` reviews each as a package in its own right and names', 'what requires it; add `--depth n` for deeper levels.']}
-            caption={<>Real output from <code>trustsight review</code> on three outdated packages. A clean verdict means no known signal fired, not that the package is safe.</>}
+             label="Terminal transcript of trustsight review, showing two packages and a dependency summary. some-app-bin, version 3.1.0-1 to 3.1.1-2: only pkgver and sha256sums changed, review the diff before building. sketchy-package, version 0.9.2-1 to 1.0.0-2: the update is not trivial, checksum disabled and source URL classified as unknown."
+             lines={[...plateExample.split('\n'), ...plateFlagged.split('\n'), ...plateDeps.split('\n')]}
+             caption={<>Current renderer excerpts from <code>trustsight review</code>. A clean verdict means no known signal fired, not that the package is safe.</>}
           />
           <DocsLink href={`${DOCS}/getting-started/reading-a-report/`}>reading a report</DocsLink>
         </section>
@@ -609,8 +614,8 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>2,473 tests</strong>, enforced by
-              <strong>65 security gates</strong> and <strong>10 calibration gates</strong> in CI on every push.
+              <strong>Testing.</strong> The test suite covers <strong>1,535 tests across 43 files</strong>.
+              CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
               any scoring rule that fires on more than 30% of the benign corpus is demoted to INFO, because
