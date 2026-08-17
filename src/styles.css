@@ -18,15 +18,15 @@
   --rule: light-dark(#E3E1DB, #21262D);
   --accent: light-dark(#1073A8, #1793D1);
 
-  /* 3. plate tokens - readable in either selected theme */
-  --plate-bg: light-dark(#F6F8FA, #0D1117);
-  --plate-fg: light-dark(#1F2328, #E6EDF3);
-  --plate-dim: light-dark(#57606A, #8B949E);
-  --plate-frame: light-dark(#D0D7DE, #30363D);
-  --plate-green: light-dark(#1A7F37, #3FB950);
-  --plate-amber: light-dark(#9A6700, #D29922);
-  --plate-red: light-dark(#CF222E, #F85149);
-  --plate-blue: light-dark(#0969DA, #1793D1);
+  /* 3. plate tokens - dark defaults, overridden with literals in light mode */
+  --plate-bg: #0D1117;
+  --plate-fg: #E6EDF3;
+  --plate-dim: #8B949E;
+  --plate-frame: #30363D;
+  --plate-green: #3FB950;
+  --plate-amber: #D29922;
+  --plate-red: #F85149;
+  --plate-blue: #1793D1;
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas,
@@ -37,7 +37,17 @@
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="light"] {
+  color-scheme: light;
+  --plate-bg: #F6F8FA;
+  --plate-fg: #1F2328;
+  --plate-dim: #57606A;
+  --plate-frame: #D0D7DE;
+  --plate-green: #1A7F37;
+  --plate-amber: #9A6700;
+  --plate-red: #CF222E;
+  --plate-blue: #0969DA;
+}
 
 /* Accessibility settings (set from the a11y menu; font-size is persisted) */
 :root[data-font-size="large"] { zoom: 1.15; }
