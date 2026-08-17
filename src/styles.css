@@ -1,38 +1,38 @@
-/* TrustSight landing page — security-serious, documentation voice.
+/* TrustSight landing page - security-serious, documentation voice.
    Palette and plate tokens follow docs/security.md's design notes:
    components read only layer-2 semantic roles; plate internals read only
-   layer-3 literals (colour-scheme: dark isolates them from both themes). */
+   layer-3 theme-aware values. */
 
 :root {
   color-scheme: dark;
 
-  /* 1. brand constants — never flip, never used directly for text */
+  /* 1. brand constants - never flip, never used directly for text */
   --ink: #0D1117;
   --paper: #E6EDF3;
   --arch: #1793D1;
 
-  /* 2. semantic roles — the only tokens components use */
+  /* 2. semantic roles - the only tokens components use */
   --bg: light-dark(#FBFBF9, #0D1117);
   --fg: light-dark(#16191D, #E6EDF3);
   --fg-muted: light-dark(#5A6169, #8B949E);
   --rule: light-dark(#E3E1DB, #21262D);
   --accent: light-dark(#1073A8, #1793D1);
 
-  /* 3. PLATE tokens — literals, deliberately outside both themes */
-  --plate-bg: #0D1117;
-  --plate-fg: #E6EDF3;
-  --plate-dim: #8B949E;
-  --plate-frame: #30363D;
-  --plate-green: #3FB950;
-  --plate-amber: #D29922;
-  --plate-red: #F85149;
-  --plate-blue: #1793D1;
+  /* 3. plate tokens - readable in either selected theme */
+  --plate-bg: light-dark(#F6F8FA, #0D1117);
+  --plate-fg: light-dark(#1F2328, #E6EDF3);
+  --plate-dim: light-dark(#57606A, #8B949E);
+  --plate-frame: light-dark(#D0D7DE, #30363D);
+  --plate-green: light-dark(#1A7F37, #3FB950);
+  --plate-amber: light-dark(#9A6700, #D29922);
+  --plate-red: light-dark(#CF222E, #F85149);
+  --plate-blue: light-dark(#0969DA, #1793D1);
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas,
                "DejaVu Sans Mono", "Liberation Mono", monospace;
 
-  /* 4. motion — one easing and duration for every interaction */
+  /* 4. motion - one easing and duration for every interaction */
   --dur: 0.2s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -599,7 +599,6 @@ code, kbd, samp {
 .plate {
   margin: 48px auto 0;
   max-width: 780px;
-  color-scheme: dark; /* plates stay dark in both themes; scrollbar stays dark too */
   /* Size container for the terminal: the frame hugs the text (fit-content
      below), so the scale-to-fit font is sized against this outer width. */
   container-type: inline-size;
