@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'preact/hooks'
 import { plateExample, plateFlagged, plateDeps } from './plate.js'
 import { linkRules } from './rules.js'
 
@@ -61,144 +60,54 @@ const INSTALL = {
   ].join('\n'),
 }
 
-function fallbackCopy(text) {
-  const previousFocus = document.activeElement
-  const el = document.createElement('textarea')
-  el.value = text
-  el.setAttribute('readonly', '')
-  el.setAttribute('aria-hidden', 'true')
-  el.tabIndex = -1
-  el.style.position = 'fixed'
-  el.style.opacity = '0'
-  document.body.appendChild(el)
-  el.focus()
-  el.select()
-  let copied = false
-  try { copied = document.execCommand('copy') } catch (e) {}
-  document.body.removeChild(el)
-  previousFocus?.focus?.()
-  return copied
-}
-
-/* The same switch the dbwarden site ships: a sun/moon pill that writes
-   data-theme on <html> and persists the choice. React controls the toggle;
-   the head script only sets the initial value, so there is no flash and no
-   double-toggle. */
-function ThemeSwitch({ dark, toggleTheme }) {
+function ThemeSwitch() {
   return (
-    <button className={dark ? 'theme-switch is-dark' : 'theme-switch'} type="button" onClick={toggleTheme} role="switch" aria-checked={dark} aria-label="Toggle color theme">
-      <span className={dark ? 'theme-option theme-sun' : 'theme-option theme-sun is-active'} aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg></span>
-      <span className={dark ? 'theme-option theme-moon is-active' : 'theme-option theme-moon'} aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg></span>
+    <button className="theme-switch is-dark" type="button" data-theme-toggle role="switch" aria-checked="true" aria-label="Toggle color theme">
+      <span className="theme-option theme-sun" data-theme-sun aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg></span>
+      <span className="theme-option theme-moon is-active" data-theme-moon aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg></span>
     </button>
   )
 }
 
-/* Accessibility settings: font size and high contrast, persisted. Same
-   behaviour as the dbwarden site's menu. */
 function AccessibilityMenu() {
-  const [open, setOpen] = useState(false)
-  const [fontSize, setFontSize] = useState(() => {
-    try { return typeof window !== 'undefined' && window.localStorage.getItem('ts-font-size') === 'large' ? 'large' : 'normal' } catch (e) { return 'normal' }
-  })
-  const [contrast, setContrast] = useState(() => {
-    try {
-      if (typeof window === 'undefined') return null
-      const saved = window.localStorage.getItem('ts-contrast')
-      return saved === 'high' ? true : saved === 'normal' ? false : null
-    } catch (e) { return null }
-  })
-  const wrapRef = useRef(null)
-  const triggerRef = useRef(null)
-
-  useEffect(() => {
-    document.documentElement.dataset.fontSize = fontSize
-    try { localStorage.setItem('ts-font-size', fontSize) } catch (e) {}
-  }, [fontSize])
-
-  useEffect(() => {
-    if (contrast === null) {
-      delete document.documentElement.dataset.contrast
-      return
-    }
-    document.documentElement.dataset.contrast = contrast ? 'high' : 'normal'
-    try { localStorage.setItem('ts-contrast', contrast ? 'high' : 'normal') } catch (e) {}
-  }, [contrast])
-
-  useEffect(() => {
-    if (!open) return
-    const close = () => {
-      setOpen(false)
-      triggerRef.current?.focus()
-    }
-    const onDown = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) close() }
-    const onKey = (e) => { if (e.key === 'Escape') close() }
-    document.addEventListener('pointerdown', onDown)
-    document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey) }
-  }, [open])
-
   return (
-    <div className="a11y-wrap" ref={wrapRef}>
-      <button ref={triggerRef} className={open ? 'a11y-button is-open' : 'a11y-button'} type="button" onClick={() => setOpen((v) => !v)} aria-controls="accessibility-settings" aria-expanded={open} aria-label="Accessibility settings">
+    <div className="a11y-wrap" data-a11y-wrap>
+      <button className="a11y-button" type="button" data-a11y-toggle aria-controls="accessibility-settings" aria-expanded="false" aria-label="Accessibility settings">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="1.6" /><path d="M12 9.8v4.4" /><path d="M12 11.5 7.8 8.5" /><path d="M12 11.5l4.2-3" /><path d="M12 14.2 9.2 18.2" /><path d="M12 14.2l2.8 4" /></svg>
       </button>
-      {open ? (
-        <div className="a11y-panel" id="accessibility-settings" role="group" aria-label="Accessibility settings">
-          <div className="a11y-row"><span className="a11y-label">Font size</span><div className="a11y-seg" role="group" aria-label="Font size"><button type="button" className={fontSize === 'normal' ? 'is-on' : ''} onClick={() => setFontSize('normal')} aria-pressed={fontSize === 'normal'}>A</button><button type="button" className={fontSize === 'large' ? 'is-on' : ''} onClick={() => setFontSize('large')} aria-pressed={fontSize === 'large'}><span className="a11y-big">A</span></button></div></div>
-          <div className="a11y-row"><span className="a11y-label">High contrast</span><div className="a11y-seg" role="group" aria-label="High contrast"><button type="button" className={!contrast ? 'is-on' : ''} onClick={() => setContrast(false)} aria-pressed={!contrast}>Off</button><button type="button" className={contrast ? 'is-on' : ''} onClick={() => setContrast(true)} aria-pressed={contrast}>On</button></div></div>
-        </div>
-      ) : null}
+      <div className="a11y-panel" id="accessibility-settings" role="group" aria-label="Accessibility settings" hidden>
+        <div className="a11y-row"><span className="a11y-label">Font size</span><div className="a11y-seg" role="group" aria-label="Font size"><button type="button" className="is-on" data-font-size="normal" aria-pressed="true">A</button><button type="button" data-font-size="large" aria-pressed="false"><span className="a11y-big">A</span></button></div></div>
+        <div className="a11y-row"><span className="a11y-label">High contrast</span><div className="a11y-seg" role="group" aria-label="High contrast"><button type="button" className="is-on" data-contrast="normal" aria-pressed="true">Off</button><button type="button" data-contrast="high" aria-pressed="false">On</button></div></div>
+      </div>
     </div>
   )
 }
 
 function InstallCommand({ className }) {
-  const [copied, setCopied] = useState(false)
-  const [copyStatus, setCopyStatus] = useState('')
-  const [protocol, setProtocol] = useState('https')
-  const install = INSTALL[protocol]
-
-  const copy = () => {
-    const done = () => {
-      setCopied(true)
-      setCopyStatus('Install commands copied to clipboard.')
-      window.setTimeout(() => setCopied(false), 2000)
-    }
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(install).then(done).catch(() => {
-        if (fallbackCopy(install)) done()
-      })
-    } else {
-      if (fallbackCopy(install)) done()
-    }
-  }
-
   return (
-    <div className={className ? `install-command ${className}` : 'install-command'}>
-      <span className="visually-hidden" role="status" aria-live="polite">{copyStatus}</span>
+    <div className={className ? `install-command ${className}` : 'install-command'} data-install>
+      <span className="visually-hidden" data-copy-status role="status" aria-live="polite" />
       <div className="install-command__header">
         <span className="install-command__title">Install from source</span>
         <div className="install-command__actions">
           <button
             type="button"
-            className={protocol === 'ssh' ? 'install-command__protocol is-ssh' : 'install-command__protocol'}
-            onClick={() => setProtocol((value) => value === 'https' ? 'ssh' : 'https')}
-            aria-label={`Switch to ${protocol === 'https' ? 'SSH' : 'HTTPS'} clone URL`}
+            className="install-command__protocol"
+            data-protocol-toggle
+            aria-label="Switch to SSH clone URL"
             role="switch"
-            aria-checked={protocol === 'ssh'}
+            aria-checked="false"
           >
-            <span className={protocol === 'https' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">HTTPS</span>
+            <span className="install-command__protocol-option is-active" data-protocol-https aria-hidden="true">HTTPS</span>
             <span className="install-command__protocol-track" aria-hidden="true"><span /></span>
-            <span className={protocol === 'ssh' ? 'install-command__protocol-option is-active' : 'install-command__protocol-option'} aria-hidden="true">SSH</span>
+            <span className="install-command__protocol-option" data-protocol-ssh aria-hidden="true">SSH</span>
           </button>
-          <button type="button" className="install-command__copy" onClick={copy} aria-label="Copy the install commands">
-            {copied ? 'copied ✓' : 'copy'}
-          </button>
+          <button type="button" className="install-command__copy" data-copy aria-label="Copy the install commands">copy</button>
         </div>
       </div>
       <span className="install-command__body">
-        <span className="visually-hidden">Install using {protocol}: </span>
-        <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> {install.split('\n')[0]}</span>
+        <span className="visually-hidden" data-install-protocol>Install using https: </span>
+        <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> <span data-install-url>{INSTALL.https.split('\n')[0]}</span></span>
         <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> cd trustsight/packaging/aur &amp;&amp; makepkg -si</span>
         <span className="cmd-line"><span className="dollar" aria-hidden="true">$</span> trustsight review</span>
       </span>
@@ -430,28 +339,6 @@ const faqs = [
 ]
 
 export function App() {
-  // Match the server's dark default during hydration. The head bootstrap may
-  // already have applied a stored light preference, which we adopt afterwards.
-  const [dark, setDark] = useState(true)
-  const themeHydrated = useRef(false)
-
-  useEffect(() => {
-    if (!themeHydrated.current) {
-      themeHydrated.current = true
-      const initialDark = document.documentElement.dataset.theme !== 'light'
-      if (initialDark !== dark) {
-        setDark(initialDark)
-        return
-      }
-    }
-    document.documentElement.dataset.theme = dark ? 'dark' : 'light'
-    try { localStorage.setItem('ts-theme', dark ? 'dark' : 'light') } catch (e) {}
-    const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.content = dark ? '#0D1117' : '#FBFBF9'
-  }, [dark])
-
-  const toggleTheme = () => setDark((value) => !value)
-
   return (
     <div className="page" id="top">
       <a className="skip-link" href="#content">Skip to content</a>
@@ -462,7 +349,7 @@ export function App() {
           <a className="wordmark" href="/" aria-label="TrustSight">TRUST<span>SIGHT</span></a>
           <div className="masthead-actions">
             <AccessibilityMenu />
-            <ThemeSwitch dark={dark} toggleTheme={toggleTheme} />
+            <ThemeSwitch />
           </div>
         </div>
         <h1>TRUST<span>SIGHT</span></h1>

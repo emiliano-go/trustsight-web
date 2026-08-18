@@ -16,4 +16,4 @@
   Cache-Control: public, max-age=86400, must-revalidate
 
 /
-  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-BnRe8yoQbtULHZq47xstDdDkCilW1wpisitDHJ6pnf0=' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com
+  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-jUpzuMbmQL16KjTUHIY8SUuCD5a3m5W8CfpchENRMq0='; connect-src 'self'

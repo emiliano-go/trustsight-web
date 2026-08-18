@@ -163,6 +163,8 @@ code, kbd, samp {
   white-space: nowrap;
 }
 
+[hidden] { display: none !important; }
+
 /* ---------- layout ---------- */
 
 .page {
@@ -177,6 +179,13 @@ code, kbd, samp {
 }
 
 .section:first-of-type { border-top: 0; }
+
+/* The long evidence tables and FAQ stay in the HTML for no-JS readers and
+   crawlers, but do not consume initial render work below the fold. */
+main > .section:nth-child(n + 2) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1100px;
+}
 
 .section-label {
   display: flex;

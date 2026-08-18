@@ -1,11 +1,19 @@
-import { readdir, stat } from 'node:fs/promises'
+import { readFile, readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { brotliCompressSync, constants } from 'node:zlib'
 
 const limits = [
-  ['JavaScript', 'assets', '.js', 250 * 1024],
-  ['CSS', 'assets', '.css', 30 * 1024],
-  ['total artifact', '.', '', 1024 * 1024],
+  ['JavaScript', 'assets', '.js', 8 * 1024],
+  ['CSS', 'assets', '.css', 25 * 1024],
+  ['total artifact', '.', '', 350 * 1024],
+]
+const compressedLimits = [
+  ['HTML', ['index.html'], 12 * 1024],
+  ['JavaScript', ['assets', '.js'], 2 * 1024],
+  ['CSS', ['assets', '.css'], 5 * 1024],
+  ['font', ['assets', '.woff2'], 50 * 1024],
+  ['critical path', ['index.html', 'assets', '.js', '.css', '.woff2'], 70 * 1024],
 ]
 
 async function filesIn(directory) {
@@ -27,6 +35,22 @@ for (const [name, directory, extension, limit] of limits) {
   const size = (await Promise.all(selected.map((file) => stat(file)))).reduce((total, file) => total + file.size, 0)
   console.log(`${name}: ${size} B / ${limit} B`)
   if (size > limit) failures.push(`${name} exceeds its ${limit} B budget`)
+}
+
+function matches(file, selectors) {
+  return selectors.some((selector) => file.endsWith(selector))
+}
+
+for (const [name, selectors, limit] of compressedLimits) {
+  const selected = files.filter((file) => matches(file, selectors))
+  const size = (await Promise.all(selected.map(async (file) => {
+    const data = await readFile(file)
+    return brotliCompressSync(data, {
+      params: { [constants.BROTLI_PARAM_QUALITY]: 11 },
+    }).length
+  }))).reduce((total, bytes) => total + bytes, 0)
+  console.log(`${name} Brotli: ${size} B / ${limit} B`)
+  if (size > limit) failures.push(`${name} Brotli exceeds its ${limit} B budget`)
 }
 
 if (failures.length) {

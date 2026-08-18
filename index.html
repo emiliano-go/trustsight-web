@@ -13,6 +13,11 @@
         /* Dark is the default; only an explicit stored light choice flips it. */
         var theme = v === 'light' ? 'light' : 'dark'
         d.setAttribute('data-theme', theme)
+        try {
+          d.setAttribute('data-font-size', localStorage.getItem('ts-font-size') === 'large' ? 'large' : 'normal')
+          var contrast = localStorage.getItem('ts-contrast')
+          if (contrast === 'high' || contrast === 'normal') d.setAttribute('data-contrast', contrast)
+        } catch (e) {}
         var meta = document.querySelector('meta[name="theme-color"]')
         if (meta) meta.content = theme === 'light' ? '#FBFBF9' : '#0D1117'
       })()
