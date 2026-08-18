@@ -12,8 +12,8 @@ const compressedLimits = [
   // so nothing render-blocks first paint); ~10.9 kB page + ~4.2 kB CSS.
   ['HTML', ['index.html'], 18 * 1024],
   ['JavaScript', ['assets', '.js'], 2 * 1024],
-  ['font', ['assets', '.woff2'], 35 * 1024],
-  ['critical path', ['index.html', 'assets', '.js', '.woff2'], 70 * 1024],
+  ['font', ['fonts', '.woff2'], 35 * 1024],
+  ['critical path', ['index.html', 'assets', '.js', 'fonts', '.woff2'], 70 * 1024],
 ]
 
 async function filesIn(directory) {

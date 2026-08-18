@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto'
-import { readFile, readdir, rm, writeFile } from 'node:fs/promises'
-import { spawnSync } from 'node:child_process'
+import { readFile, rm, writeFile } from 'node:fs/promises'
 
 const indexPath = new URL('../dist/index.html', import.meta.url)
 const serverEntry = new URL('../dist/server/entry-server.js', import.meta.url)
@@ -33,29 +32,7 @@ if (cssLink) {
   await writeFile(headersPath, pinned)
 }
 
-// 2. Subset the Inter latin variable font to just the characters the page
-//    renders (plus a safety margin in src/font-chars.txt). Keep the variable
-//    axes so every weight still works. Requires fonttools (pyftsubset).
-const assets = await readdir(new URL('../dist/assets/', import.meta.url))
-const latin = assets.find((file) => file.startsWith('inter-latin-wght-normal-') && file.endsWith('.woff2'))
-if (latin) {
-  const fontPath = new URL(`../dist/assets/${latin}`, import.meta.url)
-  const tempPath = new URL(`../dist/assets/.${latin}.subset`, import.meta.url)
-  const subset = spawnSync('pyftsubset', [
-    fontPath.pathname,
-    '--text-file=src/font-chars.txt',
-    '--flavor=woff2',
-    `--output-file=${tempPath.pathname}`,
-  ], { encoding: 'utf8' })
-  if (subset.status === 0) {
-    await writeFile(fontPath, await readFile(tempPath))
-    await rm(tempPath, { force: true })
-  } else {
-    throw new Error(`prerender: font subset failed (${(subset.stderr ?? '').slice(0, 200)})`)
-  }
-}
-
-// 3. Inject the server-rendered content into the shell.
+// 2. Inject the server-rendered content into the shell.
 const rendered = render()
 if (!rendered.includes('<main id="content">')) {
   throw new Error('prerender: server render did not produce landing-page content')

@@ -8,12 +8,8 @@ function preloadFont() {
     name: 'preload-inter-font',
     writeBundle() {
       const outDir = 'dist'
-      if (!existsSync(join(outDir, 'assets'))) return
-      const latin = readdirSync(join(outDir, 'assets')).find(
-        (file) => file.startsWith('inter-latin-wght-normal-') && file.endsWith('.woff2')
-      )
-      if (!latin) throw new Error('preload-font: latin Inter woff2 not found in dist/assets')
-      const tag = `<link rel="preload" href="/assets/${latin}" as="font" type="font/woff2" crossorigin />`
+      if (!existsSync(join(outDir, 'fonts'))) return
+      const tag = '<link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />'
       const file = join(outDir, 'index.html')
       const html = readFileSync(file, 'utf8')
       if (html.includes(tag)) return

@@ -3,6 +3,7 @@ import { readFile, readdir } from 'node:fs/promises'
 
 const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8')
 const assets = await readdir(new URL('../dist/assets/', import.meta.url))
+const fonts = await readdir(new URL('../dist/fonts/', import.meta.url))
 const headers = await readFile(new URL('../dist/_headers', import.meta.url), 'utf8')
 const client = await readFile(new URL(`../dist/assets/${assets.find((file) => file.endsWith('.js'))}`, import.meta.url), 'utf8')
 const style = html.match(/<style>([\s\S]*?)<\/style>/)
@@ -18,7 +19,7 @@ const checks = [
   ['no additional inline scripts were generated', (html.match(/<script(?![^>]*\bsrc=)[^>]*>/g) ?? []).length === 2],
   ['stylesheet is inlined, not a render-blocking asset', style !== null && !assets.some((file) => file.endsWith('.css'))],
   ['inline style hash is pinned in the CSP', styleHash !== null && headers.includes(`style-src 'self' ${styleHash}`)],
-  ['font subset is shipped (under 35 kB)', assets.some((file) => file.endsWith('.woff2'))],
+  ['font subset is shipped (under 35 kB)', fonts.some((file) => file.endsWith('.woff2'))],
 ]
 
 const failed = checks.filter(([, passed]) => !passed)
