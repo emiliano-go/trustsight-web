@@ -21,15 +21,19 @@ import argparse
 import sys
 from pathlib import Path
 
-from seoslug import (
-    SEOConfig,
-    URLPolicy,
-    SEOEntity,
-    SEOOverrides,
-    OGImage,
-    Robots,
-    build_seo_payload,
-)
+try:
+    from seoslug import (
+        SEOConfig,
+        URLPolicy,
+        SEOEntity,
+        SEOOverrides,
+        OGImage,
+        Robots,
+        build_seo_payload,
+    )
+    SEOSLUG_AVAILABLE = True
+except ModuleNotFoundError:
+    SEOSLUG_AVAILABLE = False
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
@@ -43,12 +47,10 @@ DESCRIPTION = (
 )
 # The OG image is the repo's banner (docs/assets/images/trustsight-banner.png),
 # served from /og-image.png; keep width/height in sync with that file.
-OG_IMAGE = OGImage(
-    url=f"{SITE_URL}/og-image.png",
-    width=2806,
-    height=1582,
-    alt="TrustSight | Audits AUR PKGBUILDs before you update",
-)
+OG_IMAGE_URL = f"{SITE_URL}/og-image.png"
+OG_IMAGE_WIDTH = 2806
+OG_IMAGE_HEIGHT = 1582
+OG_IMAGE_ALT = "TrustSight | Audits AUR PKGBUILDs before you update"
 
 # The page is a software product, so the JSON-LD is a SoftwareApplication
 # rather than seoslug's default WebPage for entity_type "home".
@@ -63,7 +65,7 @@ SCHEMA_JSONLD = {
         "structural risk, and tells you what it cannot verify."
     ),
     "url": SITE_URL,
-    "image": f"{SITE_URL}/og-image.png",
+    "image": OG_IMAGE_URL,
     "sameAs": ["https://github.com/emiliano-go/trustsight"],
     "isAccessibleForFree": True,
     "codeRepository": "https://github.com/emiliano-go/trustsight",
@@ -71,29 +73,34 @@ SCHEMA_JSONLD = {
     "author": {"@type": "Person", "name": "Emiliano Gandini"},
 }
 
-SEO_CONFIG = SEOConfig(
-    canonical_host="trustsight.org",
-    public_base_url=SITE_URL,
-    url_policy=URLPolicy(
-        enforce_https=True,
-        lowercase_paths=True,
-        trailing_slash="always",
-    ),
-    site_name=SITE_NAME,
-    title_template=f"{SITE_NAME} | {{title}}",
-    default_og_image=OG_IMAGE,
-    locale="en_US",
-    publisher_name="Emiliano Gandini",
-    publisher_logo=f"{SITE_URL}/og-image.png",
-    default_robots=Robots(index=True, follow=True, max_image_preview="large"),
-    emit_warnings=True,
-)
-
 MARK_START = "<!-- seoslug:start -->"
 MARK_END = "<!-- seoslug:end -->"
 
 
 def build_block() -> str:
+    og_image = OGImage(
+        url=OG_IMAGE_URL,
+        width=OG_IMAGE_WIDTH,
+        height=OG_IMAGE_HEIGHT,
+        alt=OG_IMAGE_ALT,
+    )
+    config = SEOConfig(
+        canonical_host="trustsight.org",
+        public_base_url=SITE_URL,
+        url_policy=URLPolicy(
+            enforce_https=True,
+            lowercase_paths=True,
+            trailing_slash="always",
+        ),
+        site_name=SITE_NAME,
+        title_template=f"{SITE_NAME} | {{title}}",
+        default_og_image=og_image,
+        locale="en_US",
+        publisher_name="Emiliano Gandini",
+        publisher_logo=OG_IMAGE_URL,
+        default_robots=Robots(index=True, follow=True, max_image_preview="large"),
+        emit_warnings=True,
+    )
     entity = SEOEntity(
         entity_type="home",
         title=TITLE,
@@ -104,7 +111,7 @@ def build_block() -> str:
         robots=Robots(index=True, follow=True, max_image_preview="large"),
         schema_jsonld=SCHEMA_JSONLD,
     )
-    payload = build_seo_payload(entity, "/", SEO_CONFIG, overrides)
+    payload = build_seo_payload(entity, "/", config, overrides)
     return payload.render_html().strip()
 
 
@@ -121,6 +128,20 @@ def main() -> int:
         help="fail (exit 1) if index.html is stale instead of writing",
     )
     args = parser.parse_args()
+
+    # Cloudflare Pages' build sandbox has no seoslug and cannot pip install it
+    # (PEP 668). CI installs seoslug and runs this script as the drift gate, so
+    # on an environment without the module, --check degrades to a warning: the
+    # committed head is still verified on every CI run.
+    if not SEOSLUG_AVAILABLE:
+        if args.check:
+            print(
+                "generate-seo: WARN - seoslug not installed; skipping drift check "
+                "here (CI runs it with seoslug installed)."
+            )
+            return 0
+        print("generate-seo: seoslug is required to regenerate the SEO block (pip install \"seoslug>=2.0.1\")")
+        return 1
 
     html = INDEX.read_text(encoding="utf-8")
     if MARK_START not in html or MARK_END not in html:
