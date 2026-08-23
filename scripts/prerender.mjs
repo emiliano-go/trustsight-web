@@ -16,7 +16,7 @@ if (!html.includes(root)) {
 //    pin its sha256 in the CSP. The site's CSP is strict (style-src 'self'),
 //    so an unpinned inline <style> would be silently blocked by the browser;
 //    the hash keeps the CSP strict and the page working.
-const cssLink = html.match(/<link rel="stylesheet"[^>]*?href="([^"]+)"/)
+const cssLink = html.match(/<link rel="stylesheet"[^>]*?href="([^"]+)"[^>]*>/)
 let cssText = null
 let cssPath = null
 if (cssLink) {
