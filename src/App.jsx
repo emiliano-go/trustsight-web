@@ -20,7 +20,7 @@ function Plate({ label, lines, caption }) {
   )
 }
 
-const TAG_RE = /\[(?:[RCDSXW]\d{3}|SOURCE_BUCKET)\]/g
+const TAG_RE = /\[(?:[RCDSPXW]\d{3}|SOURCE_BUCKET)\]/g
 
 /* A dependency mini-card sits inside its parent panel: outer border, then an
    indent, then the card's box border. The card is flagged, so its border
@@ -422,12 +422,14 @@ export function App() {
             <p>
               Default output from <code>trustsight review</code> for two outdated packages. The first
               is a routine version bump with updated checksums; the second is a change worth a look
-              before you build it. The dependency example shows the mini-cards nested in the output.
+              before you build it, and it carries at least one finding from every rule namespace, so
+              each kind of signal appears exactly as a real report shows it. The dependency example
+              shows the mini-cards nested in the output.
               Without flags the report shows the findings and the verdict, no score column.
             </p>
           </div>
           <Plate
-             label="Terminal transcript of trustsight review, showing two packages and a dependency summary. some-app-bin, version 3.1.0-1 to 3.1.1-2: only pkgver and sha256sums changed, review the diff before building. sketchy-package, version 0.9.2-1 to 1.0.0-2: the update is not trivial, checksum disabled and source URL classified as unknown."
+             label="Terminal transcript of trustsight review, showing two packages and a dependency summary. some-app-bin, version 3.1.0-1 to 3.1.1-2: only pkgver and sha256sums changed, review the diff before building. sketchy-package, version 0.9.2-1 to 1.0.0-2: the update is not trivial. A system-root deletion command, checksum set to SKIP, source URL changed without a version bump and classified as unknown, an executable assembled through partial quoting, validpgpkeys declared, and a build script not declared in source. The dependency summary shows libhelper resembling libuv."
              lines={[...plateExample.split('\n'), ...plateFlagged.split('\n'), ...plateDeps.split('\n')]}
              caption={<>Current renderer excerpts from <code>trustsight review</code>. A clean verdict means no known signal fired, not that the package is safe.</>}
           />
