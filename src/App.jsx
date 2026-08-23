@@ -203,14 +203,14 @@ const tiers = [
 
 const nsCategories = {
   r: [
-    ['Fetch and Execution', 'fetch-and-execution', 36],
-    ['Integrity and Verification', 'integrity', 26],
+    ['Fetch and Execution', 'fetch-and-execution', 35],
+    ['Integrity and Verification', 'integrity', 19],
     ['Install and Persistence', 'install-and-persist', 17],
-    ['Maintainer and Metadata', 'maintainer-and-metadata', 13],
+    ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
     ['Obfuscation', 'obfuscation', 8],
     ['Staging and Reconnaissance', 'staging-and-recon', 8],
     ['Corpus Behavioral', 'corpus-behavioral', 7],
-    ['Naming and Dependencies', 'naming-and-dependency', 10],
+    ['Naming and Dependencies', 'naming-and-dependency', 6],
     ['Deception and Anti-Analysis', 'deception', 5],
     ['Count-Based', 'count-based', 5],
     ['Temporal Context', 'temporal', 3],
@@ -239,8 +239,8 @@ const namespaces = [
   {
     letter: 'R',
     name: 'Detection rules',
-    count: '151 rules',
-    blurb: '151 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
+    count: '127 rules',
+    blurb: '127 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
     cats: nsCategories.r,
   },
   {
