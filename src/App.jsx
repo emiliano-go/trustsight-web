@@ -20,7 +20,7 @@ function Plate({ label, lines, caption }) {
   )
 }
 
-const TAG_RE = /\[(?:[RCDSX]\d{3}|SOURCE_BUCKET)\]/g
+const TAG_RE = /\[(?:[RCDSXW]\d{3}|SOURCE_BUCKET)\]/g
 
 /* A dependency mini-card sits inside its parent panel: outer border, then an
    indent, then the card's box border. The card is flagged, so its border
@@ -190,33 +190,34 @@ const detects = [
   { attack: 'A stale package suddenly revived', how: 'A package with no updates for over a year suddenly gets one (R067).' },
   { attack: 'Sabotage payloads (fork bombs, <code>rm -rf /</code>, disk wiping, coin miners)', how: 'Command-position matching separates build-sandbox housekeeping (<code>rm -rf "$srcdir/x"</code>) from system damage (S001–S008).' },
   { attack: 'Orphan hijacking (adopted from orphan, then rewritten with no upstream change)', how: 'The maintainer field against its last recorded state, plus a recipe-only-change signature (R141–R143).' },
-  { attack: 'Build steps that fetch unpinned code (<code>npm install</code> in a build function)', how: 'Not scored. Reported as the <code>unpinned_build_deps</code> coverage gap, because what the build will run is not in the analysed text and no checksum covers it.' },
+  { attack: 'Build steps that fetch unpinned code (<code>npm install</code> in a build function)', how: 'Not scored. Reported as the <code>unpinned_build_deps</code> coverage gap and as <code>W002</code>, because what the build will run is not in the analysed text and no checksum covers it.' },
 ]
 
 const tiers = [
   { tier: 'A: Structural', what: 'Direct structural facts from the diff.', example: '<code>curl | bash</code> (R001); checksum set to SKIP (R004)', weight: 'The strongest evidence' },
   { tier: 'B: Priors / Context', what: 'Source-bucket classification of every new URL.', example: 'an unknown domain adds weight', weight: 'Moderate: a prior, not proof' },
   { tier: 'C: History / Novelty', what: 'First-seen history for URLs and maintainers, maturity-gated.', example: 'URL first seen globally; maintainer first seen', weight: 'Scales with observation history' },
-  { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: 'P001–P007', weight: '0: reported, never scored' },
+  { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: 'P001–P008', weight: '0: reported, never scored' },
+  { tier: 'Reported, not scored', what: 'Analysis boundaries: bytes the package will run that this run could not read.', example: 'W001–W006', weight: '0: always shown' },
 ]
 
 const nsCategories = {
   r: [
-    ['Fetch and Execution', 'fetch-and-execution', 33],
-    ['Integrity and Verification', 'integrity', 17],
-    ['Install and Persistence', 'install-and-persist', 13],
-    ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
+    ['Fetch and Execution', 'fetch-and-execution', 36],
+    ['Integrity and Verification', 'integrity', 26],
+    ['Install and Persistence', 'install-and-persist', 17],
+    ['Maintainer and Metadata', 'maintainer-and-metadata', 13],
     ['Obfuscation', 'obfuscation', 8],
     ['Staging and Reconnaissance', 'staging-and-recon', 8],
     ['Corpus Behavioral', 'corpus-behavioral', 7],
-    ['Naming and Dependencies', 'naming-and-dependency', 6],
+    ['Naming and Dependencies', 'naming-and-dependency', 10],
     ['Deception and Anti-Analysis', 'deception', 5],
     ['Count-Based', 'count-based', 5],
     ['Temporal Context', 'temporal', 3],
     ['Composition', 'composition', 2],
   ],
   c: [
-    ['Integrity and Verification', 'integrity', 5],
+    ['Integrity and Verification', 'integrity', 7],
     ['Maintainer and Metadata', 'maintainer-and-metadata', 1],
     ['Fetch and Execution', 'fetch-and-execution', 1],
   ],
@@ -226,8 +227,11 @@ const nsCategories = {
   s: [
     ['Sabotage', 'sabotage', 8],
   ],
+  w: [
+    ['Unverifiable', 'unverifiable', 6],
+  ],
   x: [
-    ['Crossfire', 'crossfire', 7],
+    ['Crossfire', 'crossfire', 23],
   ],
 }
 
@@ -235,15 +239,15 @@ const namespaces = [
   {
     letter: 'R',
     name: 'Detection rules',
-    count: '119 rules',
-    blurb: '119 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
+    count: '151 rules',
+    blurb: '151 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
     cats: nsCategories.r,
   },
   {
     letter: 'C',
     name: 'Structural rules',
-    count: '7 rules',
-    blurb: 'Seven context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, metadata, and fetch facts.',
+    count: '9 rules',
+    blurb: 'Nine context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, metadata, and fetch facts.',
     cats: nsCategories.c,
   },
   {
@@ -263,15 +267,15 @@ const namespaces = [
   {
     letter: 'X',
     name: 'Crossfire rules',
-    count: '7 rules',
-    blurb: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, and command substitution assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
+    count: '23 rules',
+    blurb: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, command substitution and other tokenizer-defeating shapes assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
     cats: nsCategories.x,
   },
   {
     letter: 'P',
     name: 'Declared practice',
-    count: 'weight 0',
-    blurb: 'What the recipe declares, not what the analysis found. These findings read the claims a PKGBUILD makes about itself: checksums declared for every non-VCS source, validpgpkeys present, signatures sourced, sources pinned to a commit hash or tag, downloads over HTTPS. Every one is INFO and checkable by the reader against the file itself. They are reported, never credited: a signal an attacker can assert for free must not move a score.',
+    count: '8 findings, weight 0',
+    blurb: 'What the recipe declares, not what the analysis found. These findings read the claims a PKGBUILD makes about itself: checksums declared for every non-VCS source, validpgpkeys present, signatures sourced, sources pinned to a commit hash or tag, downloads over HTTPS, or a branch/unpinned ref tracked. Every one is INFO and checkable by the reader against the file itself. They are reported, never credited: a signal an attacker can assert for free must not move a score.',
     cats: [
       ['Checksums declared for all non-VCS sources (P001)', 'system/#declared-practice', null],
       ['validpgpkeys declared (P002)', 'system/#declared-practice', null],
@@ -279,7 +283,15 @@ const namespaces = [
       ['Source pinned to a full commit hash (P005)', 'system/#declared-practice', null],
       ['Source pinned to a tag (P006)', 'system/#declared-practice', null],
       ['Source on a trusted forge over HTTPS (P007)', 'system/#declared-practice', null],
+      ['Source tracks a branch or unpinned ref (P008)', 'system/#declared-practice', null],
     ],
+  },
+  {
+    letter: 'W',
+    name: 'Unverifiable',
+    count: '6 findings, weight 0',
+    blurb: 'Not a claim about the recipe but about the analysis: something the package will run that this run could not read. A build script that executes a file not declared in source=(), a patch not committed to the repo, a manifest generated at build time, or a dependency resolved from a registry. Each is reported so the reader knows the boundary of what was examined; none contributes to the score.',
+    cats: nsCategories.w,
   },
 ]
 
@@ -579,12 +591,12 @@ export function App() {
         {/* 9 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">145 documented rules, in six namespaces</h2>
+          <h2 id="rules">185 documented rules, in seven namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published
               in the <a href={RULES} target="_blank" rel="noreferrer">rules reference</a>. Rules are grouped
-              into six namespaces; the categories under each namespace are the kinds of claims its rules make.
+              into seven namespaces; the categories under each namespace are the kinds of claims its rules make.
             </p>
           </div>
           <div className="ns-list">

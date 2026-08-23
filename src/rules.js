@@ -12,6 +12,8 @@ export const RULE_PAGES = {
   c005: 'integrity/#c005',
   c006: 'maintainer-and-metadata/#c006',
   c007: 'fetch-and-execution/#c007',
+  c008: 'integrity/#c008',
+  c009: 'integrity/#c009',
   d001: 'naming-and-dependency/#d001',
   d002: 'naming-and-dependency/#d002',
   d003: 'naming-and-dependency/#d003',
@@ -22,6 +24,7 @@ export const RULE_PAGES = {
   p005: 'system/#declared-practice',
   p006: 'system/#declared-practice',
   p007: 'system/#declared-practice',
+  p008: 'system/#declared-practice',
   r001: 'fetch-and-execution/#r001',
   r002: 'fetch-and-execution/#r002',
   r003: 'obfuscation/#r003',
@@ -141,6 +144,14 @@ export const RULE_PAGES = {
   r141: 'maintainer-and-metadata/#r141',
   r142: 'integrity/#r142',
   r143: 'maintainer-and-metadata/#r143',
+  r144: 'install-and-persist/#r144',
+  r145: 'install-and-persist/#r145',
+  r146: 'fetch-and-execution/#r146',
+  r147: 'integrity/#r147',
+  r148: 'integrity/#r148',
+  r149: 'install-and-persist/#r149',
+  r150: 'fetch-and-execution/#r150',
+  r151: 'install-and-persist/#r151',
   s001: 'sabotage/#s001',
   s002: 'sabotage/#s002',
   s003: 'sabotage/#s003',
@@ -149,6 +160,12 @@ export const RULE_PAGES = {
   s006: 'sabotage/#s006',
   s007: 'sabotage/#s007',
   s008: 'sabotage/#s008',
+  w001: 'unverifiable/#w001',
+  w002: 'unverifiable/#w002',
+  w003: 'unverifiable/#w003',
+  w004: 'unverifiable/#w004',
+  w005: 'unverifiable/#w005',
+  w006: 'unverifiable/#w006',
   x001: 'crossfire/#x001',
   x002: 'crossfire/#x002',
   x003: 'crossfire/#x003',
@@ -156,6 +173,22 @@ export const RULE_PAGES = {
   x005: 'crossfire/#x005',
   x006: 'crossfire/#x006',
   x007: 'crossfire/#x007',
+  x008: 'crossfire/#x008',
+  x009: 'crossfire/#x009',
+  x010: 'crossfire/#x010',
+  x011: 'crossfire/#x011',
+  x012: 'crossfire/#x012',
+  x013: 'crossfire/#x013',
+  x014: 'crossfire/#x014',
+  x015: 'crossfire/#x015',
+  x016: 'crossfire/#x016',
+  x017: 'crossfire/#x017',
+  x018: 'crossfire/#x018',
+  x019: 'crossfire/#x019',
+  x020: 'crossfire/#x020',
+  x021: 'crossfire/#x021',
+  x022: 'crossfire/#x022',
+  x023: 'crossfire/#x023',
 }
 
 export function ruleHref(id, base) {
@@ -180,7 +213,7 @@ function rangeIds(a, b) {
    in the range lives on it, or per-rule links when the range crosses pages.
    Single ids link straight to their anchor. Everything else passes through. */
 export function linkRules(html, base) {
-  return html.replace(/([RCDSXP]\d{3})–([RCDSXP]\d{3})|([RCDSXP]\d{3})/g, (m, ra, rb, single) => {
+  return html.replace(/([RCDSXPW]\d{3})–([RCDSXPW]\d{3})|([RCDSXPW]\d{3})/g, (m, ra, rb, single) => {
     if (ra && rb) {
       const ids = rangeIds(ra, rb)
       if (!ids) return m
