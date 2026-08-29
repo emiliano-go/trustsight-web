@@ -203,14 +203,14 @@ const tiers = [
 
 const nsCategories = {
   r: [
-    ['Fetch and Execution', 'fetch-and-execution', 35],
-    ['Integrity and Verification', 'integrity', 19],
+    ['Fetch and Execution', 'fetch-and-execution', 36],
+    ['Integrity and Verification', 'integrity', 26],
     ['Install and Persistence', 'install-and-persist', 17],
     ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
     ['Obfuscation', 'obfuscation', 8],
     ['Staging and Reconnaissance', 'staging-and-recon', 8],
     ['Corpus Behavioral', 'corpus-behavioral', 7],
-    ['Naming and Dependencies', 'naming-and-dependency', 6],
+    ['Naming and Dependencies', 'naming-and-dependency', 10],
     ['Deception and Anti-Analysis', 'deception', 5],
     ['Count-Based', 'count-based', 5],
     ['Temporal Context', 'temporal', 3],
@@ -274,7 +274,7 @@ const namespaces = [
   {
     letter: 'P',
     name: 'Declared practice',
-    count: '8 findings, weight 0',
+    count: '7 findings, weight 0',
     blurb: 'What the recipe declares, not what the analysis found. These findings read the claims a PKGBUILD makes about itself: checksums declared for every non-VCS source, validpgpkeys present, signatures sourced, sources pinned to a commit hash or tag, downloads over HTTPS, or a branch/unpinned ref tracked. Every one is INFO and checkable by the reader against the file itself. They are reported, never credited: a signal an attacker can assert for free must not move a score.',
     cats: [
       ['Checksums declared for all non-VCS sources (P001)', 'system/#declared-practice', null],
@@ -552,7 +552,7 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>1,535 tests across 43 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>3,617 tests across 57 files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -593,7 +593,7 @@ export function App() {
         {/* 9 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">185 documented rules, in seven namespaces</h2>
+          <h2 id="rules">184 documented rules, in seven namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published

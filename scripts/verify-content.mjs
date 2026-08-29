@@ -8,7 +8,7 @@ const files = {
 
 const checks = [
   ['license metadata uses the current default branch', files.index.includes('trustsight/blob/master/LICENSE')],
-  ['current test count is documented', files.app.includes('1,535 tests across 43 files')],
+  ['current test count is documented', files.app.includes('3,617 tests across 57 files')],
   ['gate suites are described without stale gate counts', files.app.includes('separate security and calibration gate suites')],
   ['old test count is absent', !files.app.includes('2,473 tests')],
   ['old gate counts are absent', !files.app.includes('65 security gates') && !files.app.includes('10 calibration gates')],
