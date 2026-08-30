@@ -432,6 +432,7 @@ main > .section:nth-child(n + 2) {
 .masthead-install {
   margin-top: 46px;
   max-width: 720px;
+  container-type: inline-size;
 }
 
 .masthead-links {
@@ -450,7 +451,8 @@ main > .section:nth-child(n + 2) {
 
 .install-command {
   display: block;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   border: 1px solid var(--rule);
@@ -458,7 +460,7 @@ main > .section:nth-child(n + 2) {
   background: color-mix(in srgb, var(--bg) 60%, var(--fg) 4%);
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: 0.7941rem;
+  font-size: min(0.7941rem, calc(100cqi / 42));
   line-height: 1.8;
   text-align: left;
   transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
@@ -501,8 +503,7 @@ main > .section:nth-child(n + 2) {
 
 .install-command .cmd-line {
   display: block;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  white-space: pre;
 }
 
 .install-command .dollar {
@@ -644,15 +645,14 @@ main > .section:nth-child(n + 2) {
 
 .plate {
   margin: 48px auto 0;
-  max-width: 780px;
+  max-width: 100%;
+  container-type: inline-size;
 }
 
 .plate__scroll {
   /* The border wraps the terminal output exactly, centered in the plate. */
   width: fit-content;
-  max-width: 100%;
   margin: 0 auto;
-  overflow-x: auto;
   border: 1px solid var(--plate-frame);
   border-radius: 8px;
   background: var(--plate-bg);
@@ -669,7 +669,7 @@ main > .section:nth-child(n + 2) {
   padding: 0 22px;
   color: var(--plate-fg);
   font-family: var(--font-mono);
-  font-size: 0.7647rem;
+  font-size: min(0.7647rem, calc(100cqi / 52));
   line-height: 1.62;
   white-space: pre;
   font-feature-settings: "liga" 0, "calt" 0;
@@ -976,7 +976,7 @@ main > .section:nth-child(n + 2) {
 
 .install-block {
   margin: 40px 0 0;
-  max-width: 720px;
+  container-type: inline-size;
 }
 
 .install-block pre {
@@ -987,9 +987,10 @@ main > .section:nth-child(n + 2) {
   background: color-mix(in srgb, var(--bg) 60%, var(--fg) 4%);
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: 0.7941rem;
+  font-size: min(0.7941rem, calc(100cqi / 44));
   line-height: 1.8;
-  overflow-x: auto;
+  width: fit-content;
+  max-width: 100%;
   white-space: pre;
 }
 
