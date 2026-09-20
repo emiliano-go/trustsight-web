@@ -1,9 +1,9 @@
-// CSP hash drift gate — the same instinct as the project's own calibration
+// CSP hash drift gate: the same instinct as the project's own calibration
 // gates: a claim without a check is a claim this project does not make.
 //
 // index.html carries one inline <script> (the no-flash theme bootstrap).
 // Its sha256 hash is pinned in public/_headers. If either side changes, the
-// page breaks silently under the CSP — so this script fails the build.
+// page breaks silently under the CSP, so this script fails the build.
 //
 //   node scripts/verify-csp.mjs
 

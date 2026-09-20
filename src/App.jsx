@@ -203,14 +203,14 @@ const tiers = [
 
 const nsCategories = {
   r: [
-    ['Fetch and Execution', 'fetch-and-execution', 36],
-    ['Integrity and Verification', 'integrity', 26],
+    ['Fetch and Execution', 'fetch-and-execution', 35],
+    ['Integrity and Verification', 'integrity', 25],
     ['Install and Persistence', 'install-and-persist', 17],
     ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
     ['Obfuscation', 'obfuscation', 8],
     ['Staging and Reconnaissance', 'staging-and-recon', 8],
     ['Corpus Behavioral', 'corpus-behavioral', 7],
-    ['Naming and Dependencies', 'naming-and-dependency', 10],
+    ['Naming and Dependencies', 'naming-and-dependency', 6],
     ['Deception and Anti-Analysis', 'deception', 5],
     ['Count-Based', 'count-based', 5],
     ['Temporal Context', 'temporal', 3],
@@ -231,7 +231,7 @@ const nsCategories = {
     ['Unverifiable', 'unverifiable', 6],
   ],
   x: [
-    ['Crossfire', 'crossfire', 23],
+    ['Crossfire', 'crossfire', 25],
   ],
 }
 
@@ -239,8 +239,8 @@ const namespaces = [
   {
     letter: 'R',
     name: 'Detection rules',
-    count: '127 rules',
-    blurb: '127 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
+    count: '133 rules',
+    blurb: '133 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
     cats: nsCategories.r,
   },
   {
@@ -267,7 +267,7 @@ const namespaces = [
   {
     letter: 'X',
     name: 'Crossfire rules',
-    count: '23 rules',
+    count: '25 rules',
     blurb: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, command substitution and other tokenizer-defeating shapes assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
     cats: nsCategories.x,
   },
@@ -552,7 +552,7 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>3,617 tests across 57 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>4,010 tests across 84 files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -560,6 +560,14 @@ export function App() {
               a rule that fires on a third of ordinary updates is not a signal. The rules are checked
               against their documentation on every test run, so a documented pattern cannot drift from the
               one that runs.
+            </p>
+            <p>
+              <strong>Isolation.</strong> The tokenizer that resolves shell variables is the one place a
+              crafted PKGBUILD can amplify (a chain of <code>b=$a$a</code> assignments doubles per level),
+              so it runs in a separate, resource-capped process: no inherited descriptors, a hard memory
+              ceiling, and a wall-clock timeout. The analysis process reads the result as data and never
+              parses that text itself. If the child cannot answer, the package is reported as not vetted
+              rather than analysed without it, so a failed parser can never read as a clean diff.
             </p>
             <p>
               <strong>Configuration.</strong> The rules live in <code>~/.config/trustsight/rules.toml</code> and
@@ -593,7 +601,7 @@ export function App() {
         {/* 9 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">184 documented rules, in seven namespaces</h2>
+          <h2 id="rules">192 documented rules, in seven namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published
