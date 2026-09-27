@@ -12,6 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # The rules-map gate derives src/rules.js from the trustsight catalog,
+      # so it needs that checkout beside this one. Without it `npm run build`
+      # cannot import trustsight and the whole build fails.
+      - uses: actions/checkout@v4
+        with:
+          repository: emiliano-go/trustsight
+          ref: master
+          path: trustsight
+      - name: Point the rules-map gate at the trustsight catalog
+        run: echo "TRUSTSIGHT_SRC=$GITHUB_WORKSPACE/trustsight/src" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
