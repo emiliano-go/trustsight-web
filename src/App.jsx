@@ -181,7 +181,7 @@ const detects = [
   { attack: 'Package-name typosquatting (<code>libuvc</code> resembling <code>libuv</code>)', how: 'Edit-distance comparison against more popular packages in the seed database (R074).' },
   { attack: 'A risky AUR dependency (novel, typosquatted, or hijacked)', how: 'Walks AUR dependencies to a configurable depth (default: direct ones; <code>--depth</code> to go further) and analyses each as a package in its own right: novel (D001), typosquatted (D002), network-using makedepends (D003), and provides hijacks (D004).' },
   { attack: 'Source URL swapped without a version bump', how: 'Tracks source URL changes that do not come with a new version (C003).' },
-  { attack: 'Novel, never-before-seen URLs or maintainers', how: 'Compares against the signed release seed: about 180,000 known source URLs and 35,587 hashed maintainer identities, in the novelty tier.' },
+  { attack: 'Novel, never-before-seen URLs or maintainers', how: 'Compares against the signed release seed: 185,902 known source URLs, 36,912 hashed maintainer identities and 215,504 dependency names, in the novelty tier.' },
   { attack: 'Known-bad indicators', how: 'Matches package URLs and strings against signed, federated IOC baselines; reported outside the heuristic score (IOC tier).' },
   { attack: 'Unicode bidi override attacks (invisible characters that change how text displays)', how: 'Detects directionality overrides and homoglyph codepoints in PKGBUILD content (R013, FATAL).' },
   { attack: 'Prompt injection in package metadata', how: 'Pattern-matches common injection templates; the primary defence is structural (R012).' },
@@ -203,7 +203,7 @@ const tiers = [
 
 const nsCategories = {
   r: [
-    ['Fetch and Execution', 'fetch-and-execution', 35],
+    ['Fetch and Execution', 'fetch-and-execution', 36],
     ['Integrity and Verification', 'integrity', 25],
     ['Install and Persistence', 'install-and-persist', 17],
     ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
@@ -217,9 +217,10 @@ const nsCategories = {
     ['Composition', 'composition', 2],
   ],
   c: [
-    ['Integrity and Verification', 'integrity', 7],
+    ['Integrity and Verification', 'integrity', 10],
     ['Maintainer and Metadata', 'maintainer-and-metadata', 1],
     ['Fetch and Execution', 'fetch-and-execution', 1],
+    ['Deception and Anti-Analysis', 'deception', 1],
   ],
   d: [
     ['Naming and Dependencies', 'naming-and-dependency', 4],
@@ -239,15 +240,15 @@ const namespaces = [
   {
     letter: 'R',
     name: 'Detection rules',
-    count: '133 rules',
-    blurb: '133 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
+    count: '134 rules',
+    blurb: '134 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
     cats: nsCategories.r,
   },
   {
     letter: 'C',
     name: 'Structural rules',
-    count: '9 rules',
-    blurb: 'Nine context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, metadata, and fetch facts.',
+    count: '13 rules',
+    blurb: 'Thirteen context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, metadata, and fetch facts.',
     cats: nsCategories.c,
   },
   {
@@ -322,11 +323,11 @@ const faqs = [
   },
   {
     q: 'Why is my package flagged when the update looks normal?',
-    a: <>About 13% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
+    a: <>About 8% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
   },
   {
     q: 'How does novelty detection work before I have any history?',
-    a: <>The first run imports a signed seed of about 180,000 normalised source URLs and 35,587 hashed maintainer identities, verified against a key pinned in the package. Novelty signals are maturity-gated: they scale with your own observation count (<code>observation_count / 50</code>), so a cold database contributes nothing and your own reviews take over as history accumulates.</>,
+    a: <>The first run imports a signed seed of 185,902 normalised source URLs, 36,912 hashed maintainer identities and 215,504 dependency names, verified against a key pinned in the package. Novelty signals are maturity-gated: they scale with your own observation count (<code>observation_count / 50</code>), so a cold database contributes nothing and your own reviews take over as history accumulates.</>,
   },
   {
     q: 'Does TrustSight phone home?',
@@ -510,13 +511,13 @@ export function App() {
           <h2 id="calibration">The weights are measured, not asserted</h2>
           <div className="prose">
             <p>
-              Against the locked 3,739-diff benign corpus, <strong>68.3%</strong> of benign diffs score 0.
-              Benign diffs reach a 95th percentile of <strong>35</strong>; the CRITICAL-class corpus has a
+              Against the locked 3,739-diff benign corpus, <strong>70.3%</strong> of benign diffs score 0.
+              Benign diffs reach a 95th percentile of <strong>30</strong>; the CRITICAL-class corpus has a
               5th percentile of <strong>60</strong>. The 20-point threshold is not the benign p95; it sits
-              at the 86.9th percentile, so about 13% of benign diffs land above it. What matters is that
+              at the 92.1th percentile, so about 8% of benign diffs land above it. What matters is that
               the two distributions do not overlap.
             </p>
-          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 35. Malicious diffs start at a 5th percentile of 60. The 25-point margin between them is enforced by CI.">
+          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 30. Malicious diffs start at a 5th percentile of 60. The 30-point margin between them is enforced by CI.">
             <div className="gauge__inner">
               <div className="gauge__track">
                 <span className="gauge__mark gauge__mark--threshold">
@@ -525,7 +526,7 @@ export function App() {
                 </span>
                 <span className="gauge__mark gauge__mark--benign">
                   <span className="gauge__tick" />
-                  <span className="gauge__label">benign p95 · 35</span>
+                  <span className="gauge__label">benign p95 · 30</span>
                 </span>
                 <span className="gauge__mark gauge__mark--malicious">
                   <span className="gauge__tick" />
@@ -533,7 +534,7 @@ export function App() {
                 </span>
               </div>
               <div className="gauge__ends"><span>0</span><span>100</span></div>
-              <div className="gauge__sep">25-point margin, gated</div>
+              <div className="gauge__sep">30-point margin, gated</div>
             </div>
           </div>
           <div className="prose push">
@@ -552,7 +553,7 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>4,010 tests across 84 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>4,233 tests across 85 files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -601,7 +602,7 @@ export function App() {
         {/* 9 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">192 documented rules, in seven namespaces</h2>
+          <h2 id="rules">197 documented rules, in seven namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published
@@ -630,7 +631,7 @@ export function App() {
           </div>
           <div className="prose push">
             <p>
-              Counts are per the generated rules index; the 14 category pages are closed, so every rule
+              Counts are per the generated rules index; the 15 category pages are closed, so every rule
               has exactly one page. <code>trustsight lint-rules</code> checks the shipped rules against
               their documentation on every test run. The rule files themselves are part of the open
               source repository: read a pattern, change a severity, or rebuild the tool, and nothing
@@ -657,7 +658,8 @@ export function App() {
               Novelty detection needs a baseline of what is normal in the AUR. On an empty database
               every URL looks first-seen and every maintainer looks new, which turns the novelty signal
               into noise. So the tool ships a seed of prior knowledge built from the AUR git mirror:
-              about 180,000 normalised source URLs and salted hashes of maintainer identities. It is
+              185,902 normalised source URLs, 215,504 dependency names and salted hashes of 36,912
+              maintainer identities. It is
               published as a signed release asset rather than shipped inside the package, because the
               AUR is exactly the channel under review. The first time you run{' '}
               <code>trustsight review</code>, the tool downloads the seed and imports it only after its
