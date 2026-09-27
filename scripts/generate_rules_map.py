@@ -25,6 +25,7 @@ Needs the trustsight package importable: it is found beside this checkout
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -32,6 +33,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "rules.js"
+FIGS_OUT = ROOT / "src" / "figures.generated.json"
 
 #: Ids documented under a `<id>-rule` anchor rather than a bare `<id>`,
 #: because `system.md` already owns the bare anchor as a cross-reference
@@ -100,6 +102,75 @@ def render(current: str) -> str:
     return f"{head}{MARK_START}\n{build_block()}\n{MARK_END}{tail}"
 
 
+def build_figures() -> dict:
+    """Every published number the site shows, derived from the catalog.
+
+    Rule and category counts come from ``trustsight.categories``; the seed,
+    suite and calibration figures come from the trustSight repository's
+    ``tests/fixtures/published-figures.json``, which its own tests keep
+    measured.  Nothing here is hand-typed, so the site cannot quote a number
+    the tool does not hold.
+    """
+    rule_categories, category_of, declared = _import_trustsight()
+    import trustsight
+
+    repo_root = Path(trustsight.__file__).resolve().parents[2]
+    published = json.loads(
+        (repo_root / "tests" / "fixtures" / "published-figures.json").read_text()
+    )
+
+    titles = {category.value: category.title for category in set(rule_categories.values())}
+
+    def _by_slug(letters: str) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for rule_id in rule_categories:
+            if rule_id[0].upper() in letters:
+                slug = category_of(rule_id).doc_page.removesuffix(".md")
+                counts[slug] = counts.get(slug, 0) + 1
+        return counts
+
+    def _namespace(letters: str, unit: str = "rules") -> dict:
+        counts = _by_slug(letters)
+        total = sum(counts.values())
+        return {
+            "count_label": f"{total} {unit}",
+            "total": total,
+            "categories": [
+                [titles[slug], slug, count]
+                for slug, count in sorted(counts.items(), key=lambda kv: -kv[1])
+            ],
+        }
+
+    namespaces = {
+        "detection": _namespace("HR"),
+        "structural": _namespace("C"),
+        "dependency_graph": _namespace("D"),
+        "sabotage": _namespace("S"),
+        "crossfire": _namespace("X"),
+        "unverifiable": _namespace("W", unit="findings, weight 0"),
+    }
+    namespaces["declared_practice"] = {
+        "count_label": f"{len(declared)} findings, weight 0",
+        "total": len(declared),
+        "categories": [],
+    }
+
+    return {
+        "namespaces": namespaces,
+        "total_rules": len(rule_categories) + len(declared),
+        "category_pages": len(
+            {category.doc_page for category in rule_categories.values()}
+        ),
+        "tests": published["tests"],
+        "seed": published["seed"],
+        "calibration": published["calibration"],
+    }
+
+
+def _render_figures() -> str:
+    return json.dumps(build_figures(), indent=2) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--check", action="store_true",
@@ -108,9 +179,12 @@ def main(argv: list[str] | None = None) -> int:
 
     current = OUT.read_text() if OUT.exists() else ""
     generated = render(current)
+    figures = _render_figures()
 
     if args.check:
-        if current != generated:
+        rules_stale = current != generated
+        figures_stale = not FIGS_OUT.exists() or FIGS_OUT.read_text() != figures
+        if rules_stale:
             have = set(re.findall(r"^\s*([a-z]\d{3}):", current, re.M))
             want = set(re.findall(r"^\s*([a-z]\d{3}):", generated, re.M))
             missing = sorted(want - have)
@@ -120,18 +194,27 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  missing rules: {', '.join(missing)}", file=sys.stderr)
             if stale:
                 print(f"  no longer shipped: {', '.join(stale)}", file=sys.stderr)
+        if figures_stale:
+            print(f"{FIGS_OUT.relative_to(ROOT)} is out of date.", file=sys.stderr)
+        if rules_stale or figures_stale:
             print("  run: python scripts/generate_rules_map.py", file=sys.stderr)
             return 1
         count = len(re.findall(r"^\s*[a-z]\d{3}:", generated, re.M))
-        print(f"rules.js is current ({count} rules)")
+        print(f"rules.js and figures.generated.json are current ({count} rules)")
         return 0
 
-    if current == generated:
-        print(f"{OUT.relative_to(ROOT)} already current")
+    changed = []
+    if current != generated:
+        OUT.write_text(generated)
+        changed.append(OUT.relative_to(ROOT))
+    if not FIGS_OUT.exists() or FIGS_OUT.read_text() != figures:
+        FIGS_OUT.write_text(figures)
+        changed.append(FIGS_OUT.relative_to(ROOT))
+    if not changed:
+        print("rules.js and figures.generated.json already current")
         return 0
-    OUT.write_text(generated)
     count = len(re.findall(r"^\s*[a-z]\d{3}:", generated, re.M))
-    print(f"wrote {OUT.relative_to(ROOT)} ({count} rules)")
+    print(f"wrote {', '.join(str(p) for p in changed)} ({count} rules)")
     return 0
 
 

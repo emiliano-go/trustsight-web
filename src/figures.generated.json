@@ -1,0 +1,168 @@
+{
+  "namespaces": {
+    "detection": {
+      "count_label": "134 rules",
+      "total": 134,
+      "categories": [
+        [
+          "Fetch and Execution",
+          "fetch-and-execution",
+          36
+        ],
+        [
+          "Integrity and Verification",
+          "integrity",
+          25
+        ],
+        [
+          "Install and Persistence",
+          "install-and-persist",
+          17
+        ],
+        [
+          "Maintainer and Metadata",
+          "maintainer-and-metadata",
+          12
+        ],
+        [
+          "Obfuscation",
+          "obfuscation",
+          8
+        ],
+        [
+          "Staging and Reconnaissance",
+          "staging-and-recon",
+          8
+        ],
+        [
+          "Corpus Behavioral",
+          "corpus-behavioral",
+          7
+        ],
+        [
+          "Naming and Dependencies",
+          "naming-and-dependency",
+          6
+        ],
+        [
+          "Deception and Anti-Analysis",
+          "deception",
+          5
+        ],
+        [
+          "Count-Based",
+          "count-based",
+          5
+        ],
+        [
+          "Temporal Context",
+          "temporal",
+          3
+        ],
+        [
+          "Composition",
+          "composition",
+          2
+        ]
+      ]
+    },
+    "structural": {
+      "count_label": "13 rules",
+      "total": 13,
+      "categories": [
+        [
+          "Integrity and Verification",
+          "integrity",
+          10
+        ],
+        [
+          "Fetch and Execution",
+          "fetch-and-execution",
+          1
+        ],
+        [
+          "Deception and Anti-Analysis",
+          "deception",
+          1
+        ],
+        [
+          "Maintainer and Metadata",
+          "maintainer-and-metadata",
+          1
+        ]
+      ]
+    },
+    "dependency_graph": {
+      "count_label": "4 rules",
+      "total": 4,
+      "categories": [
+        [
+          "Naming and Dependencies",
+          "naming-and-dependency",
+          4
+        ]
+      ]
+    },
+    "sabotage": {
+      "count_label": "8 rules",
+      "total": 8,
+      "categories": [
+        [
+          "Sabotage",
+          "sabotage",
+          8
+        ]
+      ]
+    },
+    "crossfire": {
+      "count_label": "25 rules",
+      "total": 25,
+      "categories": [
+        [
+          "Crossfire",
+          "crossfire",
+          25
+        ]
+      ]
+    },
+    "unverifiable": {
+      "count_label": "6 findings, weight 0",
+      "total": 6,
+      "categories": [
+        [
+          "Unverifiable",
+          "unverifiable",
+          6
+        ]
+      ]
+    },
+    "declared_practice": {
+      "count_label": "7 findings, weight 0",
+      "total": 7,
+      "categories": []
+    }
+  },
+  "total_rules": 197,
+  "category_pages": 15,
+  "tests": {
+    "count": 4240,
+    "files": 86
+  },
+  "seed": {
+    "source_urls": 185902,
+    "hashed_maintainers": 36912,
+    "dependency_names": 215504
+  },
+  "calibration": {
+    "labelled_fixtures": 179,
+    "corpus_diffs": 3739,
+    "benign_zero_rate_pct": 70.3,
+    "benign_p95": 30,
+    "malicious_p5": 60,
+    "malicious_minimum": 50,
+    "benign_above_threshold_pct": 7.9,
+    "threshold_percentile": 92.1,
+    "separation_margin": 30,
+    "ruleset_trigger_rate_pct": 29.7
+  }
+}
