@@ -214,7 +214,7 @@ const nsCategories = {
     ['Deception and Anti-Analysis', 'deception', 5],
     ['Count-Based', 'count-based', 5],
     ['Temporal Context', 'temporal', 3],
-    ['Composition', 'composition', 2],
+    ['Composition', 'composition', 3],
   ],
   c: [
     ['Integrity and Verification', 'integrity', 10],
@@ -240,8 +240,8 @@ const namespaces = [
   {
     letter: 'R',
     name: 'Detection rules',
-    count: '134 rules',
-    blurb: '134 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
+    count: '135 rules',
+    blurb: '135 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
     cats: nsCategories.r,
   },
   {
@@ -514,7 +514,7 @@ export function App() {
               Against the locked 3,739-diff benign corpus, <strong>70.3%</strong> of benign diffs score 0.
               Benign diffs reach a 95th percentile of <strong>30</strong>; the CRITICAL-class corpus has a
               5th percentile of <strong>60</strong>. The 20-point threshold is not the benign p95; it sits
-              at the 92.1th percentile, so about 8% of benign diffs land above it. What matters is that
+              at the 92.2th percentile, so about 8% of benign diffs land above it. What matters is that
               the two distributions do not overlap.
             </p>
           </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 30. Malicious diffs start at a 5th percentile of 60. The 30-point margin between them is enforced by CI.">
@@ -553,7 +553,7 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>4,240 tests across 86 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>4,381 tests across 90 files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -602,7 +602,7 @@ export function App() {
         {/* 9 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">197 documented rules, in seven namespaces</h2>
+          <h2 id="rules">198 documented rules, in seven namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published

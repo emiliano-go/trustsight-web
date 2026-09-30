@@ -1,8 +1,8 @@
 {
   "namespaces": {
     "detection": {
-      "count_label": "134 rules",
-      "total": 134,
+      "count_label": "135 rules",
+      "total": 135,
       "categories": [
         [
           "Fetch and Execution",
@@ -62,7 +62,7 @@
         [
           "Composition",
           "composition",
-          2
+          3
         ]
       ]
     },
@@ -142,11 +142,11 @@
       "categories": []
     }
   },
-  "total_rules": 197,
+  "total_rules": 198,
   "category_pages": 15,
   "tests": {
-    "count": 4240,
-    "files": 86
+    "count": 4381,
+    "files": 90
   },
   "seed": {
     "source_urls": 185902,
@@ -154,14 +154,14 @@
     "dependency_names": 215504
   },
   "calibration": {
-    "labelled_fixtures": 179,
+    "labelled_fixtures": 180,
     "corpus_diffs": 3739,
     "benign_zero_rate_pct": 70.3,
     "benign_p95": 30,
     "malicious_p5": 60,
     "malicious_minimum": 50,
-    "benign_above_threshold_pct": 7.9,
-    "threshold_percentile": 92.1,
+    "benign_above_threshold_pct": 7.8,
+    "threshold_percentile": 92.2,
     "separation_margin": 30,
     "ruleset_trigger_rate_pct": 29.7
   }

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run verify:csp && npm run verify:seo && npm run verify:rules && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server --emptyOutDir false && node scripts/prerender.mjs && node scripts/verify-prerender.mjs",
+    "build": "npm run verify:csp && npm run verify:seo && vite build && vite build --ssr src/entry-server.jsx --outDir dist/server --emptyOutDir false && node scripts/prerender.mjs && node scripts/verify-prerender.mjs",
     "preview": "vite preview",
     "generate:seo": "python scripts/generate_seo.py",
     "verify:seo": "python scripts/generate_seo.py --check",

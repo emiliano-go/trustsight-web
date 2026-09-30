@@ -120,6 +120,7 @@ export const RULE_PAGES = {
   h095: 'install-and-persist/#h095',
   h096: 'integrity/#h096',
   h097: 'integrity/#h097',
+  h098: 'composition/#h098',
   p001: 'system/#declared-practice',
   p002: 'system/#declared-practice',
   p003: 'system/#declared-practice',

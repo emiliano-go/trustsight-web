@@ -34,5 +34,10 @@ jobs:
       - run: npm ci
       - run: npm run verify:content
       - run: npm run verify:csp
+      # The rules-map gate needs the trustSight catalog checked out above, so it
+      # runs here rather than inside `npm run build`: Cloudflare Pages builds
+      # `npm run build` without the sibling checkout, and a deployable build
+      # must not depend on one.  This is the only place the gate is enforced.
+      - run: npm run verify:rules
       - run: npm run build
       - run: npm run verify:budget
