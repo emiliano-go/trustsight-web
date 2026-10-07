@@ -204,8 +204,8 @@ const tiers = [
 const nsCategories = {
   r: [
     ['Fetch and Execution', 'fetch-and-execution', 36],
-    ['Integrity and Verification', 'integrity', 25],
-    ['Install and Persistence', 'install-and-persist', 17],
+    ['Integrity and Verification', 'integrity', 28],
+    ['Install and Persistence', 'install-and-persist', 18],
     ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
     ['Obfuscation', 'obfuscation', 8],
     ['Staging and Reconnaissance', 'staging-and-recon', 8],
@@ -214,13 +214,16 @@ const nsCategories = {
     ['Deception and Anti-Analysis', 'deception', 5],
     ['Count-Based', 'count-based', 5],
     ['Temporal Context', 'temporal', 3],
-    ['Composition', 'composition', 3],
+    ['Composition', 'composition', 4],
   ],
   c: [
-    ['Integrity and Verification', 'integrity', 10],
-    ['Maintainer and Metadata', 'maintainer-and-metadata', 1],
-    ['Fetch and Execution', 'fetch-and-execution', 1],
+    ['Integrity and Verification', 'integrity', 14],
+    ['Fetch and Execution', 'fetch-and-execution', 3],
+    ['Composition', 'composition', 2],
     ['Deception and Anti-Analysis', 'deception', 1],
+    ['Install and Persistence', 'install-and-persist', 1],
+    ['Staging and Reconnaissance', 'staging-and-recon', 1],
+    ['Maintainer and Metadata', 'maintainer-and-metadata', 1],
   ],
   d: [
     ['Naming and Dependencies', 'naming-and-dependency', 4],
@@ -232,7 +235,7 @@ const nsCategories = {
     ['Unverifiable', 'unverifiable', 6],
   ],
   x: [
-    ['Crossfire', 'crossfire', 25],
+    ['Crossfire', 'crossfire', 31],
   ],
 }
 
@@ -240,15 +243,15 @@ const namespaces = [
   {
     letter: 'R',
     name: 'Detection rules',
-    count: '135 rules',
-    blurb: '135 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
+    count: '140 rules',
+    blurb: '140 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
     cats: nsCategories.r,
   },
   {
     letter: 'C',
     name: 'Structural rules',
-    count: '13 rules',
-    blurb: 'Thirteen context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, metadata, and fetch facts.',
+    count: '23 rules',
+    blurb: 'Twenty-three context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, metadata, and fetch facts.',
     cats: nsCategories.c,
   },
   {
@@ -268,7 +271,7 @@ const namespaces = [
   {
     letter: 'X',
     name: 'Crossfire rules',
-    count: '25 rules',
+    count: '31 rules',
     blurb: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, command substitution and other tokenizer-defeating shapes assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
     cats: nsCategories.x,
   },
@@ -323,7 +326,7 @@ const faqs = [
   },
   {
     q: 'Why is my package flagged when the update looks normal?',
-    a: <>About 8% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
+    a: <>About 9.5% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
   },
   {
     q: 'How does novelty detection work before I have any history?',
@@ -511,13 +514,13 @@ export function App() {
           <h2 id="calibration">The weights are measured, not asserted</h2>
           <div className="prose">
             <p>
-              Against the locked 3,739-diff benign corpus, <strong>70.3%</strong> of benign diffs score 0.
-              Benign diffs reach a 95th percentile of <strong>30</strong>; the CRITICAL-class corpus has a
+              Against the locked 3,739-diff benign corpus, <strong>68.4%</strong> of benign diffs score 0.
+              Benign diffs reach a 95th percentile of <strong>35</strong>; the CRITICAL-class corpus has a
               5th percentile of <strong>60</strong>. The 20-point threshold is not the benign p95; it sits
-              at the 92.2th percentile, so about 8% of benign diffs land above it. What matters is that
+              at the 90.5th percentile, so about 9.5% of benign diffs land above it. What matters is that
               the two distributions do not overlap.
             </p>
-          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 30. Malicious diffs start at a 5th percentile of 60. The 30-point margin between them is enforced by CI.">
+          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 35. Malicious diffs start at a 5th percentile of 60. The 25-point margin between them is enforced by CI.">
             <div className="gauge__inner">
               <div className="gauge__track">
                 <span className="gauge__mark gauge__mark--threshold">
@@ -526,7 +529,7 @@ export function App() {
                 </span>
                 <span className="gauge__mark gauge__mark--benign">
                   <span className="gauge__tick" />
-                  <span className="gauge__label">benign p95 · 30</span>
+                  <span className="gauge__label">benign p95 · 35</span>
                 </span>
                 <span className="gauge__mark gauge__mark--malicious">
                   <span className="gauge__tick" />
@@ -534,7 +537,7 @@ export function App() {
                 </span>
               </div>
               <div className="gauge__ends"><span>0</span><span>100</span></div>
-              <div className="gauge__sep">30-point margin, gated</div>
+              <div className="gauge__sep">25-point margin, gated</div>
             </div>
           </div>
           <div className="prose push">
@@ -553,7 +556,7 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>4,381 tests across 90 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>5,245 tests across 121 files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -602,7 +605,7 @@ export function App() {
         {/* 9 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">198 documented rules, in seven namespaces</h2>
+          <h2 id="rules">219 documented rules, in seven namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published

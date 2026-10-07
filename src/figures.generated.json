@@ -1,8 +1,8 @@
 {
   "namespaces": {
     "detection": {
-      "count_label": "135 rules",
-      "total": 135,
+      "count_label": "140 rules",
+      "total": 140,
       "categories": [
         [
           "Fetch and Execution",
@@ -12,12 +12,12 @@
         [
           "Integrity and Verification",
           "integrity",
-          25
+          28
         ],
         [
           "Install and Persistence",
           "install-and-persist",
-          17
+          18
         ],
         [
           "Maintainer and Metadata",
@@ -55,34 +55,49 @@
           5
         ],
         [
-          "Temporal Context",
-          "temporal",
-          3
-        ],
-        [
           "Composition",
           "composition",
+          4
+        ],
+        [
+          "Temporal Context",
+          "temporal",
           3
         ]
       ]
     },
     "structural": {
-      "count_label": "13 rules",
-      "total": 13,
+      "count_label": "23 rules",
+      "total": 23,
       "categories": [
         [
           "Integrity and Verification",
           "integrity",
-          10
+          14
         ],
         [
           "Fetch and Execution",
           "fetch-and-execution",
-          1
+          3
+        ],
+        [
+          "Composition",
+          "composition",
+          2
         ],
         [
           "Deception and Anti-Analysis",
           "deception",
+          1
+        ],
+        [
+          "Install and Persistence",
+          "install-and-persist",
+          1
+        ],
+        [
+          "Staging and Reconnaissance",
+          "staging-and-recon",
           1
         ],
         [
@@ -115,13 +130,13 @@
       ]
     },
     "crossfire": {
-      "count_label": "25 rules",
-      "total": 25,
+      "count_label": "31 rules",
+      "total": 31,
       "categories": [
         [
           "Crossfire",
           "crossfire",
-          25
+          31
         ]
       ]
     },
@@ -142,11 +157,11 @@
       "categories": []
     }
   },
-  "total_rules": 198,
+  "total_rules": 219,
   "category_pages": 15,
   "tests": {
-    "count": 4381,
-    "files": 90
+    "count": 5245,
+    "files": 121
   },
   "seed": {
     "source_urls": 185902,
@@ -154,15 +169,15 @@
     "dependency_names": 215504
   },
   "calibration": {
-    "labelled_fixtures": 180,
+    "labelled_fixtures": 195,
     "corpus_diffs": 3739,
-    "benign_zero_rate_pct": 70.3,
-    "benign_p95": 30,
+    "benign_zero_rate_pct": 68.4,
+    "benign_p95": 35,
     "malicious_p5": 60,
     "malicious_minimum": 50,
-    "benign_above_threshold_pct": 7.8,
-    "threshold_percentile": 92.2,
-    "separation_margin": 30,
-    "ruleset_trigger_rate_pct": 29.7
+    "benign_above_threshold_pct": 9.5,
+    "threshold_percentile": 90.5,
+    "separation_margin": 25,
+    "ruleset_trigger_rate_pct": 31.6
   }
 }
