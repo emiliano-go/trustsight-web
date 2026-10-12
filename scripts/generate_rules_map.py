@@ -39,9 +39,10 @@ FIGS_OUT = ROOT / "src" / "figures.generated.json"
 #: because `system.md` already owns the bare anchor as a cross-reference
 #: stub. Only the fragment is special: the *page* always comes from the
 #: catalog, because hardcoding it here is how this map gets a rule's page
-#: wrong when the rule is recategorised. R075 moved to `count-based` and a
-#: hand-written page would still be pointing at `naming-and-dependency`.
-_RULE_SUFFIX_ANCHORS = {"r074", "r075"}
+#: wrong when the rule is recategorised. H030 was once R075, filed under
+#: `naming-and-dependency`; its page moved to `count-based` and a hand-written
+#: page would still be pointing at the old one.
+_RULE_SUFFIX_ANCHORS = {"h029", "h030"}
 _DECLARED_ANCHOR = "system/#declared-practice"
 
 
@@ -147,6 +148,12 @@ def build_figures() -> dict:
         "dependency_graph": _namespace("D"),
         "sabotage": _namespace("S"),
         "crossfire": _namespace("X"),
+        "meta": _namespace("M"),
+        "entropy": _namespace("E"),
+        "temporal": _namespace("T"),
+        "correlation": _namespace("G"),
+        "artifact": _namespace("A"),
+        "upstream_manifests": _namespace("U"),
         "unverifiable": _namespace("W", unit="findings, weight 0"),
     }
     namespaces["declared_practice"] = {
@@ -157,6 +164,7 @@ def build_figures() -> dict:
 
     return {
         "namespaces": namespaces,
+        "namespace_count": len(namespaces),
         "total_rules": len(rule_categories) + len(declared),
         "category_pages": len(
             {category.doc_page for category in rule_categories.values()}

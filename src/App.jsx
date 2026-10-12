@@ -20,7 +20,7 @@ function Plate({ label, lines, caption }) {
   )
 }
 
-const TAG_RE = /\[(?:[RCDSPXW]\d{3}|SOURCE_BUCKET)\]/g
+const TAG_RE = /\[(?:[RHCDSXWPMETGAUI]\d{3}|SOURCE_BUCKET)\]/g
 
 /* A dependency mini-card sits inside its parent panel: outer border, then an
    indent, then the card's box border. The card is flagged, so its border
@@ -174,31 +174,32 @@ const principles = [
 ]
 
 const detects = [
-  { attack: 'Piped shell scripts (<code>curl | bash</code>, <code>base64 | sh</code>)', how: 'Scans every new or changed line for command-to-shell pipelines (R001).' },
-  { attack: 'Obfuscated commands (encoded strings, <code>LD_PRELOAD</code> environment subversion)', how: 'Resolves variables, decodes known encodings, and flags build-environment tampering (R003, R070).' },
-  { attack: 'Checksum disabled or removed', how: 'Compares the old and new <code>sha256sums</code> / <code>md5sums</code> arrays (R004, R005).' },
-  { attack: 'Source URL typosquatting (<code>githab.com</code> for <code>github.com</code>)', how: 'The source-bucket prior classifies every new URL; a domain written with confusable characters is labelled <code>homograph_attack</code> (+30). A prior, not a rule.' },
-  { attack: 'Package-name typosquatting (<code>libuvc</code> resembling <code>libuv</code>)', how: 'Edit-distance comparison against more popular packages in the seed database (R074).' },
-  { attack: 'A risky AUR dependency (novel, typosquatted, or hijacked)', how: 'Walks AUR dependencies to a configurable depth (default: direct ones; <code>--depth</code> to go further) and analyses each as a package in its own right: novel (D001), typosquatted (D002), network-using makedepends (D003), and provides hijacks (D004).' },
+  { attack: 'Piped shell scripts (<code>curl | bash</code>, <code>base64 | sh</code>)', how: 'Scans every new or changed line for command-subprocess pipelines (R001); about 100% recall on known cases.' },
+  { attack: 'Obfuscated commands (encoded strings, environment subversion like <code>LD_PRELOAD</code>)', how: 'Resolves variables and decodes known obfuscation patterns; flags build-environment tampering (H025, H036).' },
+  { attack: 'Checksum disabled or removed', how: 'Compares the old and new <code>sha256sums</code> / <code>md5sums</code> arrays (H001, H002).' },
+  { attack: 'Source URL typosquatting (<code>githab.com</code> for <code>github.com</code>)', how: 'Character-level edit distance against known forge domains (the confusable-domain pipeline). A prior, not a rule.' },
+  { attack: 'Package-name typosquatting (<code>libuvc</code> resembling <code>libuv</code>)', how: 'Edit-distance comparison against more popular packages in the seed database (H029).' },
   { attack: 'Source URL swapped without a version bump', how: 'Tracks source URL changes that do not come with a new version (C003).' },
   { attack: 'Novel, never-before-seen URLs or maintainers', how: 'Compares against the signed release seed: 185,902 known source URLs, 36,912 hashed maintainer identities and 215,504 dependency names, in the novelty tier.' },
-  { attack: 'Known-bad indicators', how: 'Matches package URLs and strings against signed, federated IOC baselines; reported outside the heuristic score (IOC tier).' },
+  { attack: 'Known-bad indicators', how: 'Matches package URLs and strings against signed, federated IOC baselines; reported in the IOC tier, outside the heuristic score.' },
   { attack: 'Unicode bidi override attacks (invisible characters that change how text displays)', how: 'Detects directionality overrides and homoglyph codepoints in PKGBUILD content (R013, FATAL).' },
-  { attack: 'Prompt injection in package metadata', how: 'Pattern-matches common injection templates; the primary defence is structural (R012).' },
-  { attack: 'GPG verification removed', how: 'Detects when <code>validpgpkeys</code> was populated and is now empty (R069).' },
-  { attack: 'Untrusted maintainer takeover', how: 'A maintainer change to someone never seen before (R071).' },
-  { attack: 'A stale package suddenly revived', how: 'A package with no updates for over a year suddenly gets one (R067).' },
-  { attack: 'Sabotage payloads (fork bombs, <code>rm -rf /</code>, disk wiping, coin miners)', how: 'Command-position matching separates build-sandbox housekeeping (<code>rm -rf "$srcdir/x"</code>) from system damage (S001–S008).' },
-  { attack: 'Orphan hijacking (adopted from orphan, then rewritten with no upstream change)', how: 'The maintainer field against its last recorded state, plus a recipe-only-change signature (R141–R143).' },
+  { attack: 'Reviewer-directed instruction templates in package metadata', how: 'Flags common reviewer-manipulation templates as a high-severity tripwire (R012); a match requires review, not an inference about author intent.' },
+  { attack: 'GPG verification removed', how: 'Detects when <code>validpgpkeys</code> was populated and is now empty (H024).' },
+  { attack: 'Untrusted maintainer takeover', how: 'A maintainer change to someone never seen before (H026).' },
+  { attack: 'A stale package suddenly revived', how: 'A package with no updates for over a year suddenly gets one (H022).' },
+  { attack: 'Accelerated release cadence', how: 'Three or more commits in the last 24 hours (H028, informational).' },
+  { attack: 'Sabotage payloads (fork bombs, <code>rm -rf /</code>, disk wiping, permission sabotage, service disruption, coin miners, log wiping)', how: 'Command-position matching separates build-sandbox housekeeping (<code>rm -rf "$srcdir/x"</code>) from system damage (S001-S008).' },
+  { attack: 'Orphan hijacking (adopted from orphan, then rewritten with no upstream change)', how: 'The maintainer field against its last recorded state, plus a recipe-only-change signature and the composition with an unpinned build fetch (H086-H088).' },
   { attack: 'Build steps that fetch unpinned code (<code>npm install</code> in a build function)', how: 'Not scored. Reported as the <code>unpinned_build_deps</code> coverage gap and as <code>W002</code>, because what the build will run is not in the analysed text and no checksum covers it.' },
+  { attack: 'A risky AUR dependency (novel, typosquatted, or hijacked)', how: 'Walks AUR dependencies to a configurable depth (default: direct ones; <code>--depth</code> to go further) and analyses each as a package in its own right: novel (D001), typosquatted (D002), network-using makedepends (D003), and provides hijacks (D004).' },
 ]
 
 const tiers = [
   { tier: 'A: Structural', what: 'Direct structural facts from the diff.', example: '<code>curl | bash</code> (R001); checksum set to SKIP (R004)', weight: 'The strongest evidence' },
   { tier: 'B: Priors / Context', what: 'Source-bucket classification of every new URL.', example: 'an unknown domain adds weight', weight: 'Moderate: a prior, not proof' },
   { tier: 'C: History / Novelty', what: 'First-seen history for URLs and maintainers, maturity-gated.', example: 'URL first seen globally; maintainer first seen', weight: 'Scales with observation history' },
-  { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: 'P001–P008', weight: '0: reported, never scored' },
-  { tier: 'Reported, not scored', what: 'Analysis boundaries: bytes the package will run that this run could not read.', example: 'W001–W006', weight: '0: always shown' },
+  { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: 'P001-P008', weight: '0: reported, never scored' },
+  { tier: 'Reported, not scored', what: 'Analysis boundaries: bytes the package will run that this run could not read.', example: 'W001-W009', weight: '0: always shown' },
 ]
 
 const nsCategories = {
@@ -209,21 +210,22 @@ const nsCategories = {
     ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
     ['Obfuscation', 'obfuscation', 8],
     ['Staging and Reconnaissance', 'staging-and-recon', 8],
-    ['Corpus Behavioral', 'corpus-behavioral', 7],
     ['Naming and Dependencies', 'naming-and-dependency', 6],
+    ['Corpus Behavioral', 'corpus-behavioral', 6],
     ['Deception and Anti-Analysis', 'deception', 5],
     ['Count-Based', 'count-based', 5],
-    ['Temporal Context', 'temporal', 3],
     ['Composition', 'composition', 4],
+    ['Temporal Context', 'temporal', 3],
+    ['Indicators', 'indicator', 1],
   ],
   c: [
-    ['Integrity and Verification', 'integrity', 14],
+    ['Integrity and Verification', 'integrity', 18],
     ['Fetch and Execution', 'fetch-and-execution', 3],
+    ['Install and Persistence', 'install-and-persist', 3],
     ['Composition', 'composition', 2],
+    ['Staging and Reconnaissance', 'staging-and-recon', 2],
+    ['Maintainer and Metadata', 'maintainer-and-metadata', 2],
     ['Deception and Anti-Analysis', 'deception', 1],
-    ['Install and Persistence', 'install-and-persist', 1],
-    ['Staging and Reconnaissance', 'staging-and-recon', 1],
-    ['Maintainer and Metadata', 'maintainer-and-metadata', 1],
   ],
   d: [
     ['Naming and Dependencies', 'naming-and-dependency', 4],
@@ -231,11 +233,29 @@ const nsCategories = {
   s: [
     ['Sabotage', 'sabotage', 8],
   ],
+  m: [
+    ['Meta and Confluence', 'meta', 3],
+  ],
+  e: [
+    ['Entropy', 'entropy', 3],
+  ],
+  t: [
+    ['Temporal Context', 'temporal', 3],
+  ],
+  g: [
+    ['Correlation', 'correlation', 4],
+  ],
+  a: [
+    ['Artifact', 'artifact', 8],
+  ],
+  u: [
+    ['Upstream Manifests', 'upstream-manifests', 5],
+  ],
   w: [
-    ['Unverifiable', 'unverifiable', 6],
+    ['Unverifiable', 'unverifiable', 9],
   ],
   x: [
-    ['Crossfire', 'crossfire', 31],
+    ['Crossfire', 'crossfire', 33],
   ],
 }
 
@@ -244,14 +264,14 @@ const namespaces = [
     letter: 'R',
     name: 'Detection rules',
     count: '140 rules',
-    blurb: '140 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, and temporal context, and every match is reported with the line or URL it fired on.',
+    blurb: '140 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, temporal context, composition, and indicators, and every match is reported with the line or URL it fired on.',
     cats: nsCategories.r,
   },
   {
     letter: 'C',
     name: 'Structural rules',
-    count: '23 rules',
-    blurb: 'Twenty-three context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, metadata, and fetch facts.',
+    count: '31 rules',
+    blurb: 'Thirty-one context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, install and persistence, fetch, composition, staging, metadata, and deception.',
     cats: nsCategories.c,
   },
   {
@@ -271,9 +291,51 @@ const namespaces = [
   {
     letter: 'X',
     name: 'Crossfire rules',
-    count: '31 rules',
+    count: '33 rules',
     blurb: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, command substitution and other tokenizer-defeating shapes assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
     cats: nsCategories.x,
+  },
+  {
+    letter: 'M',
+    name: 'Meta and confluence',
+    count: '3 rules',
+    blurb: 'Three meta rules reason over the finding set itself rather than the diff: a declared practice contradicted by structure, a weak signal that spans several layers, or a composition no single family owns. They fire at the layer of their inputs, so a combination the pattern rules each miss becomes one claim.',
+    cats: nsCategories.m,
+  },
+  {
+    letter: 'E',
+    name: 'Entropy',
+    count: '3 rules',
+    blurb: 'Three entropy rules treat the statistics of the added text as evidence: its compression ratio, the fraction that is encoded alphabet, and identifier entropy. They mark a change that sits outside the normal distribution; suspicion, never a verdict, with thresholds calibrated on the benign corpus.',
+    cats: nsCategories.e,
+  },
+  {
+    letter: 'T',
+    name: 'Temporal',
+    count: '3 rules',
+    blurb: 'Three temporal rules track the identity behind the recipe rather than its content: a signing key never seen before, a maintainer domain first seen now, or a key rotated. They say how new the thing behind the update is, independent of what the diff changed.',
+    cats: nsCategories.t,
+  },
+  {
+    letter: 'G',
+    name: 'Correlation',
+    count: '4 rules',
+    blurb: 'Four correlation rules look across packages in a window rather than inside one: a host, a literal, an adopter, or an upstream dependency shared by several recent analyses. They run at cycle end, never per package, so a campaign that is invisible in any single diff becomes visible in the set.',
+    cats: nsCategories.g,
+  },
+  {
+    letter: 'A',
+    name: 'Artifact',
+    count: '8 rules',
+    blurb: 'Eight artifact rules inspect the built package, not the diff. The optional L9 build lane reads the produced manifest to catch a setuid file, an undeclared unit, a library outside depends, or an embedded eBPF object. Reported outside the static score, and off by default.',
+    cats: nsCategories.a,
+  },
+  {
+    letter: 'U',
+    name: 'Upstream manifests',
+    count: '5 rules',
+    blurb: 'Five upstream-manifest rules read the dependency manifests committed beside the recipe: a manifest added or removed, a dependency delta, a new remote source, a redirected resolver, or a dependency-surface jump. Read from the repository tree, never fetched; only U003 and U004 score.',
+    cats: nsCategories.u,
   },
   {
     letter: 'P',
@@ -293,7 +355,7 @@ const namespaces = [
   {
     letter: 'W',
     name: 'Unverifiable',
-    count: '6 findings, weight 0',
+    count: '9 findings, weight 0',
     blurb: 'Not a claim about the recipe but about the analysis: something the package will run that this run could not read. A build script that executes a file not declared in source=(), a patch not committed to the repo, a manifest generated at build time, or a dependency resolved from a registry. Each is reported so the reader knows the boundary of what was examined; none contributes to the score.',
     cats: nsCategories.w,
   },
@@ -326,7 +388,7 @@ const faqs = [
   },
   {
     q: 'Why is my package flagged when the update looks normal?',
-    a: <>About 9.5% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
+    a: <>About 10% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
   },
   {
     q: 'How does novelty detection work before I have any history?',
@@ -426,14 +488,14 @@ export function App() {
             <p>
               Default output from <code>trustsight review</code> for two outdated packages. The first
               is a routine version bump with updated checksums; the second is a change worth a look
-              before you build it, and it carries at least one finding from every rule namespace, so
-              each kind of signal appears exactly as a real report shows it. The dependency example
-              shows the mini-cards nested in the output.
+              before you build it, and it carries a representative finding from the core rule
+              families, so each kind of signal appears exactly as a real report shows it. The dependency
+              example shows the mini-cards nested in the output.
               Without flags the report shows the findings and the verdict, no score column.
             </p>
           </div>
           <Plate
-             label="Terminal transcript of trustsight review, showing two packages and a dependency summary. some-app-bin, version 3.1.0-1 to 3.1.1-2: only pkgver and sha256sums changed, review the diff before building. sketchy-package, version 0.9.2-1 to 1.0.0-2: the update is not trivial. A system-root deletion command, checksum set to SKIP, source URL changed without a version bump and classified as unknown, an executable assembled through partial quoting, validpgpkeys declared, and a build script not declared in source. The dependency summary shows libhelper resembling libuv."
+             label="Terminal transcript of trustsight review, showing two packages and a dependency summary. some-app-bin, version 3.1.0-1 to 3.1.1-2: only pkgver and sha256sums changed, review the diff before building. sketchy-package, version 0.9.2-1 to 1.0.0-2: the update is not trivial, with the checksum set to SKIP, the source URL classified as unknown, a file executed that the analysis did not read, and checksums and validpgpkeys declared. The dependency summary shows some-trusted-tool with a libhelper dependency card reporting two findings."
              lines={[...plateExample.split('\n'), ...plateFlagged.split('\n'), ...plateDeps.split('\n')]}
              caption={<>Current renderer excerpts from <code>trustsight review</code>. A clean verdict means no known signal fired, not that the package is safe.</>}
           />
@@ -514,10 +576,10 @@ export function App() {
           <h2 id="calibration">The weights are measured, not asserted</h2>
           <div className="prose">
             <p>
-              Against the locked 3,739-diff benign corpus, <strong>68.4%</strong> of benign diffs score 0.
+              Against the locked 3,739-diff benign corpus, <strong>67.9%</strong> of benign diffs score 0.
               Benign diffs reach a 95th percentile of <strong>35</strong>; the CRITICAL-class corpus has a
               5th percentile of <strong>60</strong>. The 20-point threshold is not the benign p95; it sits
-              at the 90.5th percentile, so about 9.5% of benign diffs land above it. What matters is that
+              at the 90.3th percentile, so about 10% of benign diffs land above it. What matters is that
               the two distributions do not overlap.
             </p>
           </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 35. Malicious diffs start at a 5th percentile of 60. The 25-point margin between them is enforced by CI.">
@@ -556,7 +618,7 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>5,245 tests across 121 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>5,887 tests across 138 files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -605,12 +667,12 @@ export function App() {
         {/* 9 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">219 documented rules, in seven namespaces</h2>
+          <h2 id="rules">258 documented rules, in 13 namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published
               in the <a href={RULES} target="_blank" rel="noreferrer">rules reference</a>. Rules are grouped
-              into seven namespaces; the categories under each namespace are the kinds of claims its rules make.
+              into 13 namespaces; the categories under each namespace are the kinds of claims its rules make.
             </p>
           </div>
           <div className="ns-list">
@@ -634,7 +696,7 @@ export function App() {
           </div>
           <div className="prose push">
             <p>
-              Counts are per the generated rules index; the 15 category pages are closed, so every rule
+              Counts are per the generated rules index; the 21 category pages are closed, so every rule
               has exactly one page. <code>trustsight lint-rules</code> checks the shipped rules against
               their documentation on every test run. The rule files themselves are part of the open
               source repository: read a pattern, change a severity, or rebuild the tool, and nothing

@@ -6,6 +6,14 @@
 
 /* rules-map:start */
 export const RULE_PAGES = {
+  a001: 'artifact/#a001',
+  a002: 'artifact/#a002',
+  a003: 'artifact/#a003',
+  a004: 'artifact/#a004',
+  a005: 'artifact/#a005',
+  a006: 'artifact/#a006',
+  a007: 'artifact/#a007',
+  a008: 'artifact/#a008',
   c001: 'integrity/#c001',
   c002: 'integrity/#c002',
   c003: 'integrity/#c003',
@@ -23,16 +31,31 @@ export const RULE_PAGES = {
   c015: 'fetch-and-execution/#c015',
   c016: 'fetch-and-execution/#c016',
   c017: 'install-and-persist/#c017',
+  c018: 'integrity/#c018',
+  c019: 'integrity/#c019',
   c020: 'integrity/#c020',
   c021: 'composition/#c021',
   c022: 'integrity/#c022',
   c023: 'integrity/#c023',
   c024: 'composition/#c024',
   c025: 'staging-and-recon/#c025',
+  c026: 'integrity/#c026',
+  c027: 'integrity/#c027',
+  c028: 'staging-and-recon/#c028',
+  c029: 'install-and-persist/#c029',
+  c030: 'maintainer-and-metadata/#c030',
+  c031: 'install-and-persist/#c031',
   d001: 'naming-and-dependency/#d001',
   d002: 'naming-and-dependency/#d002',
   d003: 'naming-and-dependency/#d003',
   d004: 'naming-and-dependency/#d004',
+  e001: 'entropy/#e001',
+  e002: 'entropy/#e002',
+  e003: 'entropy/#e003',
+  g001: 'correlation/#g001',
+  g002: 'correlation/#g002',
+  g003: 'correlation/#g003',
+  g004: 'correlation/#g004',
   h001: 'integrity/#h001',
   h002: 'integrity/#h002',
   h003: 'fetch-and-execution/#h003',
@@ -61,8 +84,8 @@ export const RULE_PAGES = {
   h026: 'maintainer-and-metadata/#h026',
   h027: 'composition/#h027',
   h028: 'corpus-behavioral/#h028',
-  h029: 'naming-and-dependency/#h029',
-  h030: 'count-based/#h030',
+  h029: 'naming-and-dependency/#h029-rule',
+  h030: 'count-based/#h030-rule',
   h031: 'fetch-and-execution/#h031',
   h032: 'install-and-persist/#h032',
   h033: 'integrity/#h033',
@@ -88,7 +111,7 @@ export const RULE_PAGES = {
   h053: 'naming-and-dependency/#h053',
   h054: 'maintainer-and-metadata/#h054',
   h055: 'count-based/#h055',
-  h056: 'corpus-behavioral/#h056',
+  h056: 'indicator/#h056',
   h057: 'corpus-behavioral/#h057',
   h058: 'maintainer-and-metadata/#h058',
   h059: 'naming-and-dependency/#h059',
@@ -136,6 +159,9 @@ export const RULE_PAGES = {
   h101: 'integrity/#h101',
   h102: 'composition/#h102',
   h103: 'integrity/#h103',
+  m001: 'meta/#m001',
+  m002: 'meta/#m002',
+  m003: 'meta/#m003',
   p001: 'system/#declared-practice',
   p002: 'system/#declared-practice',
   p003: 'system/#declared-practice',
@@ -188,12 +214,23 @@ export const RULE_PAGES = {
   s006: 'sabotage/#s006',
   s007: 'sabotage/#s007',
   s008: 'sabotage/#s008',
+  t001: 'temporal/#t001',
+  t002: 'temporal/#t002',
+  t003: 'temporal/#t003',
+  u001: 'upstream-manifests/#u001',
+  u002: 'upstream-manifests/#u002',
+  u003: 'upstream-manifests/#u003',
+  u004: 'upstream-manifests/#u004',
+  u005: 'upstream-manifests/#u005',
   w001: 'unverifiable/#w001',
   w002: 'unverifiable/#w002',
   w003: 'unverifiable/#w003',
   w004: 'unverifiable/#w004',
   w005: 'unverifiable/#w005',
   w006: 'unverifiable/#w006',
+  w007: 'unverifiable/#w007',
+  w008: 'unverifiable/#w008',
+  w009: 'unverifiable/#w009',
   x001: 'crossfire/#x001',
   x002: 'crossfire/#x002',
   x003: 'crossfire/#x003',
@@ -225,6 +262,8 @@ export const RULE_PAGES = {
   x029: 'crossfire/#x029',
   x030: 'crossfire/#x030',
   x031: 'crossfire/#x031',
+  x032: 'crossfire/#x032',
+  x033: 'crossfire/#x033',
 }
 /* rules-map:end */
 
@@ -233,8 +272,8 @@ export function ruleHref(id, base) {
   return page ? `${base}${page}` : null
 }
 
-/* Expand a range like "R141–R143" into its member ids ("R141", "R142",
-   "R143"). Assumes a shared letter prefix and a numeric span of at most 99. */
+/* Expand a range like "S001-S008" into its member ids ("S001", "S002",
+   "S008"). Assumes a shared letter prefix and a numeric span of at most 99. */
 function rangeIds(a, b) {
   const prefix = a[0]
   const start = Number(a.slice(1))
@@ -246,11 +285,11 @@ function rangeIds(a, b) {
 }
 
 /* Turn rule mentions inside an HTML string into links to their doc pages.
-   Ranges ("S001–S008") become one link to the category page when every rule
+   Ranges ("S001-S008") become one link to the category page when every rule
    in the range lives on it, or per-rule links when the range crosses pages.
    Single ids link straight to their anchor. Everything else passes through. */
 export function linkRules(html, base) {
-  return html.replace(/([RCDSXPW]\d{3})–([RCDSXPW]\d{3})|([RCDSXPW]\d{3})/g, (m, ra, rb, single) => {
+  return html.replace(/([RHCDSXWPMETGAUI]\d{3})-([RHCDSXWPMETGAUI]\d{3})|([RHCDSXWPMETGAUI]\d{3})/g, (m, ra, rb, single) => {
     if (ra && rb) {
       const ids = rangeIds(ra, rb)
       if (!ids) return m
@@ -267,13 +306,13 @@ export function linkRules(html, base) {
         const target = allIdentical ? first : first.split('#')[0]
         return `<a href="${target}" target="_blank" rel="noreferrer">${m}</a>`
       }
-      // The range crosses category pages (R141–R143): one link per rule.
+      // The range crosses category pages (H086-H088): one link per rule.
       return ids
         .map((id, i) => {
           const href = hrefs[i]
           return href ? `<a href="${href}" target="_blank" rel="noreferrer">${id}</a>` : id
         })
-        .join('–')
+        .join('-')
     }
     const href = ruleHref(single, base)
     return href ? `<a href="${href}" target="_blank" rel="noreferrer">${single}</a>` : m

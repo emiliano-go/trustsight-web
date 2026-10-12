@@ -15,12 +15,13 @@ const comma = (n) => n.toLocaleString('en-US')
 const checks = [
   ['license metadata uses the current default branch', files.index.includes('trustsight/blob/master/LICENSE')],
   ['gate suites are described without stale gate counts', files.app.includes('separate security and calibration gate suites')],
-  ['old test count is absent', !files.app.includes('4,233 tests') && !files.app.includes('3,617 tests') && !files.app.includes('2,473 tests')],
-  ['stale rule totals are absent', !files.app.includes('192 documented rules') && !files.app.includes('184 documented rules') && !files.app.includes('127 rules')],
+  ['old test count is absent', !files.app.includes('4,233 tests') && !files.app.includes('4,240 tests') && !files.app.includes('3,617 tests') && !files.app.includes('2,473 tests')],
+  ['stale rule totals are absent', !files.app.includes('197 documented rules') && !files.app.includes('192 documented rules') && !files.app.includes('184 documented rules') && !files.app.includes('134 rules') && !files.app.includes('25 rules') && !files.app.includes('127 rules')],
+  ['stale calibration figures are absent', !files.app.includes('70.3%') && !files.app.includes('92.1') && !files.app.includes('30-point margin')],
   ['tokenizer isolation is described', files.app.includes('the tokenizer') && files.app.includes('runs in a separate, resource-capped process')],
   ['old gate counts are absent', !files.app.includes('65 security gates') && !files.app.includes('10 calibration gates')],
-  ['current quickstart examples are captured', files.plate.includes('some-app-bin') && files.plate.includes('sketchy-package')],
-  ['old terminal examples are absent', !files.plate.includes('chez-scheme-bin') && !files.plate.includes('sketchy-pkg')],
+  ['current quickstart examples are captured', files.plate.includes('some-app-bin') && files.plate.includes('sketchy-package') && files.plate.includes('some-trusted-tool') && files.plate.includes('[H001]')],
+  ['old terminal examples are absent', !files.plate.includes('chez-scheme-bin') && !files.plate.includes('sketchy-pkg') && !files.plate.includes('[R004]') && !files.plate.includes('resembles libuv')],
   ['stale seed counts are absent', !files.app.includes('180,000') && !files.app.includes('35,587')],
 ]
 
@@ -29,7 +30,7 @@ const checks = [
 // suite, calibration). `npm run verify:rules` regenerates and checks that
 // file against the catalog, so a site copy that lags the tool fails here.
 checks.push(
-  ['documented rule total matches the catalog', files.app.includes(`${fig.total_rules} documented rules, in seven namespaces`)],
+  ['documented rule total matches the catalog', files.app.includes(`${fig.total_rules} documented rules, in ${fig.namespace_count} namespaces`)],
   ['category pages match the catalog', files.app.includes(`the ${fig.category_pages} category pages`)],
 )
 
