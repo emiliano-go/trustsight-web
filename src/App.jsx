@@ -767,7 +767,7 @@ export function App() {
           <h2>Colophon</h2>
           <p><a href={GITHUB} target="_blank" rel="noreferrer">MIT licensed</a>, fully open source. Built by <strong>Emiliano Gandini</strong>.</p>
           <p>Every rule pattern, default, and the seed&rsquo;s verification key are published in the repository. There is no closed component; the reviewer can be audited the same way it audits packages.</p>
-          <p>Security contact: <a href="mailto:emiliano.gandini@protonmail.com">emiliano.gandini@protonmail.com</a></p>
+          <p>Security contact: emiliano.gandini [at] protonmail [dot] com</p>
           <p className="pgp">PGP&nbsp;F759D6D4 9B0A395A B922414A 5CC3B4C5 0D37E793</p>
         </div>
         <div>
