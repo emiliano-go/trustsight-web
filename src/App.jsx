@@ -570,6 +570,46 @@ export function App() {
           <DocsLink href={`${DOCS}/reference/evidence-tiers/`}>evidence tiers</DocsLink>
         </section>
 
+        {/* 5b · Assurance layers */}
+        <section className="section" aria-labelledby="layers">
+          <div className="section-label">Layers</div>
+          <h2 id="layers">Eight layers say what kind of evidence a finding is</h2>
+          <div className="prose">
+            <p>
+              Separate from the tier, every rule also carries an evidence layer, <code>L1</code> to{' '}
+              <code>L8</code>, naming the <em>kind</em> of evidence a finding is. A layer is not a
+              stage an attacker passed through: a finding at <code>L4</code> does not mean the package
+              cleared <code>L1</code> to <code>L3</code>, and a layer that stayed silent is not a
+              clean bill of health. The report keeps two facts separate for every layer, whether it
+              fired and whether the change was read in full, so a finding never hides that its layer
+              was also unread.
+            </p>
+          </div>
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead><tr><th scope="col">Layer</th><th scope="col">The question its evidence answers</th><th scope="col">Rule families</th></tr></thead>
+              <tbody>
+                <tr><th scope="row"><code>L1</code> Structural coherence</th><td>Does the change hang together as an honest edit?</td><td><code>C</code>, <code>M</code></td></tr>
+                <tr><th scope="row"><code>L2</code> Readability</th><td>Was anything hidden from the reader?</td><td><code>W</code>, refusal rules <code>X026</code>/<code>X027</code></td></tr>
+                <tr><th scope="row"><code>L3</code> Payload signature</th><td>Does it do a known-bad thing?</td><td><code>R</code>, <code>S</code></td></tr>
+                <tr><th scope="row"><code>L4</code> Evasion shape</th><td>Was it written to defeat reading?</td><td><code>X</code>, <code>E</code></td></tr>
+                <tr><th scope="row"><code>L5</code> Behavioral suspicion</th><td>Does the package&rsquo;s story make sense?</td><td><code>H</code></td></tr>
+                <tr><th scope="row"><code>L6</code> Ecosystem memory</th><td>Has the ecosystem seen this before?</td><td><code>D</code>, <code>T</code></td></tr>
+                <tr><th scope="row"><code>L7</code> Known indicators</th><td>Is it on the list?</td><td><code>I</code></td></tr>
+                <tr><th scope="row"><code>L8</code> Campaign correlation</th><td>Do other packages tell the same story?</td><td><code>G</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="prose push">
+            <p>
+              A layer label names the check that produced a finding, never how far an attacker got.
+              The optional <code>L9</code> build lane inspects the built package rather than the diff,
+              so it is not one of the eight and it is off by default.
+            </p>
+          </div>
+          <DocsLink href={`${DOCS}/assurance-layers/`}>assurance layers</DocsLink>
+        </section>
+
         {/* 6 · Calibration */}
         <section className="section" aria-labelledby="calibration">
           <div className="section-label">Calibration</div>
