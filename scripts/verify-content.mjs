@@ -17,7 +17,7 @@ const checks = [
   ['gate suites are described without stale gate counts', files.app.includes('separate security and calibration gate suites')],
   ['old test count is absent', !files.app.includes('4,233 tests') && !files.app.includes('4,240 tests') && !files.app.includes('3,617 tests') && !files.app.includes('2,473 tests')],
   ['stale rule totals are absent', !files.app.includes('197 documented rules') && !files.app.includes('192 documented rules') && !files.app.includes('184 documented rules') && !files.app.includes('134 rules') && !files.app.includes('25 rules') && !files.app.includes('127 rules')],
-  ['stale calibration figures are absent', !files.app.includes('70.3%') && !files.app.includes('92.1') && !files.app.includes('30-point margin')],
+  ['stale calibration figures are absent', !files.app.includes('67.9%') && !files.app.includes('90.3th') && !files.app.includes('25-point margin')],
   ['tokenizer isolation is described', files.app.includes('the tokenizer') && files.app.includes('runs in a separate, resource-capped process')],
   ['old gate counts are absent', !files.app.includes('65 security gates') && !files.app.includes('10 calibration gates')],
   ['current quickstart examples are captured', files.plate.includes('some-app-bin') && files.plate.includes('sketchy-package') && files.plate.includes('some-trusted-tool') && files.plate.includes('[H001]')],

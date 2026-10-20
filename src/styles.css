@@ -695,6 +695,134 @@ main > .section:nth-child(n + 2) {
   padding: 0;
 }
 
+/* ---------- how it works: four stops on one road ---------- */
+
+.flow-board {
+  position: relative;
+  margin-top: 46px;
+}
+
+/* The road: a dashed track under the numbered stops. Decorative; the stops
+   and their chips are the accessible content. */
+.flow__road {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  height: 3px;
+  border-radius: 2px;
+  background-image: repeating-linear-gradient(90deg, var(--rule) 0 10px, transparent 10px 20px);
+}
+
+.flow {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow__phase {
+  position: relative;
+  padding-top: 42px;
+}
+
+.flow__step {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6471rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.flow__phase h3 {
+  margin: 0 0 4px;
+  font-size: 1.0588rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.flow__lead {
+  margin: 0 0 16px;
+  max-width: 30ch;
+  color: var(--fg-muted);
+  font-size: 0.8235rem;
+  line-height: 1.5;
+}
+
+.flow__items {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow__chip {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 94px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.flow__term {
+  display: block;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.7647rem;
+  font-weight: 600;
+}
+
+.flow__detail {
+  display: block;
+  margin-top: 2px;
+  color: var(--fg-muted);
+  font-size: 0.7647rem;
+  line-height: 1.45;
+}
+
+/* The cycle lane is dashed on purpose: it is not part of a single review. */
+.flow__cycle {
+  margin: 24px 0 0;
+  padding: 13px 16px;
+  border: 1px dashed var(--rule);
+  border-radius: 8px;
+  color: var(--fg-muted);
+  font-size: 0.8235rem;
+  line-height: 1.6;
+}
+
+.flow__cycle-tag {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.6176rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 /* One docs link at the end of every section */
 
 .section-docs {
@@ -791,7 +919,7 @@ main > .section:nth-child(n + 2) {
 }
 
 .gauge__mark--threshold { left: 20%; }
-.gauge__mark--benign { left: 45%; }
+.gauge__mark--benign { left: 30%; }
 .gauge__mark--malicious { left: 60%; }
 
 .gauge__mark--threshold .gauge__tick { background: var(--fg-muted); height: 12px; }
@@ -1141,6 +1269,13 @@ main > .section:nth-child(n + 2) {
     text-transform: uppercase;
   }
   .principle-list li { padding-left: 48px; }
+  .flow { grid-template-columns: 1fr; gap: 30px; }
+  .flow__road {
+    top: 0; bottom: 0; left: 16px; right: auto;
+    width: 3px; height: auto;
+    background-image: repeating-linear-gradient(180deg, var(--rule) 0 10px, transparent 10px 20px);
+  }
+  .flow__phase { padding-top: 0; padding-left: 52px; }
   .gauge { overflow-x: auto; }
   .gauge__inner { min-width: 0; }
   /* Keep the scale ends and the caption in step with the labels. The

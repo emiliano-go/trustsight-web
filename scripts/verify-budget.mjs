@@ -10,7 +10,9 @@ const limits = [
 const compressedLimits = [
   // HTML carries the inlined stylesheet (CSS asset is inlined at prerender,
   // so nothing render-blocks first paint); ~10.9 kB page + ~4.2 kB CSS.
-  ['HTML', ['index.html'], 18 * 1024],
+  // The review-flow graphic adds ~0.6 kB of inlined CSS/HTML; the page is
+  // still a single render-blocking document with no extra request.
+  ['HTML', ['index.html'], 20 * 1024],
   ['JavaScript', ['assets', '.js'], 2 * 1024],
   ['font', ['fonts', '.woff2'], 35 * 1024],
   ['critical path', ['index.html', 'assets', '.js', 'fonts', '.woff2'], 70 * 1024],

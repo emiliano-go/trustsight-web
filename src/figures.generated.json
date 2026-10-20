@@ -72,8 +72,8 @@
       ]
     },
     "structural": {
-      "count_label": "31 rules",
-      "total": 31,
+      "count_label": "32 rules",
+      "total": 32,
       "categories": [
         [
           "Integrity and Verification",
@@ -81,13 +81,13 @@
           18
         ],
         [
-          "Fetch and Execution",
-          "fetch-and-execution",
-          3
-        ],
-        [
           "Install and Persistence",
           "install-and-persist",
+          4
+        ],
+        [
+          "Fetch and Execution",
+          "fetch-and-execution",
           3
         ],
         [
@@ -135,24 +135,24 @@
       ]
     },
     "crossfire": {
-      "count_label": "33 rules",
-      "total": 33,
+      "count_label": "34 rules",
+      "total": 34,
       "categories": [
         [
           "Crossfire",
           "crossfire",
-          33
+          34
         ]
       ]
     },
     "meta": {
-      "count_label": "3 rules",
-      "total": 3,
+      "count_label": "6 rules",
+      "total": 6,
       "categories": [
         [
           "Meta and Confluence",
           "meta",
-          3
+          6
         ]
       ]
     },
@@ -168,24 +168,24 @@
       ]
     },
     "temporal": {
-      "count_label": "3 rules",
-      "total": 3,
+      "count_label": "5 rules",
+      "total": 5,
       "categories": [
         [
           "Temporal Context",
           "temporal",
-          3
+          5
         ]
       ]
     },
     "correlation": {
-      "count_label": "4 rules",
-      "total": 4,
+      "count_label": "10 rules",
+      "total": 10,
       "categories": [
         [
           "Correlation",
           "correlation",
-          4
+          10
         ]
       ]
     },
@@ -201,24 +201,29 @@
       ]
     },
     "upstream_manifests": {
-      "count_label": "5 rules",
-      "total": 5,
+      "count_label": "10 rules",
+      "total": 10,
       "categories": [
         [
           "Upstream Manifests",
           "upstream-manifests",
-          5
+          6
+        ],
+        [
+          "Upstream Release Integrity",
+          "upstream-release",
+          4
         ]
       ]
     },
     "unverifiable": {
-      "count_label": "9 findings, weight 0",
-      "total": 9,
+      "count_label": "12 findings, weight 0",
+      "total": 12,
       "categories": [
         [
           "Unverifiable",
           "unverifiable",
-          9
+          12
         ]
       ]
     },
@@ -229,11 +234,11 @@
     }
   },
   "namespace_count": 13,
-  "total_rules": 258,
-  "category_pages": 21,
+  "total_rules": 279,
+  "category_pages": 22,
   "tests": {
-    "count": 5887,
-    "files": 138
+    "count": 6828,
+    "files": 172
   },
   "seed": {
     "source_urls": 185902,
@@ -241,15 +246,15 @@
     "dependency_names": 215504
   },
   "calibration": {
-    "labelled_fixtures": 205,
+    "labelled_fixtures": 207,
     "corpus_diffs": 3739,
-    "benign_zero_rate_pct": 67.9,
-    "benign_p95": 35,
+    "benign_zero_rate_pct": 72.3,
+    "benign_p95": 30,
     "malicious_p5": 60,
     "malicious_minimum": 50,
-    "benign_above_threshold_pct": 9.7,
-    "threshold_percentile": 90.3,
-    "separation_margin": 25,
-    "ruleset_trigger_rate_pct": 35.5
+    "benign_above_threshold_pct": 7.1,
+    "threshold_percentile": 92.9,
+    "separation_margin": 30,
+    "ruleset_trigger_rate_pct": 31.2
   }
 }

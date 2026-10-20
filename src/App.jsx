@@ -199,7 +199,7 @@ const tiers = [
   { tier: 'B: Priors / Context', what: 'Source-bucket classification of every new URL.', example: 'an unknown domain adds weight', weight: 'Moderate: a prior, not proof' },
   { tier: 'C: History / Novelty', what: 'First-seen history for URLs and maintainers, maturity-gated.', example: 'URL first seen globally; maintainer first seen', weight: 'Scales with observation history' },
   { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: 'P001-P008', weight: '0: reported, never scored' },
-  { tier: 'Reported, not scored', what: 'Analysis boundaries: bytes the package will run that this run could not read.', example: 'W001-W009', weight: '0: always shown' },
+  { tier: 'Reported, not scored', what: 'Analysis boundaries: bytes the package will run that this run could not read.', example: 'W001-W012', weight: '0: always shown' },
 ]
 
 const nsCategories = {
@@ -220,8 +220,8 @@ const nsCategories = {
   ],
   c: [
     ['Integrity and Verification', 'integrity', 18],
+    ['Install and Persistence', 'install-and-persist', 4],
     ['Fetch and Execution', 'fetch-and-execution', 3],
-    ['Install and Persistence', 'install-and-persist', 3],
     ['Composition', 'composition', 2],
     ['Staging and Reconnaissance', 'staging-and-recon', 2],
     ['Maintainer and Metadata', 'maintainer-and-metadata', 2],
@@ -234,28 +234,29 @@ const nsCategories = {
     ['Sabotage', 'sabotage', 8],
   ],
   m: [
-    ['Meta and Confluence', 'meta', 3],
+    ['Meta and Confluence', 'meta', 6],
   ],
   e: [
     ['Entropy', 'entropy', 3],
   ],
   t: [
-    ['Temporal Context', 'temporal', 3],
+    ['Temporal Context', 'temporal', 5],
   ],
   g: [
-    ['Correlation', 'correlation', 4],
+    ['Correlation', 'correlation', 10],
   ],
   a: [
     ['Artifact', 'artifact', 8],
   ],
   u: [
-    ['Upstream Manifests', 'upstream-manifests', 5],
+    ['Upstream Manifests', 'upstream-manifests', 6],
+    ['Upstream Release Integrity', 'upstream-release', 4],
   ],
   w: [
-    ['Unverifiable', 'unverifiable', 9],
+    ['Unverifiable', 'unverifiable', 12],
   ],
   x: [
-    ['Crossfire', 'crossfire', 33],
+    ['Crossfire', 'crossfire', 34],
   ],
 }
 
@@ -270,8 +271,8 @@ const namespaces = [
   {
     letter: 'C',
     name: 'Structural rules',
-    count: '31 rules',
-    blurb: 'Thirty-one context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, install and persistence, fetch, composition, staging, metadata, and deception.',
+    count: '32 rules',
+    blurb: 'Thirty-two context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, install and persistence, fetch, composition, staging, metadata, and deception.',
     cats: nsCategories.c,
   },
   {
@@ -291,15 +292,15 @@ const namespaces = [
   {
     letter: 'X',
     name: 'Crossfire rules',
-    count: '33 rules',
+    count: '34 rules',
     blurb: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, command substitution and other tokenizer-defeating shapes assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
     cats: nsCategories.x,
   },
   {
     letter: 'M',
     name: 'Meta and confluence',
-    count: '3 rules',
-    blurb: 'Three meta rules reason over the finding set itself rather than the diff: a declared practice contradicted by structure, a weak signal that spans several layers, or a composition no single family owns. They fire at the layer of their inputs, so a combination the pattern rules each miss becomes one claim.',
+    count: '6 rules',
+    blurb: 'Six meta rules reason over the finding set and the instrument itself rather than the diff: a declared practice contradicted by structure, a weak signal that spans several layers, or a composition no single family owns, plus three tool-health checks (a co-fire that should have appeared, a licensor absent on a licensed shape, a campaign class re-armed too often). The tool-health findings carry weight 0 and never join a package\u2019s finding set, so a detector-health note cannot move a verdict.',
     cats: nsCategories.m,
   },
   {
@@ -312,15 +313,15 @@ const namespaces = [
   {
     letter: 'T',
     name: 'Temporal',
-    count: '3 rules',
-    blurb: 'Three temporal rules track the identity behind the recipe rather than its content: a signing key never seen before, a maintainer domain first seen now, or a key rotated. They say how new the thing behind the update is, independent of what the diff changed.',
+    count: '5 rules',
+    blurb: 'Five temporal rules track the identity behind the recipe rather than its content: a signing key never seen before, a maintainer domain first seen now, a key rotated, AUR metadata that runs ahead of the git tip (commits were pushed and later stripped), and a packager absent from the retained commit history. They say how new the thing behind the update is, independent of what the diff changed; the packager check is weight 0 and corroborates rather than scores.',
     cats: nsCategories.t,
   },
   {
     letter: 'G',
     name: 'Correlation',
-    count: '4 rules',
-    blurb: 'Four correlation rules look across packages in a window rather than inside one: a host, a literal, an adopter, or an upstream dependency shared by several recent analyses. They run at cycle end, never per package, so a campaign that is invisible in any single diff becomes visible in the set.',
+    count: '10 rules',
+    blurb: 'Ten correlation rules look across packages in a window rather than inside one: a host, a literal, an adopter, or an upstream dependency shared by several recent analyses, a maintainer publishing name-clones of popular packages, a first-seen account adopting many dormant packages, a watchlisted subject, a package in an active campaign\u2019s neighbourhood, and a plurality of first-seen hosts across strangers. They run at cycle end, never per package, so a campaign that is invisible in any single diff becomes visible in the set. Only the shared-signal rules score; the neighbourhood, watchlist and host-census findings are reported at weight 0.',
     cats: nsCategories.g,
   },
   {
@@ -333,8 +334,8 @@ const namespaces = [
   {
     letter: 'U',
     name: 'Upstream manifests',
-    count: '5 rules',
-    blurb: 'Five upstream-manifest rules read the dependency manifests committed beside the recipe: a manifest added or removed, a dependency delta, a new remote source, a redirected resolver, or a dependency-surface jump. Read from the repository tree, never fetched; only U003 and U004 score.',
+    count: '10 rules',
+    blurb: 'Ten upstream rules read only what a recipe declares about upstream, never fetching it. Six manifest rules cover the dependency manifests committed beside the recipe: a manifest added or removed, a dependency delta, a new remote source, a redirected resolver, a dependency-surface jump, and a manifest changed without its lockfile. Four release-integrity rules are fed by a signed upstream baseline: a git-history credential sweep, a new CI surface committed into the AUR repository, and a source the public cannot inspect. Read from the repository tree and the diff; upstream content is never fetched.',
     cats: nsCategories.u,
   },
   {
@@ -355,8 +356,8 @@ const namespaces = [
   {
     letter: 'W',
     name: 'Unverifiable',
-    count: '9 findings, weight 0',
-    blurb: 'Not a claim about the recipe but about the analysis: something the package will run that this run could not read. A build script that executes a file not declared in source=(), a patch not committed to the repo, a manifest generated at build time, or a dependency resolved from a registry. Each is reported so the reader knows the boundary of what was examined; none contributes to the score.',
+    count: '12 findings, weight 0',
+    blurb: 'Not a claim about the recipe but about the analysis: something the package will run that this run could not read. A build script that executes a file not declared in source=(), a patch not committed to the repo, a manifest generated at build time, a dependency resolved from a registry, a declared upstream this run was not allowed to fetch, or a terminal render that had to cap its finding list. Each is reported so the reader knows the boundary of what was examined; none contributes to the score.',
     cats: nsCategories.w,
   },
 ]
@@ -388,7 +389,7 @@ const faqs = [
   },
   {
     q: 'Why is my package flagged when the update looks normal?',
-    a: <>About 10% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
+    a: <>About 7% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
   },
   {
     q: 'How does novelty detection work before I have any history?',
@@ -413,6 +414,53 @@ const faqs = [
   {
     q: 'What happens when the tool cannot see everything?',
     a: <>It says so. Coverage gaps such as <code>deps_not_scanned</code> (dependencies past the configured depth) and <code>unpinned_build_deps</code> (build steps that fetch unpinned code) are part of the report, and an analysis with a coverage gap is never issued as UNFLAGGED. A report that hid what it could not look at would be indistinguishable from one that was switched off.</>,
+  },
+]
+
+
+/* The surfaces one review reads, grouped into the four moves a run makes.
+   The cycle-level correlation lane is deliberately separate: it does not run
+   inside a single `trustsight review`, and the animation must not imply it. */
+const flowPhases = [
+  {
+    step: '01',
+    title: 'Collect',
+    lead: 'What changed, and what sits beside it.',
+    items: [
+      ['PKGBUILD diff', 'old vs new, line by line'],
+      ['Companion files', '.install and .hook scriptlets, patches, CI workflows, committed manifests'],
+      ['Git history', 'commit dates, committers, history rewrites'],
+    ],
+  },
+  {
+    step: '02',
+    title: 'Extend',
+    lead: 'Who wrote it, where it comes from, what it drags in.',
+    items: [
+      ['Maintainer history', 'first-seen accounts, key rotation, takeover signals'],
+      ['Declared upstream', 'url=, source=(), validpgpkeys: read, never fetched'],
+      ['Dependency closure', 'AUR dependencies walked to --depth'],
+    ],
+  },
+  {
+    step: '03',
+    title: 'Match',
+    lead: 'Published rules against the evidence actually read.',
+    items: [
+      ['279 rules, 13 namespaces', 'pattern, structural, temporal, upstream, crossfire'],
+      ['Signed seed', 'known source URLs, maintainers and dependency names for novelty'],
+      ['Federated indicators', 'signed upstream-repo and IOC baselines'],
+    ],
+  },
+  {
+    step: '04',
+    title: 'Report',
+    lead: 'Evidence first, then what the run could not see.',
+    items: [
+      ['Findings', 'each names the line or URL it fired on'],
+      ['Coverage gaps', 'unread files, unpinned fetches, unread upstream'],
+      ['Verdict', 'input to your decision, never permission'],
+    ],
   },
 ]
 
@@ -480,7 +528,48 @@ export function App() {
           <DocsLink href={`${DOCS}/getting-started/quickstart/`}>the quickstart</DocsLink>
         </section>
 
-        {/* 3 · Example output */}
+
+        {/* 3 · How it works */}
+        <section className="section" aria-labelledby="how">
+          <div className="section-label">How it works</div>
+          <h2 id="how">One review, every surface the recipe touches.</h2>
+          <div className="prose">
+            <p>
+              A review is not a grep over the diff. It reads the diff, the files committed beside
+              it, the maintainer and git history behind it, what the recipe declares upstream, and
+              the AUR dependencies it pulls in. Then it matches published rules to that evidence and
+              reports both what it read and what it could not.
+            </p>
+          </div>
+          <div className="flow-board">
+            <span className="flow__road" aria-hidden="true" />
+            <ol className="flow">
+              {flowPhases.map((phase) => (
+                <li className="flow__phase" key={phase.step}>
+                  <span className="flow__step" aria-hidden="true">{phase.step}</span>
+                  <h3>{phase.title}</h3>
+                  <p className="flow__lead">{phase.lead}</p>
+                  <ul className="flow__items">
+                    {phase.items.map(([term, detail]) => (
+                      <li className="flow__chip" key={term}>
+                        <span className="flow__term">{term}</span>
+                        <span className="flow__detail">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <p className="flow__cycle">
+            <span className="flow__cycle-tag">At cycle end</span>
+            The watcher correlates across packages (G001&ndash;G010) and reports campaign
+            neighbourhoods; the optional L9 build lane inspects the built package, off by default.
+          </p>
+          <DocsLink href={`${DOCS}/assurance-layers/`}>assurance layers</DocsLink>
+        </section>
+
+        {/* 4 · Example output */}
         <section className="section" aria-labelledby="example">
           <div className="section-label">Example output</div>
           <h2 id="example">What a review looks like</h2>
@@ -502,7 +591,7 @@ export function App() {
           <DocsLink href={`${DOCS}/getting-started/reading-a-report/`}>reading a report</DocsLink>
         </section>
 
-        {/* 4 · What it detects */}
+        {/* 5 · What it detects */}
         <section className="section" aria-labelledby="detects">
           <div className="section-label">Detection</div>
           <h2 id="detects">What it detects</h2>
@@ -535,7 +624,7 @@ export function App() {
           <DocsLink href={RULES}>the rules reference</DocsLink>
         </section>
 
-        {/* 5 · Evidence tiers */}
+        {/* 6 · Evidence tiers */}
         <section className="section" aria-labelledby="tiers">
           <div className="section-label">Evidence</div>
           <h2 id="tiers">Four kinds of evidence</h2>
@@ -570,7 +659,7 @@ export function App() {
           <DocsLink href={`${DOCS}/reference/evidence-tiers/`}>evidence tiers</DocsLink>
         </section>
 
-        {/* 5b · Assurance layers */}
+        {/* 7 · Assurance layers */}
         <section className="section" aria-labelledby="layers">
           <div className="section-label">Layers</div>
           <h2 id="layers">Eight layers say what kind of evidence a finding is</h2>
@@ -610,19 +699,19 @@ export function App() {
           <DocsLink href={`${DOCS}/assurance-layers/`}>assurance layers</DocsLink>
         </section>
 
-        {/* 6 · Calibration */}
+        {/* 8 · Calibration */}
         <section className="section" aria-labelledby="calibration">
           <div className="section-label">Calibration</div>
           <h2 id="calibration">The weights are measured, not asserted</h2>
           <div className="prose">
             <p>
-              Against the locked 3,739-diff benign corpus, <strong>67.9%</strong> of benign diffs score 0.
-              Benign diffs reach a 95th percentile of <strong>35</strong>; the CRITICAL-class corpus has a
+              Against the locked 3,739-diff benign corpus, <strong>72.3%</strong> of benign diffs score 0.
+              Benign diffs reach a 95th percentile of <strong>30</strong>; the CRITICAL-class corpus has a
               5th percentile of <strong>60</strong>. The 20-point threshold is not the benign p95; it sits
-              at the 90.3th percentile, so about 10% of benign diffs land above it. What matters is that
+              at the 92.9th percentile, so about 7% of benign diffs land above it. What matters is that
               the two distributions do not overlap.
             </p>
-          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 35. Malicious diffs start at a 5th percentile of 60. The 25-point margin between them is enforced by CI.">
+          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 30. Malicious diffs start at a 5th percentile of 60. The 30-point margin between them is enforced by CI.">
             <div className="gauge__inner">
               <div className="gauge__track">
                 <span className="gauge__mark gauge__mark--threshold">
@@ -631,7 +720,7 @@ export function App() {
                 </span>
                 <span className="gauge__mark gauge__mark--benign">
                   <span className="gauge__tick" />
-                  <span className="gauge__label">benign p95 · 35</span>
+                  <span className="gauge__label">benign p95 · 30</span>
                 </span>
                 <span className="gauge__mark gauge__mark--malicious">
                   <span className="gauge__tick" />
@@ -639,7 +728,7 @@ export function App() {
                 </span>
               </div>
               <div className="gauge__ends"><span>0</span><span>100</span></div>
-              <div className="gauge__sep">25-point margin, gated</div>
+              <div className="gauge__sep">30-point margin, gated</div>
             </div>
           </div>
           <div className="prose push">
@@ -652,13 +741,13 @@ export function App() {
           <DocsLink href={`${DOCS}/explanation/fire-rates/`}>measured fire rates</DocsLink>
         </section>
 
-        {/* 7 · Testing and configuration */}
+        {/* 9 · Testing and configuration */}
         <section className="section" aria-labelledby="testconfig">
           <div className="section-label">Testing and configuration</div>
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>5,887 tests across 138 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>6,828 tests across 172 files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -687,7 +776,7 @@ export function App() {
           <DocsLink href={`${DOCS}/reference/configuration/`}>the configuration reference</DocsLink>
         </section>
 
-        {/* 8 · What it cannot see */}
+        {/* 10 · What it cannot see */}
         <section className="section" aria-labelledby="limits">
           <div className="section-label">Limits</div>
           <h2 id="limits">What it cannot see</h2>
@@ -704,10 +793,10 @@ export function App() {
           <DocsLink href={`${DOCS}/explanation/what-trustsight-cannot-see/`}>what TrustSight cannot see</DocsLink>
         </section>
 
-        {/* 9 · The rules */}
+        {/* 11 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">258 documented rules, in 13 namespaces</h2>
+          <h2 id="rules">279 documented rules, in 13 namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published
@@ -736,7 +825,7 @@ export function App() {
           </div>
           <div className="prose push">
             <p>
-              Counts are per the generated rules index; the 21 category pages are closed, so every rule
+              Counts are per the generated rules index; the 22 category pages are closed, so every rule
               has exactly one page. <code>trustsight lint-rules</code> checks the shipped rules against
               their documentation on every test run. The rule files themselves are part of the open
               source repository: read a pattern, change a severity, or rebuild the tool, and nothing
@@ -746,7 +835,7 @@ export function App() {
           <DocsLink href={`${DOCS}/reference/rules/system/`}>the rule system</DocsLink>
         </section>
 
-        {/* 10 · Installation */}
+        {/* 12 · Installation */}
         <section className="section" aria-labelledby="install">
           <div className="section-label">Installation</div>
           <h2 id="install">Install once, review every update after</h2>
@@ -784,7 +873,7 @@ export function App() {
           <DocsLink href={`${DOCS}/getting-started/installation/`}>installing TrustSight</DocsLink>
         </section>
 
-        {/* 11 · FAQ */}
+        {/* 13 · FAQ */}
         <section className="section" aria-labelledby="faq">
           <div className="section-label">FAQ</div>
           <h2 id="faq">Frequently asked questions</h2>
@@ -801,7 +890,7 @@ export function App() {
 
       </main>
 
-      {/* 12 · Colophon */}
+      {/* 14 · Colophon */}
       <footer className="colophon" aria-label="Colophon">
         <div>
           <h2>Colophon</h2>
