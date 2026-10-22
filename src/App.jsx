@@ -3,6 +3,7 @@ import { linkRules } from './rules.js'
 
 const DOCS = 'https://docs.trustsight.org'
 const GITHUB = 'https://github.com/emiliano-go/trustsight'
+const FEED = 'https://watcher.trustsight.org'
 const SECURITY = `${DOCS}/security/`
 const RULES = `${DOCS}/reference/rules/`
 
@@ -493,6 +494,7 @@ export function App() {
         <nav className="masthead-links" aria-label="Primary">
           <a href={DOCS} target="_blank" rel="noreferrer">Docs ↗</a>
           <a href={GITHUB} target="_blank" rel="noreferrer">GitHub ↗</a>
+          <a href={FEED} target="_blank" rel="noreferrer">Watcher feed ↗</a>
           <a href={SECURITY} target="_blank" rel="noreferrer">Security model ↗</a>
         </nav>
       </header>
