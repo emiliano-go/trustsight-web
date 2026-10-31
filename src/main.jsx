@@ -25,7 +25,7 @@ function setTheme(theme) {
     button.querySelector('[data-theme-moon]')?.classList.toggle('is-active', dark)
   })
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.content = dark ? '#0D1117' : '#FBFBF9'
+  if (meta) meta.content = dark ? '#0B0F14' : '#FAFAF7'
   persist('ts-theme', theme)
 }
 

@@ -479,17 +479,28 @@ export function App() {
             <ThemeSwitch />
           </div>
         </div>
-        <h1>TRUST<span>SIGHT</span></h1>
-        <p className="masthead-definition">
-          Audits AUR PKGBUILDs before you update: catches careless malice and structural risk,
-          and tells you what it can&rsquo;t verify.
-        </p>
-        <p className="masthead-note">
-          Fully open source under MIT. The report points at where to look; it does not replace
-          reading the PKGBUILD.
-        </p>
-        <div className="masthead-install">
-          <InstallCommand />
+        <div className="masthead-hero">
+          <div className="masthead-copy">
+            <h1>Audit the AUR update before you build it</h1>
+            <p className="masthead-definition">
+              TrustSight diffs the new PKGBUILD against the one you have, runs a published rule set
+              over the change, and reports what it read and what it could not.
+            </p>
+            <p className="masthead-note">
+              Fully open source under MIT. The report points at where to look; it does not replace
+              reading the PKGBUILD.
+            </p>
+            <div className="masthead-install">
+              <InstallCommand />
+            </div>
+          </div>
+          <div className="masthead-preview">
+            <p className="masthead-preview-label">A review, as it prints</p>
+            <Plate
+              label="Terminal transcript of a clean trustsight review: some-app-bin, version 3.1.0-1 to 3.1.1-2, only pkgver and sha256sums changed, review the diff before building."
+              lines={plateExample.split('\n')}
+            />
+          </div>
         </div>
         <nav className="masthead-links" aria-label="Primary">
           <a href={DOCS} target="_blank" rel="noreferrer">Docs ↗</a>
@@ -504,7 +515,7 @@ export function App() {
         {/* 2 · What it is */}
         <section className="section" aria-labelledby="what">
           <div className="section-label">What it is</div>
-          <h2 id="what">TrustSight audits AUR package updates before you install them.</h2>
+          <h2 id="what">TrustSight audits AUR package updates before you install them</h2>
           <div className="prose">
             <p>
               Whenever an installed AUR package has a newer version available, TrustSight clones the
@@ -534,7 +545,7 @@ export function App() {
         {/* 3 · How it works */}
         <section className="section" aria-labelledby="how">
           <div className="section-label">How it works</div>
-          <h2 id="how">One review, every surface the recipe touches.</h2>
+          <h2 id="how">One review, every surface the recipe touches</h2>
           <div className="prose">
             <p>
               A review is not a grep over the diff. It reads the diff, the files committed beside
@@ -714,24 +725,24 @@ export function App() {
               the two distributions do not overlap.
             </p>
           </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 30. Malicious diffs start at a 5th percentile of 60. The 30-point margin between them is enforced by CI.">
-            <div className="gauge__inner">
-              <div className="gauge__track">
-                <span className="gauge__mark gauge__mark--threshold">
-                  <span className="gauge__tick" />
-                  <span className="gauge__label">threshold · 20</span>
-                </span>
-                <span className="gauge__mark gauge__mark--benign">
-                  <span className="gauge__tick" />
-                  <span className="gauge__label">benign p95 · 30</span>
-                </span>
-                <span className="gauge__mark gauge__mark--malicious">
-                  <span className="gauge__tick" />
-                  <span className="gauge__label gauge__label--above">malicious p5 · 60</span>
-                </span>
-              </div>
-              <div className="gauge__ends"><span>0</span><span>100</span></div>
-              <div className="gauge__sep">30-point margin, gated</div>
+            <div className="gauge__track">
+              <span className="gauge__band gauge__band--benign" aria-hidden="true" />
+              <span className="gauge__band gauge__band--malicious" aria-hidden="true" />
+              <span className="gauge__mark gauge__mark--threshold">
+                <span className="gauge__tick" />
+                <span className="gauge__label">Threshold · 20</span>
+              </span>
+              <span className="gauge__mark gauge__mark--benign">
+                <span className="gauge__tick" />
+                <span className="gauge__label">Benign p95 · 30</span>
+              </span>
+              <span className="gauge__mark gauge__mark--malicious">
+                <span className="gauge__tick" />
+                <span className="gauge__label">Malicious p5 · 60</span>
+              </span>
             </div>
+            <div className="gauge__ends"><span>0</span><span>100</span></div>
+            <div className="gauge__sep">30-point margin, gated</div>
           </div>
           <div className="prose push">
             <p>

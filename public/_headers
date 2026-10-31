@@ -19,4 +19,4 @@
   Cache-Control: public, max-age=86400, must-revalidate
 
 /
-  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-jUpzuMbmQL16KjTUHIY8SUuCD5a3m5W8CfpchENRMq0='; connect-src 'self'
+  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-NaQVBzp+6EVAIvtZSuA6rOcSdqSHgsRgoBPoTXjDjSg='; connect-src 'self'

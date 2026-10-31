@@ -16,22 +16,23 @@
   --root-font-size: 106.25%;
 
   /* 1. brand constants - never flip, never used directly for text */
-  --ink: #0D1117;
-  --paper: #E6EDF3;
+  --ink: #0B0F14;
+  --paper: #E7EDF3;
   --arch: #1793D1;
 
-  /* 2. semantic roles - the only tokens components use */
-  --bg: light-dark(#FBFBF9, #0D1117);
-  --fg: light-dark(#16191D, #E6EDF3);
-  --fg-muted: light-dark(#5A6169, #8B949E);
-  --rule: light-dark(#E3E1DB, #21262D);
+  /* 2. semantic roles - the only tokens components use.
+     One neutral ramp, tinted toward the night-shift ink of the audit desk. */
+  --bg: light-dark(#FAFAF7, #0B0F14);
+  --fg: light-dark(#151A20, #E7EDF3);
+  --fg-muted: light-dark(#59616C, #8A96A3);
+  --rule: light-dark(#E2E2DB, #1C2530);
   --accent: light-dark(#1073A8, #1793D1);
 
   /* 3. plate tokens - dark defaults, overridden with literals in light mode */
-  --plate-bg: #0D1117;
-  --plate-fg: #E6EDF3;
-  --plate-dim: #8B949E;
-  --plate-frame: #30363D;
+  --plate-bg: #0A0D12;
+  --plate-fg: #E7EDF3;
+  --plate-dim: #8A96A3;
+  --plate-frame: #25303B;
   --plate-green: #3FB950;
   --plate-amber: #D29922;
   --plate-red: #F85149;
@@ -48,10 +49,10 @@
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --plate-bg: #F6F8FA;
-  --plate-fg: #1F2328;
-  --plate-dim: #57606A;
-  --plate-frame: #D0D7DE;
+  --plate-bg: #F4F6F5;
+  --plate-fg: #1C2229;
+  --plate-dim: #5A636E;
+  --plate-frame: #D5DAD6;
   --plate-green: #1A7F37;
   --plate-amber: #9A6700;
   --plate-red: #CF222E;
@@ -108,6 +109,7 @@ body {
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.7;
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -143,7 +145,7 @@ code, kbd, samp {
   background: var(--accent);
   color: var(--plate-bg);
   font-size: 0.7647rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .skip-link:focus { left: 0; }
@@ -187,22 +189,28 @@ main > .section:nth-child(n + 2) {
   contain-intrinsic-size: auto 1100px;
 }
 
+main { counter-reset: section; }
+
 .section-label {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   margin: 0 0 22px;
   color: var(--fg-muted);
   font-family: var(--font-mono);
-  font-size: 0.6471rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.7059rem;
+  font-weight: 500;
+  counter-increment: section;
 }
 
 .section-label::before {
+  content: counter(section, decimal-leading-zero);
+  color: var(--accent);
+}
+
+.section-label::after {
   content: "";
-  width: 34px;
+  flex: 1;
   height: 1px;
   background: var(--rule);
 }
@@ -211,9 +219,9 @@ main > .section:nth-child(n + 2) {
   margin: 0 0 26px;
   max-width: 22em;
   font-size: clamp(1.6471rem, 3.8vw, 2.3529rem);
-  font-weight: 700;
-  line-height: 1.18;
-  letter-spacing: -0.015em;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -223,7 +231,7 @@ main > .section:nth-child(n + 2) {
 
 .prose p:last-child { margin-bottom: 0; }
 
-.prose strong { color: var(--fg); font-weight: 700; }
+.prose strong { color: var(--fg); font-weight: 600; }
 
 .prose code {
   font-family: var(--font-mono);
@@ -258,6 +266,39 @@ main > .section:nth-child(n + 2) {
   padding: 34px 0 90px;
 }
 
+.masthead-hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 64px;
+  align-items: center;
+  padding: 56px 0 24px;
+}
+
+.masthead-copy { min-width: 0; }
+
+.masthead-preview { min-width: 0; }
+
+.masthead-preview-label {
+  margin: 0 0 14px;
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7059rem;
+}
+
+.masthead-preview .plate { margin: 0; }
+
+.masthead-preview .plate__scroll {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: auto;
+}
+
+.masthead-preview .term {
+  font-size: min(0.7647rem, calc(100cqi / 50));
+}
+
 .masthead-top {
   display: flex;
   justify-content: space-between;
@@ -268,8 +309,8 @@ main > .section:nth-child(n + 2) {
 .wordmark {
   font-family: var(--font-sans);
   font-size: 1.1765rem;
-  font-weight: 700;
-  letter-spacing: 0.28em;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   color: var(--fg);
   border-bottom: 0;
   transition: opacity var(--dur) var(--ease);
@@ -297,8 +338,7 @@ main > .section:nth-child(n + 2) {
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
               transform var(--dur) var(--ease);
 }
-.theme-switch:hover { border-color: var(--accent); transform: translateY(-1px); }
-.theme-switch:active { transform: translateY(0); }
+.theme-switch:hover { border-color: var(--accent); }
 
 .theme-option {
   display: grid;
@@ -336,8 +376,6 @@ main > .section:nth-child(n + 2) {
 }
 .a11y-button:hover,
 .a11y-button.is-open { border-color: var(--accent); color: var(--accent); }
-.a11y-button:hover { transform: translateY(-1px); }
-.a11y-button:active { transform: translateY(0); }
 
 .a11y-panel {
   position: absolute;
@@ -393,8 +431,7 @@ main > .section:nth-child(n + 2) {
   transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease),
               background var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.a11y-seg button:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
-.a11y-seg button:active { transform: translateY(0); }
+.a11y-seg button:hover { border-color: var(--accent); color: var(--accent); }
 .a11y-seg button.is-on {
   background: var(--accent);
   border-color: var(--accent);
@@ -403,22 +440,21 @@ main > .section:nth-child(n + 2) {
 .a11y-big { font-size: 0.8824rem; }
 
 .masthead h1 {
-  margin: clamp(70px, 14vh, 130px) 0 0;
+  margin: 0;
   font-family: var(--font-sans);
-  font-size: clamp(2.7059rem, 9vw, 5.6471rem);
-  font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: clamp(2.1176rem, 4.6vw, 3.5294rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
-.masthead h1 span { color: var(--accent); }
 
 .masthead-definition {
-  margin: 30px 0 0;
-  max-width: 34em;
+  margin: 26px 0 0;
+  max-width: 30em;
   color: var(--fg);
-  font-size: clamp(1.1176rem, 2.4vw, 1.3529rem);
-  line-height: 1.5;
+  font-size: clamp(1.0588rem, 1.8vw, 1.2353rem);
+  line-height: 1.55;
 }
 
 .masthead-note {
@@ -483,10 +519,8 @@ main > .section:nth-child(n + 2) {
 .install-command__title {
   color: var(--fg-muted);
   font-family: var(--font-sans);
-  font-size: 0.6471rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.7059rem;
+  font-weight: 500;
 }
 
 .install-command__actions {
@@ -520,10 +554,8 @@ main > .section:nth-child(n + 2) {
   background: transparent;
   color: var(--fg-muted);
   font-family: var(--font-sans);
-  font-size: 0.6471rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.7059rem;
+  font-weight: 500;
   cursor: pointer;
   transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
@@ -541,10 +573,9 @@ main > .section:nth-child(n + 2) {
   background: transparent;
   color: var(--fg-muted);
   font-family: var(--font-sans);
-  font-size: 0.6471rem;
-  font-weight: 600;
+  font-size: 0.7059rem;
+  font-weight: 500;
   line-height: 1.2;
-  text-transform: uppercase;
   cursor: pointer;
   transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease),
               background-color var(--dur) var(--ease);
@@ -552,8 +583,7 @@ main > .section:nth-child(n + 2) {
 
 .install-command__protocol-option {
   color: var(--fg-muted);
-  font-size: 0.5294rem;
-  letter-spacing: 0.03em;
+  font-size: 0.6176rem;
   transition: color var(--dur) var(--ease);
 }
 
@@ -631,7 +661,6 @@ main > .section:nth-child(n + 2) {
   color: var(--fg-muted);
   font-family: var(--font-mono);
   font-size: 0.7059rem;
-  letter-spacing: 0.08em;
 }
 
 .principle-list strong { display: block; margin-bottom: 4px; font-size: 1rem; }
@@ -752,8 +781,7 @@ main > .section:nth-child(n + 2) {
 .flow__phase h3 {
   margin: 0 0 4px;
   font-size: 1.0588rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 600;
 }
 
 .flow__lead {
@@ -817,10 +845,8 @@ main > .section:nth-child(n + 2) {
   border-radius: 999px;
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: 0.6176rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.7059rem;
+  font-weight: 500;
 }
 
 /* One docs link at the end of every section */
@@ -859,14 +885,12 @@ main > .section:nth-child(n + 2) {
 .data-table thead th {
   color: var(--fg-muted);
   font-family: var(--font-mono);
-  font-size: 0.6176rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.7059rem;
+  font-weight: 500;
   white-space: nowrap;
 }
 
-.data-table tbody th { font-weight: 700; white-space: nowrap; }
+.data-table tbody th { font-weight: 600; white-space: nowrap; }
 
 .data-table td { color: var(--fg-muted); }
 
@@ -888,9 +912,6 @@ main > .section:nth-child(n + 2) {
 .gauge {
   margin: 48px 0 8px;
   max-width: 720px;
-  /* Size container: the tick positions are percentages so the track already
-     scales; only the fixed-size labels need to shrink to fit narrow screens
-     without colliding (see the cqi rule on .gauge__label below). */
   container-type: inline-size;
 }
 
@@ -898,15 +919,36 @@ main > .section:nth-child(n + 2) {
   position: relative;
   height: 1px;
   background: var(--rule);
-  /* Headroom for the above-track label (malicious p5 · 60) and footroom for
-     the below-track labels: without it, the label's line box pokes past the
-     gauge and overflow-x: auto turns that into a vertical scrollbar. */
-  margin: 44px 6px 80px;
+  margin: 52px 6px 64px;
+}
+
+/* The two measured regions sit behind the scale as quiet bands: benign up to
+   its p95, malicious from its p5. The labels never share a side. */
+.gauge__band {
+  position: absolute;
+  top: 50%;
+  height: 52px;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  z-index: 0;
+}
+
+.gauge__band--benign {
+  left: 0;
+  width: 30%;
+  background: color-mix(in srgb, var(--plate-green) 12%, transparent);
+}
+
+.gauge__band--malicious {
+  left: 60%;
+  right: 0;
+  background: color-mix(in srgb, var(--plate-red) 10%, transparent);
 }
 
 .gauge__mark {
   position: absolute;
   top: 50%;
+  z-index: 1;
   transform: translate(-50%, -50%);
 }
 
@@ -922,7 +964,7 @@ main > .section:nth-child(n + 2) {
 .gauge__mark--benign { left: 30%; }
 .gauge__mark--malicious { left: 60%; }
 
-.gauge__mark--threshold .gauge__tick { background: var(--fg-muted); height: 12px; }
+.gauge__mark--threshold .gauge__tick { background: var(--accent); height: 22px; }
 .gauge__mark--benign .gauge__tick { background: var(--plate-green); }
 .gauge__mark--malicious .gauge__tick { background: var(--plate-red); }
 
@@ -931,19 +973,23 @@ main > .section:nth-child(n + 2) {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  margin-top: 10px;
+  margin-top: 12px;
   white-space: nowrap;
   color: var(--fg-muted);
   font-family: var(--font-mono);
   line-height: 1.35;
-  /* The two below-track labels sit 25% of the track apart; each is ~9em
-     wide, so they touch when the container is 36em wide. /37 shrinks them
-     in lockstep with the container, capped at the 12px reading size. */
-  font-size: min(0.7059rem, calc(100cqi / 37));
+  font-size: min(0.7059rem, calc(100cqi / 40));
 }
 
-.gauge__label--above { top: auto; bottom: 100%; margin-top: 0; margin-bottom: 10px; }
-.gauge__mark--threshold .gauge__label { color: var(--fg-muted); }
+.gauge__mark--threshold .gauge__label,
+.gauge__mark--malicious .gauge__label {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.gauge__mark--threshold .gauge__label { color: var(--accent); }
 .gauge__mark--benign .gauge__label { color: var(--plate-green); }
 .gauge__mark--malicious .gauge__label { color: var(--plate-red); }
 
@@ -962,8 +1008,7 @@ main > .section:nth-child(n + 2) {
   color: var(--fg-muted);
   font-family: var(--font-mono);
   font-size: 0.7353rem;
-  margin: -30px 6px 0;
-  letter-spacing: 0.02em;
+  margin: 14px 6px 0;
 }
 
 /* ---------- FAQ ---------- */
@@ -1016,28 +1061,27 @@ main > .section:nth-child(n + 2) {
 .ns-list {
   margin: 40px 0 0;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1px;
   background: var(--rule);
   border: 1px solid var(--rule);
 }
 
 .ns {
+  min-width: 0;
   background: var(--bg);
   padding: 28px 30px;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
-              background var(--dur) var(--ease);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
 .ns:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 1px var(--accent);
-  background: color-mix(in srgb, var(--bg) 98%, var(--accent) 2%);
+  background: color-mix(in srgb, var(--bg) 96%, var(--accent) 4%);
 }
 
 .ns-head {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -1052,7 +1096,7 @@ main > .section:nth-child(n + 2) {
   align-self: center;
 }
 
-.ns-head h3 { margin: 0; font-size: 1rem; font-weight: 700; }
+.ns-head h3 { margin: 0; font-size: 1rem; font-weight: 600; }
 
 .ns-count {
   margin-left: auto;
@@ -1090,8 +1134,7 @@ main > .section:nth-child(n + 2) {
               transform var(--dur) var(--ease);
 }
 
-.ns-cats a:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
-.ns-cats a:active { transform: translateY(0); }
+.ns-cats a:hover { border-color: var(--accent); color: var(--accent); }
 
 .ns-n {
   color: var(--fg-muted);
@@ -1143,7 +1186,7 @@ main > .section:nth-child(n + 2) {
 .sub-heading {
   margin: 46px 0 16px;
   font-size: 1.1176rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* ---------- colophon ---------- */
@@ -1160,9 +1203,7 @@ main > .section:nth-child(n + 2) {
   margin: 0 0 18px;
   font-family: var(--font-sans);
   font-size: 0.8824rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .colophon p {
@@ -1205,17 +1246,23 @@ main > .section:nth-child(n + 2) {
 
 /* ---------- responsive ---------- */
 
+@media (max-width: 980px) {
+  .masthead-hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 0 8px; }
+  .masthead-preview { max-width: 560px; }
+}
+
 @media (max-width: 720px) {
   body { font-size: 0.9412rem; }
+  .masthead-preview { display: none; }
   .page { padding: 0 20px; }
   .section { padding: 70px 0 76px; }
   .masthead { padding: 24px 0 60px; min-height: 0; }
-  /* The wordmark's 0.28em tracking makes the row (mark + a11y + theme
-     buttons) need ~300px; on a 320px screen the content column is 280px,
-     so the tracking is relaxed and the row keeps its single line. */
+  /* The wordmark's tracking makes the row (mark + a11y + theme buttons)
+     need ~300px; on a 320px screen the content column is 280px, so the
+     tracking is relaxed and the row keeps its single line. */
   .masthead-top { gap: 14px; }
   .wordmark { font-size: 1.0588rem; letter-spacing: 0.18em; }
-  .masthead h1 { margin-top: 80px; font-size: clamp(2.3529rem, 12vw, 3.2941rem); }
+  .masthead h1 { font-size: clamp(2.1176rem, 9vw, 2.8235rem); }
   .masthead-links { flex-wrap: wrap; gap: 18px; margin-top: 56px; }
   .colophon { grid-template-columns: 1fr; gap: 36px; }
   .colophon-note { grid-column: 1; }
@@ -1263,10 +1310,8 @@ main > .section:nth-child(n + 2) {
     margin-bottom: 3px;
     color: var(--fg-muted);
     font-family: var(--font-mono);
-    font-size: 0.6176rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: 0.7059rem;
+    font-weight: 500;
   }
   .principle-list li { padding-left: 48px; }
   .flow { grid-template-columns: 1fr; gap: 30px; }
@@ -1277,7 +1322,6 @@ main > .section:nth-child(n + 2) {
   }
   .flow__phase { padding-top: 0; padding-left: 52px; }
   .gauge { overflow-x: auto; }
-  .gauge__inner { min-width: 0; }
   /* Keep the scale ends and the caption in step with the labels. The
      caption's negative top margin shortens the flow below the ends row
      ("0 … 100"), which would otherwise poke past the gauge and, with
@@ -1292,7 +1336,7 @@ main > .section:nth-child(n + 2) {
 
 @media (max-width: 400px) {
   .install-command__header { gap: 8px; padding-left: 12px; }
-  .install-command__title { font-size: 0.5294rem; letter-spacing: 0.08em; }
+  .install-command__title { font-size: 0.6471rem; }
   .install-command__actions { gap: 8px; }
   .install-command__protocol { min-width: 86px; padding-right: 4px; padding-left: 4px; }
   .install-command__copy { padding-right: 7px; padding-left: 7px; font-size: 0.5882rem; }
