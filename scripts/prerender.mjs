@@ -22,12 +22,17 @@ let cssPath = null
 if (cssLink) {
   cssPath = new URL(`../dist${cssLink[1]}`, import.meta.url)
   cssText = await readFile(cssPath, 'utf8')
-  const styleTag = `<style>${cssText}</style>`
   const hash = `'sha256-${createHash('sha256').update(cssText).digest('base64')}'`
   const headers = await readFile(headersPath, 'utf8')
-  const pinned = headers.replace(/style-src 'self'/, `style-src 'self' ${hash}`)
+  // `_headers` may pin the CSP on more than one matching rule; every one must
+  // carry the hash, because the browser enforces the intersection and a single
+  // unpinned style-src blocks the inlined <style>.
+  const pinned = headers.replaceAll("style-src 'self'", `style-src 'self' ${hash}`)
   if (pinned === headers) {
     throw new Error('prerender: could not pin inline CSS hash (style-src \'self\' not found in dist/_headers)')
+  }
+  if (/style-src 'self'(?!\s+'sha256-)/.test(pinned)) {
+    throw new Error('prerender: an unpinned style-src remains in dist/_headers')
   }
   await writeFile(headersPath, pinned)
 }

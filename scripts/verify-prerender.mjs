@@ -18,7 +18,7 @@ const checks = [
   ['client bundle does not contain the framework runtime', !client.includes('preact') && !client.includes('hydrate')],
   ['no additional inline scripts were generated', (html.match(/<script(?![^>]*\bsrc=)[^>]*>/g) ?? []).length === 2],
   ['stylesheet is inlined, not a render-blocking asset', style !== null && !assets.some((file) => file.endsWith('.css'))],
-  ['inline style hash is pinned in the CSP', styleHash !== null && headers.includes(`style-src 'self' ${styleHash}`)],
+  ['inline style hash is pinned on every CSP line', styleHash !== null && headers.includes(`style-src 'self' ${styleHash}`) && !/style-src 'self'(?!\s+'sha256-)/.test(headers)],
   ['font subset is shipped (under 35 kB)', fonts.some((file) => file.endsWith('.woff2'))],
 ]
 

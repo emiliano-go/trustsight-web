@@ -18,6 +18,3 @@
 
 /*.svg
   Cache-Control: public, max-age=86400, must-revalidate
-
-/
-  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-NaQVBzp+6EVAIvtZSuA6rOcSdqSHgsRgoBPoTXjDjSg='; connect-src 'self'
