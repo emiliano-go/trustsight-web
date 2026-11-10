@@ -133,9 +133,14 @@ def build_figures() -> dict:
     def _namespace(letters: str, unit: str = "rules") -> dict:
         counts = _by_slug(letters)
         total = sum(counts.values())
+        ids = sorted(
+            (rule_id for rule_id in rule_categories if rule_id[0].upper() in letters),
+            key=lambda rule_id: (rule_id[0], int(rule_id[1:])),
+        )
         return {
             "count_label": f"{total} {unit}",
             "total": total,
+            "range": f"{ids[0]}-{ids[-1]}" if ids else "",
             "categories": [
                 [titles[slug], slug, count]
                 for slug, count in sorted(counts.items(), key=lambda kv: -kv[1])
@@ -156,10 +161,13 @@ def build_figures() -> dict:
         "upstream_manifests": _namespace("U"),
         "unverifiable": _namespace("W", unit="findings, weight 0"),
     }
+    declared_ids = sorted(declared, key=lambda rule_id: (rule_id[0], int(rule_id[1:])))
     namespaces["declared_practice"] = {
         "count_label": f"{len(declared)} findings, weight 0",
         "total": len(declared),
+        "range": f"{declared_ids[0]}-{declared_ids[-1]}" if declared_ids else "",
         "categories": [],
+        "reasons": [[rule_id, declared[rule_id]] for rule_id in declared_ids],
     }
 
     return {

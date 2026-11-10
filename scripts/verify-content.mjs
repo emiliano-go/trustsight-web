@@ -5,13 +5,13 @@ const files = {
   app: await read('../src/App.jsx'),
   index: await read('../index.html'),
   plate: await read('../src/plate.js'),
-  figures: JSON.parse(await read('../src/figures.generated.json')),
 }
 
-const fig = files.figures
-const comma = (n) => n.toLocaleString('en-US')
-
-// Fixed prose checks that are not derived figures.
+// Figures are no longer asserted here: App.jsx imports
+// src/figures.generated.json, so the published numbers cannot diverge from
+// the catalog. `verify:rules` keeps that file current and
+// `verify-prerender.mjs` checks the rendered output carries the values.
+// This script guards the editorial content that is not derived.
 const checks = [
   ['license metadata uses the current default branch', files.index.includes('trustsight/blob/master/LICENSE')],
   ['gate suites are described without stale gate counts', files.app.includes('separate security and calibration gate suites')],
@@ -23,37 +23,9 @@ const checks = [
   ['current quickstart examples are captured', files.plate.includes('some-app-bin') && files.plate.includes('sketchy-package') && files.plate.includes('some-trusted-tool') && files.plate.includes('[H001]')],
   ['old terminal examples are absent', !files.plate.includes('chez-scheme-bin') && !files.plate.includes('sketchy-pkg') && !files.plate.includes('[R004]') && !files.plate.includes('resembles libuv')],
   ['stale seed counts are absent', !files.app.includes('180,000') && !files.app.includes('35,587')],
+  ['published figures are imported, not hand-typed', files.app.includes("from './figures.generated.json'") && files.app.includes('const NS = figures.namespaces')],
+  ['namespace cards derive their counts from the catalog', files.app.includes('count: NS[key].count_label') && files.app.includes('cats: key === \'declared_practice\'')],
 ]
-
-// Every figure the site prints is derived in src/figures.generated.json from
-// the trustSight catalog (rule counts) and its published-figures.json (seed,
-// suite, calibration). `npm run verify:rules` regenerates and checks that
-// file against the catalog, so a site copy that lags the tool fails here.
-checks.push(
-  ['documented rule total matches the catalog', files.app.includes(`${fig.total_rules} documented rules, in ${fig.namespace_count} namespaces`)],
-  ['category pages match the catalog', files.app.includes(`the ${fig.category_pages} category pages`)],
-)
-
-for (const [name, ns] of Object.entries(fig.namespaces)) {
-  checks.push([`${name} namespace count matches the catalog`, files.app.includes(`count: '${ns.count_label}'`)])
-  for (const [title, slug, count] of ns.categories) {
-    checks.push([`${name} category ${slug} count matches the catalog`, files.app.includes(`['${title}', '${slug}', ${count}]`)])
-  }
-}
-
-const cal = fig.calibration
-checks.push(
-  ['calibration figures match the measured corpus',
-    files.app.includes(`${cal.benign_zero_rate_pct}%`) &&
-    files.app.includes(`95th percentile of <strong>${cal.benign_p95}</strong>`) &&
-    files.app.includes(`5th percentile of <strong>${cal.malicious_p5}</strong>`) &&
-    files.app.includes(`${cal.threshold_percentile}th percentile`)],
-  ['published seed counts are exact',
-    files.app.includes(comma(fig.seed.source_urls)) &&
-    files.app.includes(comma(fig.seed.hashed_maintainers)) &&
-    files.app.includes(comma(fig.seed.dependency_names))],
-  ['current test count is documented', files.app.includes(`${comma(fig.tests.count)} tests across ${fig.tests.files} files`)],
-)
 
 const failed = checks.filter(([, passed]) => !passed)
 if (failed.length) {

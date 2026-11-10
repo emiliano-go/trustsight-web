@@ -3,6 +3,7 @@
     "detection": {
       "count_label": "145 rules",
       "total": 145,
+      "range": "H001-R152",
       "categories": [
         [
           "Fetch and Execution",
@@ -72,13 +73,14 @@
       ]
     },
     "structural": {
-      "count_label": "32 rules",
-      "total": 32,
+      "count_label": "34 rules",
+      "total": 34,
+      "range": "C001-C034",
       "categories": [
         [
           "Integrity and Verification",
           "integrity",
-          18
+          19
         ],
         [
           "Install and Persistence",
@@ -88,6 +90,11 @@
         [
           "Fetch and Execution",
           "fetch-and-execution",
+          3
+        ],
+        [
+          "Maintainer and Metadata",
+          "maintainer-and-metadata",
           3
         ],
         [
@@ -101,11 +108,6 @@
           2
         ],
         [
-          "Maintainer and Metadata",
-          "maintainer-and-metadata",
-          2
-        ],
-        [
           "Deception and Anti-Analysis",
           "deception",
           1
@@ -115,6 +117,7 @@
     "dependency_graph": {
       "count_label": "5 rules",
       "total": 5,
+      "range": "D001-D005",
       "categories": [
         [
           "Naming and Dependencies",
@@ -126,6 +129,7 @@
     "sabotage": {
       "count_label": "8 rules",
       "total": 8,
+      "range": "S001-S008",
       "categories": [
         [
           "Sabotage",
@@ -137,6 +141,7 @@
     "crossfire": {
       "count_label": "34 rules",
       "total": 34,
+      "range": "X001-X034",
       "categories": [
         [
           "Crossfire",
@@ -148,6 +153,7 @@
     "meta": {
       "count_label": "6 rules",
       "total": 6,
+      "range": "M001-M006",
       "categories": [
         [
           "Meta and Confluence",
@@ -159,6 +165,7 @@
     "entropy": {
       "count_label": "3 rules",
       "total": 3,
+      "range": "E001-E003",
       "categories": [
         [
           "Entropy",
@@ -168,19 +175,26 @@
       ]
     },
     "temporal": {
-      "count_label": "5 rules",
-      "total": 5,
+      "count_label": "12 rules",
+      "total": 12,
+      "range": "T001-T012",
       "categories": [
         [
           "Temporal Context",
           "temporal",
-          5
+          11
+        ],
+        [
+          "Naming and Dependencies",
+          "naming-and-dependency",
+          1
         ]
       ]
     },
     "correlation": {
       "count_label": "14 rules",
       "total": 14,
+      "range": "G001-G014",
       "categories": [
         [
           "Correlation",
@@ -192,6 +206,7 @@
     "artifact": {
       "count_label": "8 rules",
       "total": 8,
+      "range": "A001-A008",
       "categories": [
         [
           "Artifact",
@@ -203,6 +218,7 @@
     "upstream_manifests": {
       "count_label": "12 rules",
       "total": 12,
+      "range": "U001-U012",
       "categories": [
         [
           "Upstream Manifests",
@@ -217,44 +233,80 @@
       ]
     },
     "unverifiable": {
-      "count_label": "12 findings, weight 0",
-      "total": 12,
+      "count_label": "13 findings, weight 0",
+      "total": 13,
+      "range": "W001-W013",
       "categories": [
         [
           "Unverifiable",
           "unverifiable",
-          12
+          13
         ]
       ]
     },
     "declared_practice": {
       "count_label": "8 findings, weight 0",
       "total": 8,
-      "categories": []
+      "range": "P001-P009",
+      "categories": [],
+      "reasons": [
+        [
+          "P001",
+          "checksums declared for all non-VCS sources"
+        ],
+        [
+          "P002",
+          "validpgpkeys declared"
+        ],
+        [
+          "P003",
+          "a signature source accompanies a source, with PGP keys declared"
+        ],
+        [
+          "P005",
+          "source pinned to a full commit hash"
+        ],
+        [
+          "P006",
+          "source pinned to a tag (tags can be repointed; commit pins cannot)"
+        ],
+        [
+          "P007",
+          "source hosted on a trusted forge over HTTPS"
+        ],
+        [
+          "P008",
+          "source tracks a branch or unpinned ref; upstream decides at build time what this compiles and runs"
+        ],
+        [
+          "P009",
+          "the recipe declares a prebuilt deliverable (-bin/-appimage/-wine name or a prebuilt-artifact source)"
+        ]
+      ]
     }
   },
   "namespace_count": 13,
-  "total_rules": 292,
+  "total_rules": 302,
   "category_pages": 22,
   "tests": {
-    "count": 8299,
-    "files": 210
+    "count": 8678,
+    "files": 235
   },
   "seed": {
-    "source_urls": 185902,
+    "dependency_names": 215504,
     "hashed_maintainers": 36912,
-    "dependency_names": 215504
+    "source_urls": 185902
   },
   "calibration": {
-    "labelled_fixtures": 210,
-    "corpus_diffs": 8393,
-    "benign_zero_rate_pct": 74.8,
+    "benign_above_threshold_pct": 6.9,
     "benign_p95": 30,
-    "malicious_p5": 40,
+    "benign_zero_rate_pct": 73.9,
+    "corpus_diffs": 8393,
+    "labelled_fixtures": 213,
     "malicious_minimum": 20,
-    "benign_above_threshold_pct": 6.6,
-    "threshold_percentile": 93.4,
+    "malicious_p5": 40,
+    "ruleset_trigger_rate_pct": 30.2,
     "separation_margin": 10,
-    "ruleset_trigger_rate_pct": 29.5
+    "threshold_percentile": 93.1
   }
 }

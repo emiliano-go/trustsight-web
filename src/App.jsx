@@ -1,5 +1,12 @@
+import figures from './figures.generated.json'
 import { plateExample, plateFlagged, plateDeps } from './plate.js'
 import { linkRules } from './rules.js'
+
+const NS = figures.namespaces
+const cal = figures.calibration
+const comma = (n) => n.toLocaleString('en-US')
+const catCount = (namespace, slug) =>
+  NS[namespace].categories.find(([, categorySlug]) => categorySlug === slug)?.[2] ?? 0
 
 const DOCS = 'https://docs.trustsight.org'
 const GITHUB = 'https://github.com/emiliano-go/trustsight'
@@ -181,7 +188,7 @@ const detects = [
   { attack: 'Source URL typosquatting (<code>githab.com</code> for <code>github.com</code>)', how: 'Character-level edit distance against known forge domains (the confusable-domain pipeline). A prior, not a rule.' },
   { attack: 'Package-name typosquatting (<code>libuvc</code> resembling <code>libuv</code>)', how: 'Edit-distance comparison against more popular packages in the seed database (H029).' },
   { attack: 'Source URL swapped without a version bump', how: 'Tracks source URL changes that do not come with a new version (C003).' },
-  { attack: 'Novel, never-before-seen URLs or maintainers', how: 'Compares against the signed release seed: 185,902 known source URLs, 36,912 hashed maintainer identities and 215,504 dependency names, in the novelty tier.' },
+  { attack: 'Novel, never-before-seen URLs or maintainers', how: `Compares against the signed release seed: ${comma(figures.seed.source_urls)} known source URLs, ${comma(figures.seed.hashed_maintainers)} hashed maintainer identities and ${comma(figures.seed.dependency_names)} dependency names, in the novelty tier.` },
   { attack: 'Known-bad indicators', how: 'Matches package URLs and strings against signed, federated IOC baselines; reported in the IOC tier, outside the heuristic score.' },
   { attack: 'Unicode bidi override attacks (invisible characters that change how text displays)', how: 'Detects directionality overrides and homoglyph codepoints in PKGBUILD content (R013, FATAL).' },
   { attack: 'Reviewer-directed instruction templates in package metadata', how: 'Flags common reviewer-manipulation templates as a high-severity tripwire (R012); a match requires review, not an inference about author intent.' },
@@ -199,169 +206,66 @@ const tiers = [
   { tier: 'A: Structural', what: 'Direct structural facts from the diff.', example: '<code>curl | bash</code> (R001); checksum set to SKIP (R004)', weight: 'The strongest evidence' },
   { tier: 'B: Priors / Context', what: 'Source-bucket classification of every new URL.', example: 'an unknown domain adds weight', weight: 'Moderate: a prior, not proof' },
   { tier: 'C: History / Novelty', what: 'First-seen history for URLs and maintainers, maturity-gated.', example: 'URL first seen globally; maintainer first seen', weight: 'Scales with observation history' },
-  { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: 'P001-P008', weight: '0: reported, never scored' },
-  { tier: 'Reported, not scored', what: 'Analysis boundaries: bytes the package will run that this run could not read.', example: 'W001-W012', weight: '0: always shown' },
+  { tier: 'D: Verification', what: 'What the recipe declares: checksums, PGP keys, pins.', example: NS.declared_practice.range, weight: '0: reported, never scored' },
+  { tier: 'Reported, not scored', what: 'Analysis boundaries: bytes the package will run that this run could not read.', example: NS.unverifiable.range, weight: '0: always shown' },
 ]
 
-const nsCategories = {
-  r: [
-    ['Fetch and Execution', 'fetch-and-execution', 36],
-    ['Integrity and Verification', 'integrity', 28],
-    ['Install and Persistence', 'install-and-persist', 18],
-    ['Maintainer and Metadata', 'maintainer-and-metadata', 12],
-    ['Obfuscation', 'obfuscation', 8],
-    ['Staging and Reconnaissance', 'staging-and-recon', 8],
-    ['Naming and Dependencies', 'naming-and-dependency', 6],
-    ['Corpus Behavioral', 'corpus-behavioral', 6],
-    ['Deception and Anti-Analysis', 'deception', 5],
-    ['Count-Based', 'count-based', 5],
-    ['Composition', 'composition', 4],
-    ['Temporal Context', 'temporal', 3],
-    ['Indicators', 'indicator', 1],
-  ],
-  c: [
-    ['Integrity and Verification', 'integrity', 18],
-    ['Install and Persistence', 'install-and-persist', 4],
-    ['Fetch and Execution', 'fetch-and-execution', 3],
-    ['Composition', 'composition', 2],
-    ['Staging and Reconnaissance', 'staging-and-recon', 2],
-    ['Maintainer and Metadata', 'maintainer-and-metadata', 2],
-    ['Deception and Anti-Analysis', 'deception', 1],
-  ],
-  d: [
-    ['Naming and Dependencies', 'naming-and-dependency', 4],
-  ],
-  s: [
-    ['Sabotage', 'sabotage', 8],
-  ],
-  m: [
-    ['Meta and Confluence', 'meta', 6],
-  ],
-  e: [
-    ['Entropy', 'entropy', 3],
-  ],
-  t: [
-    ['Temporal Context', 'temporal', 5],
-  ],
-  g: [
-    ['Correlation', 'correlation', 10],
-  ],
-  a: [
-    ['Artifact', 'artifact', 8],
-  ],
-  u: [
-    ['Upstream Manifests', 'upstream-manifests', 6],
-    ['Upstream Release Integrity', 'upstream-release', 4],
-  ],
-  w: [
-    ['Unverifiable', 'unverifiable', 12],
-  ],
-  x: [
-    ['Crossfire', 'crossfire', 34],
-  ],
+/* Short labels for the declared-practice chips. The id list itself comes from
+   the generated catalog, so a new P rule still renders (falling back to its
+   published description) even before this map gains an entry. */
+const DECLARED_LABELS = {
+  P001: 'Checksums declared for all non-VCS sources',
+  P002: 'validpgpkeys declared',
+  P003: 'Signature source with PGP keys declared',
+  P005: 'Source pinned to a full commit hash',
+  P006: 'Source pinned to a tag',
+  P007: 'Source on a trusted forge over HTTPS',
+  P008: 'Source tracks a branch or unpinned ref',
+  P009: 'Recipe declares a prebuilt deliverable',
 }
 
-const namespaces = [
-  {
-    letter: 'R',
-    name: 'Detection rules',
-    count: '140 rules',
-    blurb: '140 pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, temporal context, composition, and indicators, and every match is reported with the line or URL it fired on.',
-    cats: nsCategories.r,
-  },
-  {
-    letter: 'C',
-    name: 'Structural rules',
-    count: '32 rules',
-    blurb: 'Thirty-two context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, install and persistence, fetch, composition, staging, metadata, and deception.',
-    cats: nsCategories.c,
-  },
-  {
-    letter: 'D',
-    name: 'Dependency-graph rules',
-    count: '4 rules',
-    blurb: 'Four rules treat the dependency graph as first-class evidence. A review walks a package\'s AUR dependencies, direct ones by default and deeper with --depth, analysing each as a package in its own right: has it been seen before, does its name resemble a more popular package, does it fetch over the network during build, does it hijack a provides others rely on. Novelty is judged against the same signed seed the URL rules use.',
-    cats: nsCategories.d,
-  },
-  {
-    letter: 'S',
-    name: 'Sabotage rules',
-    count: '8 rules',
-    blurb: 'Eight rules look for payloads aimed at the operator\'s machine rather than at getting something out of it: resource exhaustion, deletion, permission sabotage, service disruption, and resource theft. What unites them is that the machine running the build is the target. Each rule is written against a distinction, not a command: rm -rf inside the sandbox is housekeeping, rm -rf / is an attack, and a mention is not an invocation.',
-    cats: nsCategories.s,
-  },
-  {
-    letter: 'X',
-    name: 'Crossfire rules',
-    count: '34 rules',
-    blurb: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, command substitution and other tokenizer-defeating shapes assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
-    cats: nsCategories.x,
-  },
-  {
-    letter: 'M',
-    name: 'Meta and confluence',
-    count: '6 rules',
-    blurb: 'Six meta rules reason over the finding set and the instrument itself rather than the diff: a declared practice contradicted by structure, a weak signal that spans several layers, or a composition no single family owns, plus three tool-health checks (a co-fire that should have appeared, a licensor absent on a licensed shape, a campaign class re-armed too often). The tool-health findings carry weight 0 and never join a package\u2019s finding set, so a detector-health note cannot move a verdict.',
-    cats: nsCategories.m,
-  },
-  {
-    letter: 'E',
-    name: 'Entropy',
-    count: '3 rules',
-    blurb: 'Three entropy rules treat the statistics of the added text as evidence: its compression ratio, the fraction that is encoded alphabet, and identifier entropy. They mark a change that sits outside the normal distribution; suspicion, never a verdict, with thresholds calibrated on the benign corpus.',
-    cats: nsCategories.e,
-  },
-  {
-    letter: 'T',
-    name: 'Temporal',
-    count: '5 rules',
-    blurb: 'Five temporal rules track the identity behind the recipe rather than its content: a signing key never seen before, a maintainer domain first seen now, a key rotated, AUR metadata that runs ahead of the git tip (commits were pushed and later stripped), and a packager absent from the retained commit history. They say how new the thing behind the update is, independent of what the diff changed; the packager check is weight 0 and corroborates rather than scores.',
-    cats: nsCategories.t,
-  },
-  {
-    letter: 'G',
-    name: 'Correlation',
-    count: '10 rules',
-    blurb: 'Ten correlation rules look across packages in a window rather than inside one: a host, a literal, an adopter, or an upstream dependency shared by several recent analyses, a maintainer publishing name-clones of popular packages, a first-seen account adopting many dormant packages, a watchlisted subject, a package in an active campaign\u2019s neighbourhood, and a plurality of first-seen hosts across strangers. They run at cycle end, never per package, so a campaign that is invisible in any single diff becomes visible in the set. Only the shared-signal rules score; the neighbourhood, watchlist and host-census findings are reported at weight 0.',
-    cats: nsCategories.g,
-  },
-  {
-    letter: 'A',
-    name: 'Artifact',
-    count: '8 rules',
-    blurb: 'Eight artifact rules inspect the built package, not the diff. The optional L9 build lane reads the produced manifest to catch a setuid file, an undeclared unit, a library outside depends, or an embedded eBPF object. Reported outside the static score, and off by default.',
-    cats: nsCategories.a,
-  },
-  {
-    letter: 'U',
-    name: 'Upstream manifests',
-    count: '10 rules',
-    blurb: 'Ten upstream rules read only what a recipe declares about upstream, never fetching it. Six manifest rules cover the dependency manifests committed beside the recipe: a manifest added or removed, a dependency delta, a new remote source, a redirected resolver, a dependency-surface jump, and a manifest changed without its lockfile. Four release-integrity rules are fed by a signed upstream baseline: a git-history credential sweep, a new CI surface committed into the AUR repository, and a source the public cannot inspect. Read from the repository tree and the diff; upstream content is never fetched.',
-    cats: nsCategories.u,
-  },
-  {
-    letter: 'P',
-    name: 'Declared practice',
-    count: '7 findings, weight 0',
-    blurb: 'What the recipe declares, not what the analysis found. These findings read the claims a PKGBUILD makes about itself: checksums declared for every non-VCS source, validpgpkeys present, signatures sourced, sources pinned to a commit hash or tag, downloads over HTTPS, or a branch/unpinned ref tracked. Every one is INFO and checkable by the reader against the file itself. They are reported, never credited: a signal an attacker can assert for free must not move a score.',
-    cats: [
-      ['Checksums declared for all non-VCS sources (P001)', 'system/#declared-practice', null],
-      ['validpgpkeys declared (P002)', 'system/#declared-practice', null],
-      ['Signature source with PGP keys declared (P003)', 'system/#declared-practice', null],
-      ['Source pinned to a full commit hash (P005)', 'system/#declared-practice', null],
-      ['Source pinned to a tag (P006)', 'system/#declared-practice', null],
-      ['Source on a trusted forge over HTTPS (P007)', 'system/#declared-practice', null],
-      ['Source tracks a branch or unpinned ref (P008)', 'system/#declared-practice', null],
-    ],
-  },
-  {
-    letter: 'W',
-    name: 'Unverifiable',
-    count: '12 findings, weight 0',
-    blurb: 'Not a claim about the recipe but about the analysis: something the package will run that this run could not read. A build script that executes a file not declared in source=(), a patch not committed to the repo, a manifest generated at build time, a dependency resolved from a registry, a declared upstream this run was not allowed to fetch, or a terminal render that had to cap its finding list. Each is reported so the reader knows the boundary of what was examined; none contributes to the score.',
-    cats: nsCategories.w,
-  },
+const NAMESPACES = [
+  ['detection', 'R', 'Detection rules'],
+  ['structural', 'C', 'Structural rules'],
+  ['dependency_graph', 'D', 'Dependency-graph rules'],
+  ['sabotage', 'S', 'Sabotage rules'],
+  ['crossfire', 'X', 'Crossfire rules'],
+  ['meta', 'M', 'Meta and confluence'],
+  ['entropy', 'E', 'Entropy'],
+  ['temporal', 'T', 'Temporal'],
+  ['correlation', 'G', 'Correlation'],
+  ['artifact', 'A', 'Artifact'],
+  ['upstream_manifests', 'U', 'Upstream manifests'],
+  ['declared_practice', 'P', 'Declared practice'],
+  ['unverifiable', 'W', 'Unverifiable'],
 ]
+
+const BLURBS = {
+  detection: `${NS.detection.total} pattern rules read the diff and the variable-resolved command text. Each is a published pattern with a severity from INFO to FATAL, and a FATAL finding pins the verdict to 100: a bidi-override attack cannot be weighted away. The rules group by the kind of claim they make, from fetch and execution and integrity through obfuscation, deception, temporal context, composition, and indicators, and every match is reported with the line or URL it fired on.`,
+  structural: `${NS.structural.total} context rules reason about the diff as a whole rather than any single line, comparing the old and new states of the same field: a source URL that changed without a version bump, a checksum list that shrank, metadata that contradicts itself, unread content moved under a stable version. Where the pattern rules ask what a line does, the structural rules ask whether the change is internally consistent, across integrity, install and persistence, fetch, composition, staging, metadata, and deception.`,
+  dependency_graph: `${NS.dependency_graph.total} rules treat the dependency graph as first-class evidence. A review walks a package's AUR dependencies, direct ones by default and deeper with --depth, analysing each as a package in its own right: has it been seen before, does its name resemble a more popular package, does it fetch over the network during build, does it hijack a provides others rely on. Novelty is judged against the same signed seed the URL rules use.`,
+  sabotage: `${NS.sabotage.total} rules look for payloads aimed at the operator's machine rather than at getting something out of it: resource exhaustion, deletion, permission sabotage, service disruption, and resource theft. What unites them is that the machine running the build is the target. Each rule is written against a distinction, not a command: rm -rf inside the sandbox is housekeeping, rm -rf / is an attack, and a mention is not an invocation.`,
+  crossfire: 'The evasion technique, not the payload it hides. Every other family fires on what a diff does; these fire on how it was written. Partial quoting, array routing, command substitution and other tokenizer-defeating shapes assemble an executable name no pattern ever sees, so a word the tokenizer could not reduce to a literal is itself the signal. One rule covers the evasion surface of every payload rule at once, and a defeated tokenizer produces a CRITICAL finding rather than silence.',
+  meta: `${NS.meta.total} meta rules reason over the finding set and the instrument itself rather than the diff: a declared practice contradicted by structure, a weak signal that spans several layers, or a composition no single family owns, plus three tool-health checks (a co-fire that should have appeared, a licensor absent on a licensed shape, a campaign class re-armed too often). The tool-health findings carry weight 0 and never join a package's finding set, so a detector-health note cannot move a verdict.`,
+  entropy: `${NS.entropy.total} entropy rules treat the statistics of the added text as evidence: its compression ratio, the fraction that is encoded alphabet, and identifier entropy. They mark a change that sits outside the normal distribution; suspicion, never a verdict, with thresholds calibrated on the benign corpus.`,
+  temporal: `${NS.temporal.total} temporal rules track the identity and history behind the recipe rather than its content: a signing key never seen before, a maintainer domain first seen now, a key rotated, AUR metadata that runs ahead of the git tip (commits were pushed and later stripped), a packager absent from the retained commit history, a vouch surface removed, an HTTPS source downgraded, a payload adopted only after a delay, a high-value dormant package taken over, a dependency redirected, a package that disappeared and reappeared, and a trust-erosion sequence. They say how new the thing behind the update is, independent of what the diff changed; the non-scoring checks corroborate rather than score.`,
+  correlation: `${NS.correlation.total} correlation rules look across packages in a window rather than inside one: a host, a literal, an adopter, an upstream dependency, a payload signal, a fetch target, or an adoption window shared by several recent analyses, a maintainer publishing name-clones of popular packages, a first-seen account adopting many dormant packages, a maintainer creating packages in a burst, a watchlisted subject, a package in an active campaign's neighbourhood, and a plurality of first-seen hosts across strangers. They run at cycle end, never per package, so a campaign that is invisible in any single diff becomes visible in the set. Only the shared-signal rules score; the neighbourhood, watchlist and host-census findings are reported at weight 0.`,
+  artifact: `${NS.artifact.total} artifact rules inspect the built package, not the diff. The optional L9 build lane reads the produced manifest to catch a setuid file, an undeclared unit, a library outside depends, or an embedded eBPF object. Reported outside the static score, and off by default.`,
+  upstream_manifests: `${NS.upstream_manifests.total} upstream rules read only what a recipe declares about upstream, never fetching it. ${catCount('upstream_manifests', 'upstream-manifests')} manifest rules cover the dependency manifests committed beside the recipe: a manifest added or removed, a dependency delta, a new remote source, a redirected registry, a dependency-surface jump, a manifest changed without its lockfile, an upstream origin change, and a weakened lockfile. ${catCount('upstream_manifests', 'upstream-release')} release-integrity rules are fed by a signed upstream baseline: a git-history credential sweep, a new CI surface committed into the AUR repository, and a source the public cannot inspect. Read from the repository tree and the diff; upstream content is never fetched.`,
+  declared_practice: 'What the recipe declares, not what the analysis found. These findings read the claims a PKGBUILD makes about itself: checksums declared for every non-VCS source, validpgpkeys present, signatures sourced, sources pinned to a commit hash or tag, downloads over HTTPS, a branch/unpinned ref tracked, or a prebuilt deliverable declared. Every one is INFO and checkable by the reader against the file itself. They are reported, never credited: a signal an attacker can assert for free must not move a score.',
+  unverifiable: 'Not a claim about the recipe but about the analysis: something the package will run that this run could not read. A build script that executes a file not declared in source=(), a patch not committed to the repo, a manifest generated at build time, a dependency resolved from a registry, a declared upstream this run was not allowed to fetch, a campaign perimeter that bounds what the cycle could see, or a terminal render that had to cap its finding list. Each is reported so the reader knows the boundary of what was examined; none contributes to the score.',
+}
+
+const namespaces = NAMESPACES.map(([key, letter, name]) => ({
+  key,
+  letter,
+  name,
+  count: NS[key].count_label,
+  blurb: BLURBS[key],
+  cats: key === 'declared_practice'
+    ? NS[key].reasons.map(([id, text]) => [`${DECLARED_LABELS[id] ?? text} (${id})`, 'system/#declared-practice', null])
+    : NS[key].categories,
+}))
 
 const limits = [
   { strong: 'Malicious upstream tarballs.', text: 'TrustSight audits the PKGBUILD, not the binaries it downloads. A clean build file can point to a compromised tarball.' },
@@ -390,11 +294,11 @@ const faqs = [
   },
   {
     q: 'Why is my package flagged when the update looks normal?',
-    a: <>About 7% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
+    a: <>About {cal.benign_above_threshold_pct}% of benign diffs score above the threshold. The tool reports evidence first and the score on request, so a flag is a reason to look, not a verdict to accept. Open the report, check which rules fired and where, and decide from the diff. That is the intended workflow, not a false-positive problem.</>,
   },
   {
     q: 'How does novelty detection work before I have any history?',
-    a: <>The first run imports a signed seed of 185,902 normalised source URLs, 36,912 hashed maintainer identities and 215,504 dependency names, verified against a key pinned in the package. Novelty signals are maturity-gated: they scale with your own observation count (<code>observation_count / 50</code>), so a cold database contributes nothing and your own reviews take over as history accumulates.</>,
+    a: <>The first run imports a signed seed of {comma(figures.seed.source_urls)} normalised source URLs, {comma(figures.seed.hashed_maintainers)} hashed maintainer identities and {comma(figures.seed.dependency_names)} dependency names, verified against a key pinned in the package. Novelty signals are maturity-gated: they scale with your own observation count (<code>observation_count / 50</code>), so a cold database contributes nothing and your own reviews take over as history accumulates.</>,
   },
   {
     q: 'Does TrustSight phone home?',
@@ -448,7 +352,7 @@ const flowPhases = [
     title: 'Match',
     lead: 'Published rules against the evidence actually read.',
     items: [
-      ['279 rules, 13 namespaces', 'pattern, structural, temporal, upstream, crossfire'],
+      [`${figures.total_rules} rules, ${figures.namespace_count} namespaces`, 'pattern, structural, temporal, upstream, crossfire'],
       ['Signed seed', 'known source URLs, maintainers and dependency names for novelty'],
       ['Federated indicators', 'signed upstream-repo and IOC baselines'],
     ],
@@ -576,7 +480,7 @@ export function App() {
           </div>
           <p className="flow__cycle">
             <span className="flow__cycle-tag">At cycle end</span>
-            The watcher correlates across packages (G001&ndash;G010) and reports campaign
+            The watcher correlates across packages ({NS.correlation.range.replace('-', '\u2013')}) and reports campaign
             neighbourhoods; the optional L9 build lane inspects the built package, off by default.
           </p>
           <DocsLink href={`${DOCS}/assurance-layers/`}>assurance layers</DocsLink>
@@ -718,13 +622,13 @@ export function App() {
           <h2 id="calibration">The weights are measured, not asserted</h2>
           <div className="prose">
             <p>
-              Against the locked 3,739-diff benign corpus, <strong>72.3%</strong> of benign diffs score 0.
-              Benign diffs reach a 95th percentile of <strong>30</strong>; the CRITICAL-class corpus has a
-              5th percentile of <strong>60</strong>. The 20-point threshold is not the benign p95; it sits
-              at the 92.9th percentile, so about 7% of benign diffs land above it. What matters is that
+              Against the locked {comma(cal.corpus_diffs)}-diff benign corpus, <strong>{cal.benign_zero_rate_pct}%</strong> of benign diffs score 0.
+              Benign diffs reach a 95th percentile of <strong>{cal.benign_p95}</strong>; the CRITICAL-class corpus has a
+              5th percentile of <strong>{cal.malicious_p5}</strong>. The 20-point threshold is not the benign p95; it sits
+              at the {cal.threshold_percentile}th percentile, so about {cal.benign_above_threshold_pct}% of benign diffs land above it. What matters is that
               the two distributions do not overlap.
             </p>
-          </div>            <div className="gauge" role="img" aria-label="A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of 30. Malicious diffs start at a 5th percentile of 60. The 30-point margin between them is enforced by CI.">
+          </div>            <div className="gauge" role="img" aria-label={`A score scale from 0 to 100. The threshold sits at 20. Benign diffs reach a 95th percentile of ${cal.benign_p95}. Malicious diffs start at a 5th percentile of ${cal.malicious_p5}. The ${cal.separation_margin}-point margin between them is enforced by CI.`}>
             <div className="gauge__track">
               <span className="gauge__band gauge__band--benign" aria-hidden="true" />
               <span className="gauge__band gauge__band--malicious" aria-hidden="true" />
@@ -734,15 +638,15 @@ export function App() {
               </span>
               <span className="gauge__mark gauge__mark--benign">
                 <span className="gauge__tick" />
-                <span className="gauge__label">Benign p95 · 30</span>
+                <span className="gauge__label">Benign p95 · {cal.benign_p95}</span>
               </span>
               <span className="gauge__mark gauge__mark--malicious">
                 <span className="gauge__tick" />
-                <span className="gauge__label">Malicious p5 · 60</span>
+                <span className="gauge__label">Malicious p5 · {cal.malicious_p5}</span>
               </span>
             </div>
             <div className="gauge__ends"><span>0</span><span>100</span></div>
-            <div className="gauge__sep">30-point margin, gated</div>
+            <div className="gauge__sep">{cal.separation_margin}-point margin, gated</div>
           </div>
           <div className="prose push">
             <p>
@@ -760,7 +664,7 @@ export function App() {
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
-              <strong>Testing.</strong> The test suite covers <strong>6,828 tests across 172 files</strong>.
+              <strong>Testing.</strong> The test suite covers <strong>{comma(figures.tests.count)} tests across {figures.tests.files} files</strong>.
               CI enforces separate security and calibration gate suites on every push and pull request.
               Among them: CRITICAL recall stays at 100% (every labelled malicious sample must fire the rules
               it is labelled for); the separation gate requires benign p95 to stay below malicious p5; and
@@ -809,12 +713,12 @@ export function App() {
         {/* 11 · The rules */}
         <section className="section" aria-labelledby="rules">
           <div className="section-label">The rules</div>
-          <h2 id="rules">279 documented rules, in 13 namespaces</h2>
+          <h2 id="rules">{figures.total_rules} documented rules, in {figures.namespace_count} namespaces</h2>
           <div className="prose">
             <p>
               Every shipped rule (its pattern, its severity, and its measured fire rate) is published
               in the <a href={RULES} target="_blank" rel="noreferrer">rules reference</a>. Rules are grouped
-              into 13 namespaces; the categories under each namespace are the kinds of claims its rules make.
+              into {figures.namespace_count} namespaces; the categories under each namespace are the kinds of claims its rules make.
             </p>
           </div>
           <div className="ns-list">
@@ -838,7 +742,7 @@ export function App() {
           </div>
           <div className="prose push">
             <p>
-              Counts are per the generated rules index; the 22 category pages are closed, so every rule
+              Counts are per the generated rules index; the {figures.category_pages} category pages are closed, so every rule
               has exactly one page. <code>trustsight lint-rules</code> checks the shipped rules against
               their documentation on every test run. The rule files themselves are part of the open
               source repository: read a pattern, change a severity, or rebuild the tool, and nothing
@@ -865,7 +769,7 @@ export function App() {
               Novelty detection needs a baseline of what is normal in the AUR. On an empty database
               every URL looks first-seen and every maintainer looks new, which turns the novelty signal
               into noise. So the tool ships a seed of prior knowledge built from the AUR git mirror:
-              185,902 normalised source URLs, 215,504 dependency names and salted hashes of 36,912
+              {comma(figures.seed.source_urls)} normalised source URLs, {comma(figures.seed.dependency_names)} dependency names and salted hashes of {comma(figures.seed.hashed_maintainers)}
               maintainer identities. It is
               published as a signed release asset rather than shipped inside the package, because the
               AUR is exactly the channel under review. The first time you run{' '}

@@ -12,13 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      # The core commit the site was generated from lives in one file so the
+      # sync workflow can bump it without editing a workflow (GITHUB_TOKEN
+      # cannot push changes under .github/workflows).
+      - name: Resolve the pinned TrustSight commit
+        run: echo "TRUSTSIGHT_COMMIT=$(cat .github/trustsight-commit)" >> "$GITHUB_ENV"
+
       # The rules-map gate derives src/rules.js from the trustsight catalog,
       # so it needs that checkout beside this one. Without it `npm run build`
       # cannot import trustsight and the whole build fails.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: emiliano-go/trustsight
-          ref: 7c2061321631d6ca86cea8759a5ceec99e5e12b6
+          ref: ${{ env.TRUSTSIGHT_COMMIT }}
           path: trustsight
           persist-credentials: false
       - name: Point the rules-map gate at the trustsight catalog
