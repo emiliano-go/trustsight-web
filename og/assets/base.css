@@ -1,0 +1,67 @@
+/* Shared canvas for the social-image studies. Type only: at feed size the
+   wordmark and one line are all that survive, so nothing smaller is used. */
+
+@font-face { font-family: "Inter OG"; font-style: normal; font-display: block; font-weight: 400; src: url("fonts/Inter-400.ttf") format("truetype"); }
+@font-face { font-family: "Inter OG"; font-style: normal; font-display: block; font-weight: 600; src: url("fonts/Inter-600.ttf") format("truetype"); }
+
+:root {
+  --bg: #0B0F14;
+  --fg: #E7EDF3;
+  --muted: #8A96A3;
+  --accent: #1793D1;
+
+  --sans: "Inter OG", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 1200px;
+  height: 630px;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.canvas {
+  width: 1200px;
+  height: 630px;
+  padding: 56px 64px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--fg);
+  overflow: hidden;
+}
+
+.wordmark {
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.wordmark span { color: var(--accent); }
+
+h1 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 46px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}

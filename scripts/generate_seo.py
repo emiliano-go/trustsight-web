@@ -45,12 +45,12 @@ DESCRIPTION = (
     "TrustSight audits AUR PKGBUILDs before you update; it reports structural "
     "risk, evidence, and incomplete analysis without claiming safety."
 )
-# The OG image is the repo's banner (docs/assets/images/trustsight-banner.png),
-# served from /og-image.png; keep width/height in sync with that file.
+# The social card is authored in og/ and served from /og-image.png; keep
+# width/height in sync with that file.
 OG_IMAGE_URL = f"{SITE_URL}/og-image.png"
-OG_IMAGE_WIDTH = 2806
-OG_IMAGE_HEIGHT = 1582
-OG_IMAGE_ALT = "TrustSight | Audits AUR PKGBUILDs before you update"
+OG_IMAGE_WIDTH = 1200
+OG_IMAGE_HEIGHT = 630
+OG_IMAGE_ALT = "TrustSight | Audit the AUR update before you build it"
 
 # The page is a software product, so the JSON-LD is a SoftwareApplication
 # rather than seoslug's default WebPage for entity_type "home".
