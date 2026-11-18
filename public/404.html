@@ -93,10 +93,12 @@
         color: var(--accent);
         font-family: var(--font-mono);
         font-size: 14px;
-        text-decoration: none;
-        border-bottom: 1px solid var(--rule);
+        text-decoration: underline;
+        text-decoration-color: var(--rule);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
       }
-      a:hover { border-color: currentColor; }
+      a:hover { text-decoration-color: currentColor; }
       @media (max-width: 720px) {
         .wordmark { font-size: 18px; letter-spacing: 0.18em; }
         .label { margin-top: 56px; }

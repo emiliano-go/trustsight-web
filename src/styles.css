@@ -118,12 +118,14 @@ body {
 
 a {
   color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 
-a:hover { border-color: currentColor; }
+a:hover { text-decoration-color: currentColor; }
 
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -250,7 +252,7 @@ main { counter-reset: section; }
   text-underline-offset: 3px;
   transition: text-decoration-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
-.prose a:hover { border-bottom: 0; text-decoration-color: currentColor; }
+.prose a:hover { text-decoration-color: currentColor; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -312,10 +314,10 @@ main { counter-reset: section; }
   font-weight: 600;
   letter-spacing: 0.22em;
   color: var(--fg);
-  border-bottom: 0;
+  text-decoration: none;
   transition: opacity var(--dur) var(--ease);
 }
-.wordmark:hover { border-bottom: 0; opacity: 0.85; }
+.wordmark:hover { opacity: 0.85; }
 .wordmark span { color: var(--accent); }
 
 .masthead-actions {
@@ -480,7 +482,7 @@ main { counter-reset: section; }
   font-size: 0.7647rem;
 }
 
-.masthead-links a { color: var(--fg-muted); border-bottom: 0; }
+.masthead-links a { color: var(--fg-muted); text-decoration: none; }
 .masthead-links a:hover { color: var(--accent); }
 
 /* ---------- install command (copy button) ---------- */
@@ -1231,7 +1233,7 @@ main { counter-reset: section; }
   font-size: 0.7941rem;
 }
 
-.colophon ul a { color: var(--fg-muted); border-bottom: 0; }
+.colophon ul a { color: var(--fg-muted); text-decoration: none; }
 .colophon ul a:hover { color: var(--accent); }
 
 .colophon-note {
