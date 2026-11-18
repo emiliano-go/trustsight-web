@@ -1,4 +1,5 @@
 import './styles.css'
+import { registerAgentTools } from './agent-tools.js'
 
 const INSTALL = {
   https: 'git clone https://github.com/emiliano-go/trustsight.git\ncd trustsight/packaging/aur && makepkg -si\ntrustsight review',
@@ -134,3 +135,5 @@ document.addEventListener('pointerdown', (event) => {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') setA11yOpen(false, true)
 })
+
+registerAgentTools()

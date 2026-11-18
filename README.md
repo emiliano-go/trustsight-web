@@ -32,6 +32,20 @@ npm run verify:csp
 The plate in `src/plate.js` is generated from default `trustsight review`
 output, without `--score`; do not hand-type it.
 
+## Agent discovery
+
+The site publishes the discovery surface in `public/.well-known/`: an API
+catalog, an AI/ARD catalog, an agent-skills index and a read-only MCP server
+card. `public/auth.md` says plainly that the public resources need no
+registration, and `public/robots.txt` carries the Content-Signal and AI-crawler
+rules.
+
+`functions/mcp.js` is a stateless Streamable HTTP MCP bridge over the public
+watcher API. It exposes four read-only tools and adds no write surface.
+
+`npm run verify:agent` checks the documents, skill digest, headers and MCP
+handler; the build runs it against both the source and `dist/`.
+
 ## Sync with core
 
 `src/rules.js` and `src/figures.generated.json` are derived from the TrustSight

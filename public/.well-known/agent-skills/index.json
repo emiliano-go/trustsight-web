@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "trustsight-audit",
+      "type": "skill-md",
+      "description": "Review an AUR PKGBUILD update with TrustSight, and interpret the evidence without treating a clean report as permission to install.",
+      "url": "https://trustsight.org/.well-known/agent-skills/trustsight-audit/SKILL.md",
+      "digest": "sha256:e5764fcc232875cf04b353beab8fde7a8ecfaec675d465f09dc40083748f5cd5"
+    }
+  ]
+}
