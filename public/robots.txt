@@ -1,4 +1,33 @@
+# TrustSight: public content is open to search and AI grounding, not model
+# training. The same policy is published on docs.trustsight.org.
+
 User-agent: *
 Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+
+User-agent: OAI-SearchBot
+Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+
+User-agent: Claude-SearchBot
+Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+
+User-agent: PerplexityBot
+Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+
+User-agent: GPTBot
+Disallow: /
+Content-Signal: ai-train=no, search=no, ai-input=no
+
+User-agent: ClaudeBot
+Disallow: /
+Content-Signal: ai-train=no, search=no, ai-input=no
+
+User-agent: Google-Extended
+Disallow: /
+Content-Signal: ai-train=no, search=no, ai-input=no
 
 Sitemap: https://trustsight.org/sitemap.xml
+Agentmap: https://trustsight.org/.well-known/ai-catalog.json

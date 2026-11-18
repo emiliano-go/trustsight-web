@@ -1,0 +1,52 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "TrustSight",
+    "identifier": "did:web:trustsight.org"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:trustsight.org:api:watcher",
+      "displayName": "TrustSight Watcher API",
+      "type": "application/vnd.oai.openapi+json;version=3.1",
+      "url": "https://watcher.trustsight.org/api/openapi.json",
+      "representativeQueries": [
+        "which AUR packages raised a TrustSight alert today",
+        "show alerts for a package or rule id",
+        "find campaign or dependency-impact alerts"
+      ]
+    },
+    {
+      "identifier": "urn:air:trustsight.org:mcp:watcher",
+      "displayName": "TrustSight Watcher MCP server",
+      "type": "application/mcp-server-card+json",
+      "url": "https://trustsight.org/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "search TrustSight alerts for a package",
+        "get the latest AUR watcher alerts",
+        "show rule triggers for H003"
+      ]
+    },
+    {
+      "identifier": "urn:air:trustsight.org:skill:audit-aur-update",
+      "displayName": "Audit an AUR update with TrustSight",
+      "type": "text/markdown",
+      "url": "https://trustsight.org/.well-known/agent-skills/trustsight-audit/SKILL.md",
+      "representativeQueries": [
+        "review an AUR PKGBUILD update before building it",
+        "interpret a TrustSight review report"
+      ]
+    },
+    {
+      "identifier": "urn:air:trustsight.org:site:docs",
+      "displayName": "TrustSight documentation",
+      "type": "text/html",
+      "url": "https://docs.trustsight.org/",
+      "representativeQueries": [
+        "how do I install TrustSight",
+        "what does an UNFLAGGED verdict mean",
+        "how do TrustSight rules score evidence"
+      ]
+    }
+  ]
+}
