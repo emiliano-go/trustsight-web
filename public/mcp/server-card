@@ -12,7 +12,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://trustsight.org/mcp",
+      "url": "https://watcher.trustsight.org/mcp",
       "supportedProtocolVersions": ["2025-06-18", "2025-03-26"]
     }
   ],
@@ -22,7 +22,7 @@
   },
   "transport": {
     "type": "streamable-http",
-    "endpoint": "https://trustsight.org/mcp"
+    "endpoint": "https://watcher.trustsight.org/mcp"
   },
   "capabilities": {
     "tools": {
