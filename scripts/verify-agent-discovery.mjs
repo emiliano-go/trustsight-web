@@ -178,6 +178,66 @@ try {
   globalThis.fetch = originalFetch
 }
 
+// --- Markdown for Agents ---------------------------------------------------
+// The homepage negotiates Markdown at the edge. A wrong Accept decision is
+// invisible to a browser and breaks exactly the clients this exists for, so
+// both branches are exercised here.
+const markdown = await import(join(root, 'functions/index.js'))
+const markdownBody = '# TrustSight\n\nRepresentation under test.\n'
+const assets = { fetch: async () => new Response(markdownBody, { status: 200 }) }
+
+for (const accept of ['text/markdown', 'text/markdown, text/html;q=0.8', 'text/html;q=0.5, text/markdown']) {
+  if (!markdown.prefersMarkdown(accept)) failures.push(`markdown: did not prefer markdown for ${accept}`)
+}
+for (const accept of ['', '*/*', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'text/markdown;q=0']) {
+  if (markdown.prefersMarkdown(accept)) failures.push(`markdown: wrongly preferred markdown for ${accept || '(none)'}`)
+}
+
+function markdownRequest(accept) {
+  return new Request('https://trustsight.org/', { headers: { accept } })
+}
+
+try {
+  const negotiated = await markdown.onRequest({
+    request: markdownRequest('text/markdown'),
+    next: async () => {
+      throw new Error('markdown handler fell through for an explicit markdown request')
+    },
+    env: { ASSETS: assets },
+  })
+  if (!/^text\/markdown/.test(negotiated.headers.get('content-type') ?? '')) {
+    failures.push('markdown: response is not text/markdown')
+  }
+  if (negotiated.headers.get('vary') !== 'Accept') failures.push('markdown: response does not vary on Accept')
+  if (!(Number(negotiated.headers.get('x-markdown-tokens')) > 0)) failures.push('markdown: no token estimate')
+  if ((await negotiated.text()) !== markdownBody) failures.push('markdown: served the wrong body')
+
+  let fellThrough = false
+  const htmlRequest = await markdown.onRequest({
+    request: markdownRequest('text/html,*/*;q=0.8'),
+    next: async () => {
+      fellThrough = true
+      return new Response('<html></html>', { status: 200, headers: { 'content-type': 'text/html' } })
+    },
+    env: { ASSETS: assets },
+  })
+  if (!fellThrough) failures.push('markdown: a browser-like Accept did not fall through')
+  if (htmlRequest.headers.get('content-type') !== 'text/html') failures.push('markdown: fallthrough lost the HTML response')
+
+  let missingArtifactFellThrough = false
+  await markdown.onRequest({
+    request: markdownRequest('text/markdown'),
+    next: async () => {
+      missingArtifactFellThrough = true
+      return new Response('<html></html>', { status: 200 })
+    },
+    env: { ASSETS: { fetch: async () => new Response('missing', { status: 404 }) } },
+  })
+  if (!missingArtifactFellThrough) failures.push('markdown: a missing artifact did not fall back to HTML')
+} catch (error) {
+  failures.push(`markdown: ${error.message}`)
+}
+
 // --- built output ----------------------------------------------------------
 if (checkDist) {
   for (const rel of [

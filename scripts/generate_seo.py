@@ -112,7 +112,18 @@ def build_block() -> str:
         schema_jsonld=SCHEMA_JSONLD,
     )
     payload = build_seo_payload(entity, "/", config, overrides)
-    return payload.render_html().strip()
+    block = payload.render_html().strip()
+    # seoslug owns canonical, but the Markdown-for-Agents representation is a
+    # site convention, not an SEO field, so it is added here rather than
+    # hand-edited into the generated block.
+    canonical = f'<link rel="canonical" href="{SITE_URL}/">'
+    alternate = (
+        '<link rel="alternate" type="text/markdown" href="/index.md" '
+        'title="Markdown representation">'
+    )
+    if canonical in block:
+        return block.replace(canonical, f"{canonical}\n{alternate}", 1)
+    return f"{block}\n{alternate}"
 
 
 def indent_block(block: str, spaces: int = 4) -> str:

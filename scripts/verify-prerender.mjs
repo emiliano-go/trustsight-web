@@ -7,10 +7,20 @@ const fonts = await readdir(new URL('../dist/fonts/', import.meta.url))
 const headers = await readFile(new URL('../dist/_headers', import.meta.url), 'utf8')
 const figures = JSON.parse(await readFile(new URL('../src/figures.generated.json', import.meta.url), 'utf8'))
 const client = await readFile(new URL(`../dist/assets/${assets.find((file) => file.endsWith('.js'))}`, import.meta.url), 'utf8')
+const markdown = await readFile(new URL('../dist/index.md', import.meta.url), 'utf8')
 const comma = (n) => n.toLocaleString('en-US')
 const cal = figures.calibration
 const style = html.match(/<style>([\s\S]*?)<\/style>/)
 const styleHash = style ? `'sha256-${createHash('sha256').update(style[1]).digest('base64')}'` : null
+const stripText = (html) => html
+  .replace(/<[^>]+>/g, '')
+  .replace(/&nbsp;/g, ' ')
+  .replace(/&amp;/g, '&')
+  .replace(/&#39;|&apos;/g, "'")
+  .replace(/&quot;/g, '"')
+  .trim()
+const headings = [...html.matchAll(/<h2[^>]*>([\s\S]*?)<\/h2>/g)].map((match) => stripText(match[1])).filter(Boolean)
+const missingHeadings = headings.filter((heading) => !markdown.includes(heading))
 const checks = [
   ['root contains rendered page content', html.includes('<div id="root"><div class="page" id="top">')],
   ['main content is present for no-JS visitors', html.includes('<main id="content">')],
@@ -29,11 +39,16 @@ const checks = [
   ['calibration figures render from the catalog', html.includes(`${cal.benign_zero_rate_pct}%`) && html.includes(`Benign p95 · ${cal.benign_p95}`) && html.includes(`Malicious p5 · ${cal.malicious_p5}`) && html.includes(`${cal.threshold_percentile}th percentile`)],
   ['seed counts render from the catalog', html.includes(comma(figures.seed.source_urls)) && html.includes(comma(figures.seed.hashed_maintainers)) && html.includes(comma(figures.seed.dependency_names))],
   ['declared and unverifiable ranges render from the catalog', html.includes(figures.namespaces.declared_practice.range) && html.includes(figures.namespaces.unverifiable.range)],
+  ['markdown representation is generated from the same render', markdown.startsWith('# ') && markdown.length > 2_000],
+  ['markdown representation carries every section heading', headings.length > 0 && missingHeadings.length === 0],
+  ['markdown representation carries no page chrome', !markdown.includes('<svg') && !markdown.includes('<button')],
+  ['markdown representation has no root-relative links', !/\]\(\//.test(markdown)],
 ]
 
 const failed = checks.filter(([, passed]) => !passed)
 if (failed.length) {
   for (const [name] of failed) console.error(`FAIL ${name}`)
+  if (missingHeadings.length) console.error(`  missing headings: ${missingHeadings.join(' | ')}`)
   process.exitCode = 1
 } else {
   console.log(`Verified ${checks.length} prerender checks.`)
