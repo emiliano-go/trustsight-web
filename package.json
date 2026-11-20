@@ -22,6 +22,8 @@
     "preact": "10.29.8",
     "preact-render-to-string": "6.7.0",
     "terser": "5.50.0",
+    "turndown": "7.2.2",
+    "turndown-plugin-gfm": "1.0.2",
     "vite": "8.2.1"
   }
 }

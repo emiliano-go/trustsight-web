@@ -1,9 +1,11 @@
 import { createHash } from 'node:crypto'
 import { readFile, rm, writeFile } from 'node:fs/promises'
+import { pageToMarkdown } from './markdown.mjs'
 
 const indexPath = new URL('../dist/index.html', import.meta.url)
 const serverEntry = new URL('../dist/server/entry-server.js', import.meta.url)
 const headersPath = new URL('../dist/_headers', import.meta.url)
+const markdownPath = new URL('../dist/index.md', import.meta.url)
 const { render } = await import(serverEntry.href)
 const html = await readFile(indexPath, 'utf8')
 const root = '<div id="root"></div>'
@@ -49,6 +51,11 @@ if (cssLink && cssText !== null) {
   // The stylesheet is now inlined; the asset is dead weight on the host.
   await rm(cssPath, { force: true })
 }
+
+// 3. Emit the Markdown representation from the same render. `functions/index.js`
+//    serves it when a client sends `Accept: text/markdown`.
+await writeFile(markdownPath, pageToMarkdown(rendered))
+
 await writeFile(indexPath, finalHtml)
 // The SSR bundle is build-time machinery, not an asset for the static host.
 await rm(new URL('../dist/server/', import.meta.url), { recursive: true, force: true })
