@@ -8,6 +8,7 @@ token required to read them.
 - Documentation: <https://docs.trustsight.org/>
 - Watcher read API: <https://watcher.trustsight.org/api>
 - OpenAPI description: <https://watcher.trustsight.org/api/openapi.json>
+- MCP endpoint: <https://watcher.trustsight.org/mcp>
 
 ## For agents
 

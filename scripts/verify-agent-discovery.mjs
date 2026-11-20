@@ -132,46 +132,50 @@ if (index) {
   }
 }
 
-// --- MCP handler -----------------------------------------------------------
+// --- MCP compatibility shim ------------------------------------------------
+// The bridge itself lives in trustsight-feed. This path must keep forwarding
+// the exact body to the canonical endpoint; if the target drifts, every client
+// configured against the old URL silently points at nothing.
 const mcp = await import(join(root, 'functions/mcp.js'))
 const originalFetch = globalThis.fetch
-globalThis.fetch = async (url) =>
-  new Response(JSON.stringify({ url: String(url), items: [] }), {
+let forwarded = null
+globalThis.fetch = async (url, init) => {
+  forwarded = { url: String(url), method: init?.method, body: init?.body }
+  return new Response('{"jsonrpc":"2.0","id":1,"result":{}}', {
     status: 200,
     headers: { 'content-type': 'application/json' },
   })
-
-async function rpc(payload) {
-  const request = new Request('https://trustsight.org/mcp', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-  const response = await mcp.onRequestPost({ request })
-  return { status: response.status, body: await response.json() }
 }
 
 try {
-  const init = await rpc({
-    jsonrpc: '2.0',
-    id: 1,
-    method: 'initialize',
-    params: { protocolVersion: '2025-06-18' },
+  const response = await mcp.onRequest({
+    request: new Request('https://trustsight.org/mcp', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}',
+    }),
   })
-  if (init.body.result?.protocolVersion !== '2025-06-18') {
-    failures.push('mcp: initialize did not negotiate a protocol')
+  if (forwarded?.url !== 'https://watcher.trustsight.org/mcp') {
+    failures.push(`mcp: forwards to ${forwarded?.url}, not the watcher bridge`)
   }
-  const list = await rpc({ jsonrpc: '2.0', id: 2, method: 'tools/list' })
-  if (list.body.result?.tools?.length !== 4) {
-    failures.push('mcp: tools/list did not return four tools')
+  if (forwarded?.method !== 'POST') failures.push('mcp: does not forward as POST')
+  if (forwarded?.body !== '{"jsonrpc":"2.0","id":1,"method":"tools/list"}') {
+    failures.push('mcp: does not forward the request body verbatim')
   }
-  const call = await rpc({
-    jsonrpc: '2.0',
-    id: 3,
-    method: 'tools/call',
-    params: { name: 'search-alerts', arguments: { q: 'yay', limit: 2 } },
+  if (response.status !== 200) failures.push('mcp: does not pass the upstream status through')
+  if (response.headers.get('access-control-allow-origin') !== '*') {
+    failures.push('mcp: forwarded response is not CORS-open')
+  }
+
+  const options = await mcp.onRequest({
+    request: new Request('https://trustsight.org/mcp', { method: 'OPTIONS' }),
   })
-  if (call.body.result?.isError) failures.push('mcp: search-alerts failed')
+  if (options.status !== 204) failures.push('mcp: preflight is not 204')
+
+  const get = await mcp.onRequest({
+    request: new Request('https://trustsight.org/mcp'),
+  })
+  if (get.status !== 405) failures.push('mcp: GET is not refused')
 } catch (error) {
   failures.push(`mcp: ${error.message}`)
 } finally {

@@ -40,8 +40,11 @@ card. `public/auth.md` says plainly that the public resources need no
 registration, and `public/robots.txt` carries the Content-Signal and AI-crawler
 rules.
 
-`functions/mcp.js` is a stateless Streamable HTTP MCP bridge over the public
-watcher API. It exposes four read-only tools and adds no write surface.
+The MCP bridge is hosted beside the API it serves, at
+`https://watcher.trustsight.org/mcp` (`trustsight-feed/worker/mcp.js`). This
+site only advertises it; `functions/mcp.js` is a compatibility shim that
+forwards the published `/mcp` path so client configurations made before the
+move keep working.
 
 `npm run verify:agent` checks the documents, skill digest, headers and MCP
 handler; the build runs it against both the source and `dist/`.
