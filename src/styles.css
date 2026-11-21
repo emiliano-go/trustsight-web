@@ -203,7 +203,7 @@ main > .section:nth-child(n + 2) {
 
 .prose { max-width: 66ch; }
 
-.prose p { margin: 0 0 18px; }
+.prose p { margin: 0 0 18px; text-wrap: pretty; }
 
 .prose p:last-child { margin-bottom: 0; }
 
@@ -279,6 +279,12 @@ main > .section:nth-child(n + 2) {
    more size than the hero preview; the hero stays capped by its column. */
 .section .plate .term {
   font-size: clamp(0.8235rem, 1vw, 1rem);
+}
+
+/* The transcript in Example output is the product itself, so it gets a step
+   more size than the hero preview; the hero stays capped by its column. */
+.section .plate .term {
+  font-size: min(0.8824rem, calc(100cqi / 52));
 }
 
 .masthead-top {
@@ -1188,6 +1194,7 @@ main > .section:nth-child(n + 2) {
   margin: 46px 0 16px;
   font-size: 1.1176rem;
   font-weight: 600;
+  text-wrap: balance;
 }
 
 /* ---------- colophon ---------- */

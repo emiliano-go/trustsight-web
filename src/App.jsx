@@ -71,8 +71,8 @@ const INSTALL = {
 function ThemeSwitch() {
   return (
     <button className="theme-switch is-dark" type="button" data-theme-toggle role="switch" aria-checked="true" aria-label="Toggle color theme">
-      <span className="theme-option theme-sun" data-theme-sun aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg></span>
-      <span className="theme-option theme-moon is-active" data-theme-moon aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg></span>
+      <span className="theme-option theme-sun" data-theme-sun aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4" /></svg></span>
+      <span className="theme-option theme-moon is-active" data-theme-moon aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg></span>
     </button>
   )
 }
@@ -81,7 +81,7 @@ function AccessibilityMenu() {
   return (
     <div className="a11y-wrap" data-a11y-wrap>
       <button className="a11y-button" type="button" data-a11y-toggle aria-controls="accessibility-settings" aria-expanded="false" aria-label="Accessibility settings">
-        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="1.6" /><path d="M12 9.8v4.4" /><path d="M12 11.5 7.8 8.5" /><path d="M12 11.5l4.2-3" /><path d="M12 14.2 9.2 18.2" /><path d="M12 14.2l2.8 4" /></svg>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.5" r="2" /><path d="M6.5 8.5 12 10.5 17.5 8.5" /><path d="M12 10.5v4.5" /><path d="M12 15 9 20" /><path d="M12 15 15 20" /></svg>
       </button>
       <div className="a11y-panel" id="accessibility-settings" role="group" aria-label="Accessibility settings" hidden>
         <div className="a11y-row"><span className="a11y-label">Font size</span><div className="a11y-seg" role="group" aria-label="Font size"><button type="button" className="is-on" data-font-size="normal" aria-pressed="true">A</button><button type="button" data-font-size="large" aria-pressed="false"><span className="a11y-big">A</span></button></div></div>
