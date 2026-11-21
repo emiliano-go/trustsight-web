@@ -10,6 +10,20 @@ export const plateExample = `╭────────────────
 │           checksums added or changed                                   │
 ╰────────────────────────────────────────────────────────────────────────╯`
 
+// Narrow-screen variant: same clean-review facts, reflowed so the plate can
+// fit without an internal scrollbar. The full transcript stays in the example
+// section below.
+export const plateExampleCompact = `╭──── some-app-bin ────╮
+│ Version 3.1.0-1      │
+│         → 3.1.1-2    │
+│ Status  Only pkgver  │
+│         and sha256   │
+│         sums changed.│
+│ Changed checksums    │
+│         added or     │
+│         changed      │
+╰──────────────────────╯`
+
 export const plateFlagged = `╭─────────────────────────── sketchy-package ────────────────────────────╮
 │  Version  0.9.2-1 → 1.0.0-2                                            │
 │  Status   The update is not trivial. Review it.                        │
