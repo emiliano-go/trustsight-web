@@ -281,12 +281,6 @@ main > .section:nth-child(n + 2) {
   font-size: clamp(0.8235rem, 1vw, 1rem);
 }
 
-/* The transcript in Example output is the product itself, so it gets a step
-   more size than the hero preview; the hero stays capped by its column. */
-.section .plate .term {
-  font-size: min(0.8824rem, calc(100cqi / 52));
-}
-
 .masthead-top {
   display: flex;
   justify-content: space-between;
