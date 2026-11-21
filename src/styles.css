@@ -245,9 +245,9 @@ main > .section:nth-child(n + 2) {
 .masthead-hero {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 64px;
-  align-items: center;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: 56px;
+  align-items: start;
   padding: 56px 0 24px;
 }
 
@@ -262,6 +262,9 @@ main > .section:nth-child(n + 2) {
   font-size: 0.7059rem;
 }
 
+.masthead-preview-label--compact,
+.masthead-preview-compact { display: none; }
+
 .masthead-preview .plate { margin: 0; }
 
 .masthead-preview .plate__scroll {
@@ -273,6 +276,15 @@ main > .section:nth-child(n + 2) {
 
 .masthead-preview .term {
   font-size: clamp(0.7647rem, 0.9vw, 0.8824rem);
+}
+
+.masthead-preview .masthead-install--preview {
+  max-width: 100%;
+  margin-top: 32px;
+}
+
+.masthead-preview .masthead-install--preview .install-command {
+  width: 100%;
 }
 
 /* The transcript in Example output is the product itself, so it gets a step
@@ -1251,6 +1263,19 @@ main > .section:nth-child(n + 2) {
 @media (max-width: 980px) {
   .masthead-hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 0 8px; }
   .masthead-preview { max-width: 560px; }
+}
+
+@media (min-width: 721px) and (max-width: 1100px) {
+  .masthead-preview .term { font-size: 0.7059rem; }
+}
+
+@media (max-width: 584px) {
+  .masthead-preview-label--full,
+  .masthead-preview-full { display: none; }
+  .masthead-preview-label--compact,
+  .masthead-preview-compact { display: block; }
+  .masthead-preview-compact .term { font-size: 0.7647rem; }
+  .masthead-preview-compact .plate__scroll { overflow-x: visible; }
 }
 
 @media (max-width: 720px) {

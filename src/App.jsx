@@ -1,5 +1,5 @@
 import figures from './figures.generated.json'
-import { plateExample, plateFlagged, plateDeps } from './plate.js'
+import { plateExample, plateExampleCompact, plateFlagged, plateDeps } from './plate.js'
 import { linkRules } from './rules.js'
 
 const NS = figures.namespaces
@@ -394,16 +394,25 @@ export function App() {
               Fully open source under MIT. The report points at where to look; it does not replace
               reading the PKGBUILD.
             </p>
-            <div className="masthead-install">
-              <InstallCommand />
-            </div>
           </div>
           <div className="masthead-preview">
-            <p className="masthead-preview-label">A review, as it prints</p>
-            <Plate
-              label="Terminal transcript of a clean trustsight review: some-app-bin, version 3.1.0-1 to 3.1.1-2, only pkgver and sha256sums changed, review the diff before building."
-              lines={plateExample.split('\n')}
-            />
+            <p className="masthead-preview-label masthead-preview-label--full">A review, as it prints</p>
+            <p className="masthead-preview-label masthead-preview-label--compact">A review, condensed</p>
+            <div className="masthead-preview-full">
+              <Plate
+                label="Terminal transcript of a clean trustsight review: some-app-bin, version 3.1.0-1 to 3.1.1-2, only pkgver and sha256sums changed, review the diff before building."
+                lines={plateExample.split('\n')}
+              />
+            </div>
+            <div className="masthead-preview-compact">
+              <Plate
+                label="Condensed terminal excerpt of a clean trustsight review: some-app-bin, version 3.1.0-1 to 3.1.1-2, only pkgver and sha256sums changed."
+                lines={plateExampleCompact.split('\n')}
+              />
+            </div>
+            <div className="masthead-install masthead-install--preview">
+              <InstallCommand />
+            </div>
           </div>
         </div>
         <nav className="masthead-links" aria-label="Primary">
