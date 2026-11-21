@@ -84,9 +84,9 @@ async function copy(card) {
   }
   const button = card.querySelector('[data-copy]')
   const status = card.querySelector('[data-copy-status]')
-  if (button) button.textContent = 'copied ✓'
+  if (button) button.textContent = 'Copied ✓'
   if (status) status.textContent = 'Install commands copied to clipboard.'
-  window.setTimeout(() => { if (button) button.textContent = 'copy' }, 2000)
+  window.setTimeout(() => { if (button) button.textContent = 'Copy' }, 2000)
 }
 
 function setA11yOpen(open, focus = false) {

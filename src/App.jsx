@@ -110,7 +110,7 @@ function InstallCommand({ className }) {
             <span className="install-command__protocol-track" aria-hidden="true"><span /></span>
             <span className="install-command__protocol-option" data-protocol-ssh aria-hidden="true">SSH</span>
           </button>
-          <button type="button" className="install-command__copy" data-copy aria-label="Copy the install commands">copy</button>
+          <button type="button" className="install-command__copy" data-copy aria-label="Copy the install commands">Copy</button>
         </div>
       </div>
       <span className="install-command__body">
@@ -418,7 +418,6 @@ export function App() {
 
         {/* 2 · What it is */}
         <section className="section" aria-labelledby="what">
-          <div className="section-label">What it is</div>
           <h2 id="what">TrustSight audits AUR package updates before you install them</h2>
           <div className="prose">
             <p>
@@ -448,7 +447,6 @@ export function App() {
 
         {/* 3 · How it works */}
         <section className="section" aria-labelledby="how">
-          <div className="section-label">How it works</div>
           <h2 id="how">One review, every surface the recipe touches</h2>
           <div className="prose">
             <p>
@@ -488,8 +486,7 @@ export function App() {
 
         {/* 4 · Example output */}
         <section className="section" aria-labelledby="example">
-          <div className="section-label">Example output</div>
-          <h2 id="example">What a review looks like</h2>
+          <h2 id="example">A clean review, and one that needs a look</h2>
           <div className="prose">
             <p>
               Default output from <code>trustsight review</code> for two outdated packages. The first
@@ -510,7 +507,6 @@ export function App() {
 
         {/* 5 · What it detects */}
         <section className="section" aria-labelledby="detects">
-          <div className="section-label">Detection</div>
           <h2 id="detects">What it detects</h2>
           <div className="prose">
             <p>
@@ -543,7 +539,6 @@ export function App() {
 
         {/* 6 · Evidence tiers */}
         <section className="section" aria-labelledby="tiers">
-          <div className="section-label">Evidence</div>
           <h2 id="tiers">Four kinds of evidence</h2>
           <div className="prose">
             <p>
@@ -578,7 +573,6 @@ export function App() {
 
         {/* 7 · Assurance layers */}
         <section className="section" aria-labelledby="layers">
-          <div className="section-label">Layers</div>
           <h2 id="layers">Eight layers say what kind of evidence a finding is</h2>
           <div className="prose">
             <p>
@@ -618,7 +612,6 @@ export function App() {
 
         {/* 8 · Calibration */}
         <section className="section" aria-labelledby="calibration">
-          <div className="section-label">Calibration</div>
           <h2 id="calibration">The weights are measured, not asserted</h2>
           <div className="prose">
             <p>
@@ -660,7 +653,6 @@ export function App() {
 
         {/* 9 · Testing and configuration */}
         <section className="section" aria-labelledby="testconfig">
-          <div className="section-label">Testing and configuration</div>
           <h2 id="testconfig">How the claims are tested, and how you change them</h2>
           <div className="prose">
             <p>
@@ -695,7 +687,6 @@ export function App() {
 
         {/* 10 · What it cannot see */}
         <section className="section" aria-labelledby="limits">
-          <div className="section-label">Limits</div>
           <h2 id="limits">What it cannot see</h2>
           <div className="prose">
             <p>
@@ -712,7 +703,6 @@ export function App() {
 
         {/* 11 · The rules */}
         <section className="section" aria-labelledby="rules">
-          <div className="section-label">The rules</div>
           <h2 id="rules">{figures.total_rules} documented rules, in {figures.namespace_count} namespaces</h2>
           <div className="prose">
             <p>
@@ -754,7 +744,6 @@ export function App() {
 
         {/* 12 · Installation */}
         <section className="section" aria-labelledby="install">
-          <div className="section-label">Installation</div>
           <h2 id="install">Install once, review every update after</h2>
           <div className="install-block">
             <InstallCommand />
@@ -792,7 +781,6 @@ export function App() {
 
         {/* 13 · FAQ */}
         <section className="section" aria-labelledby="faq">
-          <div className="section-label">FAQ</div>
           <h2 id="faq">Frequently asked questions</h2>
           <div className="faq-list">
             {faqs.map((item) => (
