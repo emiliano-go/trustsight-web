@@ -1,3 +1,9 @@
+# Cloudflare injects its Web Analytics beacon into the HTML at the edge, and
+# the zone has Web Analytics on. script-src and connect-src allow that one
+# origin so the beacon runs instead of failing on every page load under the
+# strict policy. If Web Analytics is turned off in the dashboard, drop both
+# hosts: the site itself ships no third-party script.
+
 /*
   Cross-Origin-Opener-Policy: same-origin
   X-Content-Type-Options: nosniff
@@ -7,7 +13,7 @@
   Cache-Control: public, max-age=0, must-revalidate
   Vary: Accept
   Link: </.well-known/api-catalog>; rel="api-catalog", </.well-known/ai-catalog.json>; rel="ai-catalog", <https://docs.trustsight.org/>; rel="service-doc", </auth.md>; rel="describedby"; type="text/markdown"
-  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-NaQVBzp+6EVAIvtZSuA6rOcSdqSHgsRgoBPoTXjDjSg='; connect-src 'self' https://watcher.trustsight.org
+  Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self' 'sha256-NaQVBzp+6EVAIvtZSuA6rOcSdqSHgsRgoBPoTXjDjSg=' https://static.cloudflareinsights.com; connect-src 'self' https://watcher.trustsight.org https://cloudflareinsights.com
 
 /.well-known/api-catalog
   Content-Type: application/linkset+json
