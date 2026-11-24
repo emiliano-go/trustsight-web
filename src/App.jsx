@@ -14,13 +14,18 @@ const FEED = 'https://watcher.trustsight.org'
 const SECURITY = `${DOCS}/security/`
 const RULES = `${DOCS}/reference/rules/`
 
-/* One focusable, labelled graphic. The box-drawing characters are read aloud
-   one by one by screen readers, so the scroll region is role="img" with a
-   prose aria-label and the <pre> is aria-hidden. */
-function Plate({ label, lines, caption }) {
+/* One labelled graphic. The box-drawing characters are read aloud one by one
+   by screen readers, so the plate is role="img" with a prose aria-label and
+   the <pre> is aria-hidden. Only scrollable plates take focus. */
+function Plate({ label, lines, caption, scrollable = true }) {
   return (
     <figure className="plate">
-      <div className="plate__scroll" tabIndex="0" role="img" aria-label={label}>
+      <div
+        className={`plate__scroll${scrollable ? '' : ' plate__scroll--static'}`}
+        tabIndex={scrollable ? 0 : undefined}
+        role="img"
+        aria-label={label}
+      >
         <pre className="term" aria-hidden="true"><code>{lines.map((line, i) => <span key={i}>{renderLine(line)}{'\n'}</span>)}</code></pre>
       </div>
       {caption ? <figcaption>{caption}</figcaption> : null}
@@ -402,12 +407,14 @@ export function App() {
               <Plate
                 label="Terminal transcript of a clean trustsight review: some-app-bin, version 3.1.0-1 to 3.1.1-2, only pkgver and sha256sums changed, review the diff before building."
                 lines={plateExample.split('\n')}
+                scrollable={false}
               />
             </div>
             <div className="masthead-preview-compact">
               <Plate
                 label="Condensed terminal excerpt of a clean trustsight review: some-app-bin, version 3.1.0-1 to 3.1.1-2, only pkgver and sha256sums changed."
                 lines={plateExampleCompact.split('\n')}
+                scrollable={false}
               />
             </div>
             <div className="masthead-install masthead-install--preview">

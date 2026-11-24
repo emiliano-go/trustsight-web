@@ -271,7 +271,12 @@ main > .section:nth-child(n + 2) {
   width: fit-content;
   max-width: 100%;
   margin: 0;
-  overflow-x: auto;
+  overflow: visible;
+}
+
+.plate__scroll--static {
+  overflow: visible;
+  scrollbar-width: none;
 }
 
 .masthead-preview .term {
