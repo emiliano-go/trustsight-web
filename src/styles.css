@@ -280,7 +280,7 @@ main > .section:nth-child(n + 2) {
 }
 
 .masthead-preview .term {
-  font-size: clamp(0.7647rem, 0.9vw, 0.8824rem);
+  font-size: min(0.7647rem, calc(100cqi / 50));
 }
 
 .masthead-preview .masthead-install--preview {
