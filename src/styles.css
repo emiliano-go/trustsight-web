@@ -937,7 +937,7 @@ main > .section:nth-child(n + 2) {
   position: relative;
   height: 1px;
   background: var(--rule);
-  margin: 52px 6px 64px;
+  margin: 64px 6px 64px;
 }
 
 /* The two measured regions sit behind the scale as quiet bands: benign up to
@@ -991,7 +991,7 @@ main > .section:nth-child(n + 2) {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  margin-top: 12px;
+  margin-top: 32px;
   white-space: nowrap;
   color: var(--fg-muted);
   font-family: var(--font-mono);
@@ -1004,7 +1004,7 @@ main > .section:nth-child(n + 2) {
   top: auto;
   bottom: 100%;
   margin-top: 0;
-  margin-bottom: 18px;
+  margin-bottom: 32px;
 }
 
 .gauge__mark--threshold .gauge__label { color: var(--accent); }
