@@ -999,7 +999,7 @@ main > .section:nth-child(n + 2) {
   top: auto;
   bottom: 100%;
   margin-top: 0;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 
 .gauge__mark--threshold .gauge__label { color: var(--accent); }
