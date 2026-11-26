@@ -390,10 +390,11 @@ export function App() {
         </div>
         <div className="masthead-hero">
           <div className="masthead-copy">
-            <h1>Audit the AUR update before you build it</h1>
+            <h1>An immune system for the AUR</h1>
             <p className="masthead-definition">
-              TrustSight diffs the new PKGBUILD against the one you have, runs a published rule set
-              over the change, and reports what it read and what it could not.
+              TrustSight is immune-inspired security intelligence for the AUR. It diffs the new
+              PKGBUILD against the one you have, remembers what the ecosystem has seen, runs a
+              published rule set over the change, and reports what it read and what it could not.
             </p>
             <p className="masthead-note">
               Fully open source under MIT. The report points at where to look; it does not replace
@@ -703,7 +704,69 @@ export function App() {
           <DocsLink href={`${DOCS}/reference/configuration/`}>the configuration reference</DocsLink>
         </section>
 
-        {/* 10 · What it cannot see */}
+        {/* 10 · Harness */}
+        <section className="section" aria-labelledby="harness">
+          <h2 id="harness">The harness tries to break the rules first</h2>
+          <div className="prose">
+            <p>
+              The adversarial harness is a separate project that measures whether the rules hold when
+              someone is trying to evade them. It generates or replays a candidate diff, checks that the
+              diff is valid and that its attack chain still works, runs it through TrustSight&rsquo;s public
+              API against a pinned build, and classifies the outcome with a fixed judge.
+            </p>
+            <p>
+              A bypass is narrow by definition: the diff is syntactically valid, its declared constraints
+              were honoured, the behaviour is proven, and TrustSight returns UNFLAGGED. A parse error, a
+              broken payload, a constraint violation, or a coverage gap that forbids UNFLAGGED is a
+              different result. That distinction is the point; a harness that counted any missed diff as a
+              win would measure noise.
+            </p>
+            <p>
+              Campaigns are deterministic and pinned to a version. Every attempt keeps its evidence and
+              cost, the regression command replays every committed bypass, the coverage report maps the
+              suite to the contract, and a benign corpus scan measures the false-positive side. The suite
+              currently targets all 326 contract rules across 135 campaigns, with 297 firing probes and
+              29 negative controls.
+            </p>
+          </div>
+          <p className="section-docs">
+            <a href="https://harness.trustsight.org/" target="_blank" rel="noreferrer">The harness ↗</a>
+            {' · '}
+            <a href="https://github.com/emiliano-go/trustsight-harness" target="_blank" rel="noreferrer">source ↗</a>
+          </p>
+        </section>
+
+        {/* 11 · Watcher and feed */}
+        <section className="section" aria-labelledby="watcher">
+          <h2 id="watcher">The watcher and feed are the shared immune memory</h2>
+          <div className="prose">
+            <p>
+              A single review sees one package. The watcher runs the same analysis against the AUR change
+              stream: it observes changes, analyses what changed, keeps state, joins observations across
+              packages at cycle end, and emits bounded campaign alerts. That is where one host, maintainer
+              pattern, or install hook across a dozen packages becomes visible.
+            </p>
+            <p>
+              The public feed at watcher.trustsight.org is the shared record. Each watcher cycle posts a
+              signed document; the feed verifies the Ed25519 signature, stores each notification on a
+              searchable page, and serves a read-only API. A daily signed Merkle checkpoint chains the
+              archive, so deletion or reordering is detectable. The feed is evidence, not a verdict: a
+              notification does not authorize an install.
+            </p>
+            <p>
+              The watcher is the sensing and correlation layer, and the feed is the memory that other
+              people and machines can read. Neither is the response. A person still decides what to do
+              with the report.
+            </p>
+          </div>
+          <p className="section-docs">
+            <a href={FEED} target="_blank" rel="noreferrer">Watcher feed ↗</a>
+            {' · '}
+            <a href={`${DOCS}/workflows/watching-the-aur-continuously/`} target="_blank" rel="noreferrer">run a watcher ↗</a>
+          </p>
+        </section>
+
+        {/* 12 · What it cannot see */}
         <section className="section" aria-labelledby="limits">
           <h2 id="limits">What it cannot see</h2>
           <div className="prose">
@@ -719,7 +782,7 @@ export function App() {
           <DocsLink href={`${DOCS}/explanation/what-trustsight-cannot-see/`}>what TrustSight cannot see</DocsLink>
         </section>
 
-        {/* 11 · The rules */}
+        {/* 13 · The rules */}
         <section className="section" aria-labelledby="rules">
           <h2 id="rules">{figures.total_rules} documented rules, in {figures.namespace_count} namespaces</h2>
           <div className="prose">
@@ -760,7 +823,7 @@ export function App() {
           <DocsLink href={`${DOCS}/reference/rules/system/`}>the rule system</DocsLink>
         </section>
 
-        {/* 12 · Installation */}
+        {/* 14 · Installation */}
         <section className="section" aria-labelledby="install">
           <h2 id="install">Install once, review every update after</h2>
           <div className="install-block">
@@ -797,7 +860,7 @@ export function App() {
           <DocsLink href={`${DOCS}/getting-started/installation/`}>installing TrustSight</DocsLink>
         </section>
 
-        {/* 13 · FAQ */}
+        {/* 15 · FAQ */}
         <section className="section" aria-labelledby="faq">
           <h2 id="faq">Frequently asked questions</h2>
           <div className="faq-list">
@@ -813,7 +876,7 @@ export function App() {
 
       </main>
 
-      {/* 14 · Colophon */}
+      {/* 16 · Colophon */}
       <footer className="colophon" aria-label="Colophon">
         <div>
           <h2>Colophon</h2>
@@ -829,6 +892,8 @@ export function App() {
             <li><a href={SECURITY} target="_blank" rel="noreferrer">Security model ↗</a></li>
             <li><a href={RULES} target="_blank" rel="noreferrer">Rules reference ↗</a></li>
             <li><a href={`${DOCS}/changelog/`} target="_blank" rel="noreferrer">Changelog ↗</a></li>
+            <li><a href="https://harness.trustsight.org/" target="_blank" rel="noreferrer">Harness ↗</a></li>
+            <li><a href={FEED} target="_blank" rel="noreferrer">Watcher feed ↗</a></li>
             <li><a href={GITHUB} target="_blank" rel="noreferrer">Source on GitHub ↗</a></li>
           </ul>
         </div>

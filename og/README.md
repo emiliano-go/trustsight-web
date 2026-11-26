@@ -20,8 +20,8 @@ the wordmark. No gradients, rules, cards, or footers.
   on light.
 - Inter 400 for the tagline, 600 for the wordmark and headline. The wordmark is
   text only, as on the site.
-- Copy: `Audit AUR updates before you build.` and the current masthead
-  headline. Nothing claims a package is safe.
+- Copy: `An immune system for the AUR.` and the current masthead headline.
+  Nothing claims a package is safe.
 
 ## Render
 

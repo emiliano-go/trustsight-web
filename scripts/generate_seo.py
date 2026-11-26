@@ -40,17 +40,17 @@ INDEX = ROOT / "index.html"
 
 SITE_URL = "https://trustsight.org"
 SITE_NAME = "TrustSight"
-TITLE = "Audits AUR PKGBUILDs before you update"
+TITLE = "An immune system for the AUR"
 DESCRIPTION = (
-    "TrustSight audits AUR PKGBUILDs before you update; it reports structural "
-    "risk, evidence, and incomplete analysis without claiming safety."
+    "TrustSight is immune-inspired security intelligence for the AUR: it audits "
+    "PKGBUILDs, remembers ecosystem history, and reports what it could not verify."
 )
 # The social card is authored in og/ and served from /og-image.png; keep
 # width/height in sync with that file.
 OG_IMAGE_URL = f"{SITE_URL}/og-image.png"
 OG_IMAGE_WIDTH = 1200
 OG_IMAGE_HEIGHT = 630
-OG_IMAGE_ALT = "TrustSight | Audit the AUR update before you build it"
+OG_IMAGE_ALT = "TrustSight | An immune system for the AUR"
 
 # The page is a software product, so the JSON-LD is a SoftwareApplication
 # rather than seoslug's default WebPage for entity_type "home".
@@ -61,8 +61,8 @@ SCHEMA_JSONLD = {
     "applicationCategory": "SecurityApplication",
     "operatingSystem": "Arch Linux",
     "description": (
-        "Audits AUR PKGBUILDs before you update: catches careless malice and "
-        "structural risk, and tells you what it cannot verify."
+        "Immune-inspired security intelligence for the AUR: audits PKGBUILDs, "
+        "remembers ecosystem history, and tells you what it could not verify."
     ),
     "url": SITE_URL,
     "image": OG_IMAGE_URL,

@@ -24,7 +24,7 @@ const missingHeadings = headings.filter((heading) => !markdown.includes(heading)
 const checks = [
   ['root contains rendered page content', html.includes('<div id="root"><div class="page" id="top">')],
   ['main content is present for no-JS visitors', html.includes('<main id="content">')],
-  ['LCP heading is present for no-JS visitors', html.includes('<h1>Audit the AUR update before you build it</h1>')],
+  ['LCP heading is present for no-JS visitors', html.includes('<h1>An immune system for the AUR</h1>')],
   ['install command is present for no-JS visitors', html.includes('git clone https://github.com/emiliano-go/trustsight.git')],
   ['small client module remains available for progressive enhancement', /<script type="module" crossorigin src="\/assets\/[^" ]+\.js"><\/script>/.test(html)],
   ['static controls carry progressive-enhancement hooks', html.includes('data-theme-toggle="true"') && html.includes('data-install="true"')],
