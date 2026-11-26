@@ -201,7 +201,7 @@ const detects = [
   { attack: 'Untrusted maintainer takeover', how: 'A maintainer change to someone never seen before (H026).' },
   { attack: 'A stale package suddenly revived', how: 'A package with no updates for over a year suddenly gets one (H022).' },
   { attack: 'Accelerated release cadence', how: 'Three or more commits in the last 24 hours (H028, informational).' },
-  { attack: 'Sabotage payloads (fork bombs, <code>rm -rf /</code>, disk wiping, permission sabotage, service disruption, coin miners, log wiping)', how: 'Command-position matching separates build-sandbox housekeeping (<code>rm -rf "$srcdir/x"</code>) from system damage (S001-S008).' },
+  { attack: 'Sabotage payloads (fork bombs, <code>rm -rf /</code>, disk wiping, permission sabotage, service disruption, privileged system mutation, coin miners, log wiping, self-erasing payloads)', how: `Command-position matching separates build-sandbox housekeeping (<code>rm -rf "$srcdir/x"</code>) from system damage (${NS.sabotage.range}), including udev and service mutation and payload teardown.` },
   { attack: 'Orphan hijacking (adopted from orphan, then rewritten with no upstream change)', how: 'The maintainer field against its last recorded state, plus a recipe-only-change signature and the composition with an unpinned build fetch (H086-H088).' },
   { attack: 'Build steps that fetch unpinned code (<code>npm install</code> in a build function)', how: 'Not scored. Reported as the <code>unpinned_build_deps</code> coverage gap and as <code>W002</code>, because what the build will run is not in the analysed text and no checksum covers it.' },
   { attack: 'A risky AUR dependency (novel, typosquatted, or hijacked)', how: 'Walks AUR dependencies to a configurable depth (default: direct ones; <code>--depth</code> to go further) and analyses each as a package in its own right: novel (D001), typosquatted (D002), network-using makedepends (D003), and provides hijacks (D004).' },
@@ -255,8 +255,8 @@ const BLURBS = {
   entropy: `${NS.entropy.total} entropy rules treat the statistics of the added text as evidence: its compression ratio, the fraction that is encoded alphabet, and identifier entropy. They mark a change that sits outside the normal distribution; suspicion, never a verdict, with thresholds calibrated on the benign corpus.`,
   temporal: `${NS.temporal.total} temporal rules track the identity and history behind the recipe rather than its content: a signing key never seen before, a maintainer domain first seen now, a key rotated, AUR metadata that runs ahead of the git tip (commits were pushed and later stripped), a packager absent from the retained commit history, a vouch surface removed, an HTTPS source downgraded, a payload adopted only after a delay, a high-value dormant package taken over, a dependency redirected, a package that disappeared and reappeared, and a trust-erosion sequence. They say how new the thing behind the update is, independent of what the diff changed; the non-scoring checks corroborate rather than score.`,
   correlation: `${NS.correlation.total} correlation rules look across packages in a window rather than inside one: a host, a literal, an adopter, an upstream dependency, a payload signal, a fetch target, or an adoption window shared by several recent analyses, a maintainer publishing name-clones of popular packages, a first-seen account adopting many dormant packages, a maintainer creating packages in a burst, a watchlisted subject, a package in an active campaign's neighbourhood, and a plurality of first-seen hosts across strangers. They run at cycle end, never per package, so a campaign that is invisible in any single diff becomes visible in the set. Only the shared-signal rules score; the neighbourhood, watchlist and host-census findings are reported at weight 0.`,
-  artifact: `${NS.artifact.total} artifact rules inspect the built package, not the diff. The optional L9 build lane reads the produced manifest to catch a setuid file, an undeclared unit, a library outside depends, or an embedded eBPF object. Reported outside the static score, and off by default.`,
-  upstream_manifests: `${NS.upstream_manifests.total} upstream rules read only what a recipe declares about upstream, never fetching it. ${catCount('upstream_manifests', 'upstream-manifests')} manifest rules cover the dependency manifests committed beside the recipe: a manifest added or removed, a dependency delta, a new remote source, a redirected registry, a dependency-surface jump, a manifest changed without its lockfile, an upstream origin change, and a weakened lockfile. ${catCount('upstream_manifests', 'upstream-release')} release-integrity rules are fed by a signed upstream baseline: a git-history credential sweep, a new CI surface committed into the AUR repository, and a source the public cannot inspect. Read from the repository tree and the diff; upstream content is never fetched.`,
+  artifact: `${NS.artifact.total} artifact rules inspect what the static diff cannot: the built package manifest in the optional L9 lane, or a release asset against its tag tree in the opt-in upstream lane. L9 catches a setuid file, an undeclared unit, a library outside depends, or an embedded eBPF object; A016 catches the xz-style release asset that does not match its tag. Both are reported outside the static score and are off by default.`,
+  upstream_manifests: `${NS.upstream_manifests.total} upstream rules read what a recipe declares about upstream. ${catCount('upstream_manifests', 'upstream-manifests')} manifest rules cover the dependency manifests committed beside the recipe: a manifest added or removed, a dependency delta, a new remote source, a redirected registry, a dependency-surface jump, a manifest changed without its lockfile, an upstream origin change, and a weakened lockfile. ${catCount('upstream_manifests', 'upstream-release')} release-integrity rules are fed by a signed upstream baseline: a git-history credential sweep, a new CI surface committed into the AUR repository, and a source the public cannot inspect. Read from the repository tree and the diff; the U rules never fetch. A016, in the artifact family, is the exception: the opt-in upstream lane fetches the declared tag archive to compare it with the release asset.`,
   declared_practice: 'What the recipe declares, not what the analysis found. These findings read the claims a PKGBUILD makes about itself: checksums declared for every non-VCS source, validpgpkeys present, signatures sourced, sources pinned to a commit hash or tag, downloads over HTTPS, a branch/unpinned ref tracked, or a prebuilt deliverable declared. Every one is INFO and checkable by the reader against the file itself. They are reported, never credited: a signal an attacker can assert for free must not move a score.',
   unverifiable: 'Not a claim about the recipe but about the analysis: something the package will run that this run could not read. A build script that executes a file not declared in source=(), a patch not committed to the repo, a manifest generated at build time, a dependency resolved from a registry, a declared upstream this run was not allowed to fetch, a campaign perimeter that bounds what the cycle could see, or a terminal render that had to cap its finding list. Each is reported so the reader knows the boundary of what was examined; none contributes to the score.',
 }
@@ -276,7 +276,7 @@ const limits = [
   { strong: 'Malicious upstream tarballs.', text: 'TrustSight audits the PKGBUILD, not the binaries it downloads. A clean build file can point to a compromised tarball.' },
   { strong: 'Deliberately unremarkable attacks.', text: 'With no commands added, no URLs changed, and no checksums disabled, there is no diff signal. The rules detect patterns associated with compromise, not compromise itself.' },
   { strong: 'Dependencies past the configured depth.', text: 'Past <code>--depth</code>, and past the hard ceilings on an exhaustive walk, the closure is unread, and the report says so with a <code>deps_not_scanned</code> coverage gap.' },
-  { strong: 'Runtime behaviour.', text: 'Nothing is executed, sandboxed or otherwise, because executing a PKGBUILD would let hostile input detect the review and change its behaviour. Static analysis by design.' },
+  { strong: 'Runtime behaviour.', text: 'No PKGBUILD is executed, in a sandbox or otherwise, because executing one would let hostile input detect the review and change its behaviour. Static analysis by design.' },
   { strong: 'Zero-day structural attacks.', text: 'The rules are pattern-based. A novel attack that leaves no matching pattern will not fire.' },
 ]
 
@@ -348,7 +348,7 @@ const flowPhases = [
     lead: 'Who wrote it, where it comes from, what it drags in.',
     items: [
       ['Maintainer history', 'first-seen accounts, key rotation, takeover signals'],
-      ['Declared upstream', 'url=, source=(), validpgpkeys: read, never fetched'],
+      ['Declared upstream', 'url=, source=(), validpgpkeys: read; opt-in lane may fetch the tag archive'],
       ['Dependency closure', 'AUR dependencies walked to --depth'],
     ],
   },
@@ -495,7 +495,8 @@ export function App() {
           <p className="flow__cycle">
             <span className="flow__cycle-tag">At cycle end</span>
             The watcher correlates across packages ({NS.correlation.range.replace('-', '\u2013')}) and reports campaign
-            neighbourhoods; the optional L9 build lane inspects the built package, off by default.
+            neighbourhoods; the optional L9 build lane inspects the built package, and A016 compares a
+            release asset with its tag tree, both off by default.
           </p>
           <DocsLink href={`${DOCS}/assurance-layers/`}>assurance layers</DocsLink>
         </section>
@@ -620,7 +621,8 @@ export function App() {
             <p>
               A layer label names the check that produced a finding, never how far an attacker got.
               The optional <code>L9</code> build lane inspects the built package rather than the diff,
-              so it is not one of the eight and it is off by default.
+              and A016 uses the opt-in upstream lane to compare a release asset with its tag tree.
+              Neither is one of the eight, and both are off by default.
             </p>
           </div>
           <DocsLink href={`${DOCS}/assurance-layers/`}>assurance layers</DocsLink>

@@ -1,14 +1,14 @@
 {
   "namespaces": {
     "detection": {
-      "count_label": "145 rules",
-      "total": 145,
+      "count_label": "146 rules",
+      "total": 146,
       "range": "H001-R152",
       "categories": [
         [
           "Fetch and Execution",
           "fetch-and-execution",
-          37
+          38
         ],
         [
           "Integrity and Verification",
@@ -73,14 +73,14 @@
       ]
     },
     "structural": {
-      "count_label": "34 rules",
-      "total": 34,
-      "range": "C001-C034",
+      "count_label": "35 rules",
+      "total": 35,
+      "range": "C001-C035",
       "categories": [
         [
           "Integrity and Verification",
           "integrity",
-          19
+          20
         ],
         [
           "Install and Persistence",
@@ -127,14 +127,14 @@
       ]
     },
     "sabotage": {
-      "count_label": "8 rules",
-      "total": 8,
-      "range": "S001-S008",
+      "count_label": "11 rules",
+      "total": 11,
+      "range": "S001-S011",
       "categories": [
         [
           "Sabotage",
           "sabotage",
-          8
+          11
         ]
       ]
     },
@@ -192,55 +192,55 @@
       ]
     },
     "correlation": {
-      "count_label": "14 rules",
-      "total": 14,
-      "range": "G001-G014",
+      "count_label": "16 rules",
+      "total": 16,
+      "range": "G001-G016",
       "categories": [
         [
           "Correlation",
           "correlation",
-          14
+          16
         ]
       ]
     },
     "artifact": {
-      "count_label": "8 rules",
-      "total": 8,
-      "range": "A001-A008",
+      "count_label": "16 rules",
+      "total": 16,
+      "range": "A001-A016",
       "categories": [
         [
           "Artifact",
           "artifact",
-          8
+          16
         ]
       ]
     },
     "upstream_manifests": {
-      "count_label": "12 rules",
-      "total": 12,
-      "range": "U001-U012",
+      "count_label": "15 rules",
+      "total": 15,
+      "range": "U001-U015",
       "categories": [
         [
           "Upstream Manifests",
           "upstream-manifests",
-          8
+          9
         ],
         [
           "Upstream Release Integrity",
           "upstream-release",
-          4
+          6
         ]
       ]
     },
     "unverifiable": {
-      "count_label": "13 findings, weight 0",
-      "total": 13,
-      "range": "W001-W013",
+      "count_label": "15 findings, weight 0",
+      "total": 15,
+      "range": "W001-W015",
       "categories": [
         [
           "Unverifiable",
           "unverifiable",
-          13
+          15
         ]
       ]
     },
@@ -286,27 +286,27 @@
     }
   },
   "namespace_count": 13,
-  "total_rules": 302,
+  "total_rules": 322,
   "category_pages": 22,
   "tests": {
-    "count": 8678,
-    "files": 235
+    "count": 9909,
+    "files": 304
   },
   "seed": {
-    "dependency_names": 215504,
-    "hashed_maintainers": 36912,
-    "source_urls": 185902
+    "dependency_names": 224423,
+    "hashed_maintainers": 43815,
+    "source_urls": 195023
   },
   "calibration": {
-    "benign_above_threshold_pct": 6.9,
+    "benign_above_threshold_pct": 6.6,
     "benign_p95": 30,
-    "benign_zero_rate_pct": 73.9,
+    "benign_zero_rate_pct": 76.1,
     "corpus_diffs": 8393,
     "labelled_fixtures": 213,
     "malicious_minimum": 20,
     "malicious_p5": 40,
-    "ruleset_trigger_rate_pct": 30.2,
+    "ruleset_trigger_rate_pct": 28.3,
     "separation_margin": 10,
-    "threshold_percentile": 93.1
+    "threshold_percentile": 93.4
   }
 }
