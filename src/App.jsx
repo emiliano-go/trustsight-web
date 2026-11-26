@@ -1,4 +1,5 @@
 import figures from './figures.generated.json'
+import { INSTALL } from './install.js'
 import { plateExample, plateExampleCompact, plateFlagged, plateDeps } from './plate.js'
 import { linkRules } from './rules.js'
 
@@ -56,21 +57,6 @@ function renderLine(line) {
   }
   if (last < line.length) parts.push(line.slice(last))
   return parts.length ? parts : line
-}
-
-/* The hero and install-section command block. The copy control copies the
-   selected clone command without prompts. */
-const INSTALL = {
-  https: [
-    'git clone https://github.com/emiliano-go/trustsight.git',
-    'cd trustsight/packaging/aur && makepkg -si',
-    'trustsight review',
-  ].join('\n'),
-  ssh: [
-    'git clone git@github.com:emiliano-go/trustsight.git',
-    'cd trustsight/packaging/aur && makepkg -si',
-    'trustsight review',
-  ].join('\n'),
 }
 
 function ThemeSwitch() {

@@ -531,12 +531,13 @@ main > .section:nth-child(n + 2) {
 
 .install-command__body {
   display: block;
-  padding: 16px 20px;
+  padding: 16px;
 }
 
 .install-command .cmd-line {
   display: block;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .install-command .dollar {

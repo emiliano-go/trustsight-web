@@ -174,6 +174,7 @@ def build_figures() -> dict:
         "namespaces": namespaces,
         "namespace_count": len(namespaces),
         "total_rules": len(rule_categories) + len(declared),
+        "version": trustsight.__version__,
         "category_pages": len(
             {category.doc_page for category in rule_categories.values()}
         ),

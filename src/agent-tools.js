@@ -2,13 +2,9 @@
 // these tools expose the public watcher API and the install command to a
 // browser agent without adding any write surface.
 
-const WATCHER = 'https://watcher.trustsight.org'
+import { INSTALL } from './install.js'
 
-const INSTALL = [
-  'git clone https://github.com/emiliano-go/trustsight.git',
-  'cd trustsight/packaging/aur && makepkg -si',
-  'trustsight review',
-].join('\n')
+const WATCHER = 'https://watcher.trustsight.org'
 
 async function getJson(path) {
   const response = await fetch(`${WATCHER}${path}`, {
@@ -60,7 +56,7 @@ const tools = [
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     execute() {
       return {
-        commands: INSTALL,
+        commands: INSTALL.https,
         docs: 'https://docs.trustsight.org/start-here/installation/',
       }
     },
