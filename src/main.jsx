@@ -1,10 +1,6 @@
 import './styles.css'
 import { registerAgentTools } from './agent-tools.js'
-
-const INSTALL = {
-  https: 'git clone https://github.com/emiliano-go/trustsight.git\ncd trustsight/packaging/aur && makepkg -si\ntrustsight review',
-  ssh: 'git clone git@github.com:emiliano-go/trustsight.git\ncd trustsight/packaging/aur && makepkg -si\ntrustsight review',
-}
+import { INSTALL } from './install.js'
 
 const root = document.documentElement
 
