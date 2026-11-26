@@ -60,6 +60,21 @@ jobs:
 
       - run: pip install "seoslug==2.3.0"
 
+      - name: Require the release tag
+        run: |
+          set -eu
+          version=$(python - <<'PY'
+          import tomllib
+          from pathlib import Path
+          print(tomllib.loads(Path("trustsight/pyproject.toml").read_text())["project"]["version"])
+          PY
+          )
+          tag="v$version"
+          if ! git -C trustsight ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "core declares $version but refs/tags/$tag is missing" >&2
+            exit 1
+          fi
+
       - name: Regenerate the catalog-derived site data
         run: |
           python scripts/generate_rules_map.py
